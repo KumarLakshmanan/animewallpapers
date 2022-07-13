@@ -1,0 +1,191 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:frontendforever/controllers/theme_controller.dart';
+
+import '../constants.dart';
+
+Widget buildTitle(context, SubTheme theme) {
+  return Container(
+    width: MediaQuery.of(context).size.width,
+    padding: const EdgeInsets.all(20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Welcome to",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: theme.primary,
+            fontFamily: GoogleFonts.poppins().fontFamily,
+          ),
+        ),
+        Text(
+          kAppTitle,
+          style: TextStyle(
+            fontSize: 35,
+            fontWeight: FontWeight.w900,
+            color: theme.primary,
+            fontFamily: GoogleFonts.poppins().fontFamily,
+          ),
+        ),
+        Text(
+          kAppDescription,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
+            color: theme.textSecondary,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget backButton(context) {
+  return InkWell(
+    onTap: () {
+      Navigator.pop(context);
+    },
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(left: 0, top: 10, bottom: 10),
+            child: const Icon(Icons.keyboard_arrow_left, color: Colors.black),
+          ),
+          const Text(
+            'Back',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+class EntryField extends StatefulWidget {
+  final String title;
+  final TextEditingController controller;
+  final SubTheme theme;
+  final bool isPassword;
+  final bool isEmail;
+  final Function? isSubmit;
+  const EntryField({
+    Key? key,
+    required this.title,
+    required this.controller,
+    required this.theme,
+    this.isPassword = false,
+    this.isEmail = false,
+    this.isSubmit,
+  }) : super(key: key);
+
+  @override
+  _EntryFieldState createState() => _EntryFieldState();
+}
+
+class _EntryFieldState extends State<EntryField> {
+  bool isObsure = false;
+  @override
+  void initState() {
+    super.initState();
+    isObsure = widget.isPassword;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextField(
+            controller: widget.controller,
+            obscureText: isObsure,
+            keyboardType: widget.isEmail
+                ? TextInputType.emailAddress
+                : widget.isPassword
+                    ? TextInputType.visiblePassword
+                    : TextInputType.text,
+            onSubmitted: (value) {
+              widget.isSubmit!();
+            },
+            textInputAction: widget.isSubmit != null
+                ? TextInputAction.done
+                : TextInputAction.next,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              fillColor: const Color(0xfff3f3f4),
+              filled: true,
+              hintText: "Enter Your " + widget.title,
+              labelText: widget.title,
+              suffixIcon: widget.isPassword
+                  ? GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isObsure = !isObsure;
+                        });
+                      },
+                      child: Icon(
+                        isObsure ? Icons.visibility_off : Icons.visibility,
+                        color: widget.theme.primary,
+                      ),
+                    )
+                  : null,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+Widget submitButton(BuildContext context, Function onTap, String text,
+    SubTheme theme, Widget? child) {
+  return InkWell(
+    onTap: () {
+      onTap();
+    },
+    child: Container(
+      width: MediaQuery.of(context).size.width,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(5),
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.grey.shade200,
+            offset: const Offset(2, 4),
+            blurRadius: 5,
+            spreadRadius: 2,
+          )
+        ],
+        gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              theme.primary,
+              theme.primary.withOpacity(0.8),
+            ]),
+      ),
+      child: child ??
+          Text(
+            text,
+            style: const TextStyle(fontSize: 20, color: Colors.white),
+          ),
+    ),
+  );
+}
+
+Expanded buildDivider() {
+  return const Expanded(
+    child: Divider(
+      color: Color(0xFFD9D9D9),
+      height: 1.5,
+    ),
+  );
+}
