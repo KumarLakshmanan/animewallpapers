@@ -20,14 +20,13 @@ class InlineDropDown extends StatefulWidget {
 }
 
 class _InlineDropDownState extends State<InlineDropDown> {
-  final theme = Get.put(ThemeController());
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          color: theme.currentTheme.light.primary,
+          color: Color(0xFF30475E),
           borderRadius: BorderRadius.circular(4.0),
           boxShadow: widget.isDark
               ? null

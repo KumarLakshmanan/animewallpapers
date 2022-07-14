@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -12,8 +13,10 @@ import 'package:frontendforever/screens/onboarding.dart';
 import 'package:frontendforever/screens/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontendforever/types/prelogin.dart';
-import 'package:frontendforever/types/subject.dart';
 import 'package:frontendforever/types/user_credentials.dart';
+
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
 showCallbackDialog(String message, Function onTap,
     {bool barrierDismissible = true, bool showCancel = true}) {
@@ -50,6 +53,17 @@ showAlertDialog(context, text) {
       fit: BoxFit.contain,
     ),
     context: context,
+    actions: [
+      IconsOutlineButton(
+        onPressed: () {
+          Get.back();
+        },
+        text: 'Close',
+        iconData: Icons.cancel_outlined,
+        textStyle: TextStyle(color: Colors.grey),
+        iconColor: Colors.grey,
+      ),
+    ],
   );
 }
 
@@ -63,6 +77,17 @@ showErrorDialog(context, text) {
       fit: BoxFit.contain,
     ),
     context: context,
+    actions: [
+      IconsOutlineButton(
+        onPressed: () {
+          Get.back();
+        },
+        text: 'Close',
+        iconData: Icons.cancel_outlined,
+        textStyle: TextStyle(color: Colors.grey),
+        iconColor: Colors.grey,
+      ),
+    ],
   );
 }
 
@@ -221,8 +246,66 @@ getLogin(
       'userCredentials',
       jsonEncode(data['data']),
     );
-    Get.offAll(const OnBoardingPage());
+    Dialogs.materialDialog(
+      context: context,
+      title: 'Login Successful',
+      lottieBuilder: Lottie.asset(
+        'assets/json/success.json',
+        repeat: false,
+        fit: BoxFit.contain,
+      ),
+      actions: [
+        IconsOutlineButton(
+          onPressed: () {
+            Get.offAll(const OnBoardingPage());
+          },
+          text: 'Continue',
+          iconData: Icons.arrow_forward_outlined,
+        ),
+      ],
+    );
   } else {
     showErrorDialog(context, data['error']['description']);
+  }
+}
+
+Future<void> handleSignIn(BuildContext context) async {
+  try {
+    GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: ['email'],
+    );
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      return;
+    } else {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      if (googleAuth.accessToken != '') {
+        var accessToken = googleAuth.accessToken;
+        var yourAuthServerUrl = apiUrl;
+        var response = await http.post(
+          Uri.parse(yourAuthServerUrl),
+          body: {
+            'access_token': accessToken,
+            'email': googleUser.email,
+            'name': googleUser.displayName,
+            'id': googleUser.id,
+            'photo': googleUser.photoUrl,
+          },
+        );
+        if (response.statusCode == 200) {
+          getLogin(
+            response.body,
+            googleUser.email,
+            googleUser.id,
+            context,
+          );
+        } else {
+          showErrorDialog(context, 'Something went wrong');
+        }
+      }
+    }
+  } catch (error) {
+    print(error);
   }
 }

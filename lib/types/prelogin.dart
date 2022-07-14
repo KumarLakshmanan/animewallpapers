@@ -25,40 +25,32 @@ class PreLogin {
 
 class Theme {
   Theme({
-    required this.primay,
+    required this.primary,
     required this.secondary,
-    required this.accents,
-    required this.textPrimary,
-    required this.textSecondary,
+    required this.bottombar,
+    required this.bottombaractive,
     required this.background,
-    required this.canvas,
   });
 
-  String primay;
+  String primary;
   String secondary;
-  String accents;
-  String textPrimary;
-  String textSecondary;
+  String bottombar;
+  String bottombaractive;
   String background;
-  String canvas;
 
   factory Theme.fromJson(Map<String, dynamic> json) => Theme(
-        primay: json["primay"],
+        primary: json["primary"],
         secondary: json["secondary"],
-        accents: json["accents"],
-        textPrimary: json["textPrimary"],
-        textSecondary: json["textSecondary"],
+        bottombar: json["bottombar"],
+        bottombaractive: json["bottombaractive"],
         background: json["background"],
-        canvas: json["canvas"],
       );
 
   Map<String, dynamic> toJson() => {
-        "primay": primay,
+        "primary": primary,
         "secondary": secondary,
-        "accents": accents,
-        "textPrimary": textPrimary,
-        "textSecondary": textSecondary,
+        "bottombar": bottombar,
+        "bottombaractive": bottombaractive,
         "background": background,
-        "canvas": canvas,
       };
 }

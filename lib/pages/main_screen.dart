@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
+import 'package:frontendforever/pages/codes.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/api.dart';
 import 'package:frontendforever/constants.dart';
@@ -25,7 +26,6 @@ class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
   final MainScreenController mainController = Get.put(MainScreenController());
   final DataController dc = Get.put(DataController());
-  final ThemeController themeController = Get.put(ThemeController());
   late AnimationController menuAnimation;
   bool isOpened = false;
   List people = [];
@@ -40,12 +40,9 @@ class _MainScreenState extends State<MainScreen>
 
   @override
   Widget build(BuildContext context) {
-    SubTheme subTheme = Get.isDarkMode
-        ? themeController.currentTheme.dark
-        : themeController.currentTheme.light;
     return Scaffold(
       key: mainController.mainScaffoldKey,
-      backgroundColor: subTheme.background,
+      backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
       onEndDrawerChanged: (bool open) {
         if (open) {
           menuAnimation.forward();
@@ -60,7 +57,9 @@ class _MainScreenState extends State<MainScreen>
       body: SafeArea(
         child: Column(
           children: [
-            Ink(
+            Container(
+              color: Color(int.parse(dc.prelogin!.theme.bottombar)),
+              height: 56,
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,7 +103,9 @@ class _MainScreenState extends State<MainScreen>
                 },
                 controller: mainController.pageViewController,
                 children: [
-                  Container(),
+                  const CodesList(
+                    title: "Codes",
+                  ),
                   Container(),
                   Container(),
                   Container(),
@@ -113,34 +114,6 @@ class _MainScreenState extends State<MainScreen>
             ),
           ],
         ),
-      ),
-      floatingActionButton: GetBuilder(
-        init: MainScreenController(),
-        builder: (controller) {
-          if (mainController.tabIndex == 2) {
-            return FloatingActionButton(
-              heroTag: null,
-              backgroundColor: subTheme.primary,
-              onPressed: () {},
-              child: const Icon(
-                Icons.message,
-                color: Colors.white,
-              ),
-            );
-          } else if (mainController.tabIndex == 1) {
-            // challenge
-            return FloatingActionButton(
-              backgroundColor: subTheme.primary,
-              heroTag: null,
-              onPressed: () {},
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-            );
-          }
-          return Container();
-        },
       ),
       bottomNavigationBar: GetBuilder<MainScreenController>(
         init: MainScreenController(),

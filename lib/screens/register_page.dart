@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,16 +9,15 @@ import 'package:frontendforever/controllers/theme_controller.dart';
 import 'package:frontendforever/screens/onboarding.dart';
 import 'package:frontendforever/screens/splash_screen.dart';
 import 'package:frontendforever/widgets/all_widget.dart';
+import 'package:neopop/neopop.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontendforever/widgets/buttons.dart';
 
 import '../functions.dart';
 
 class RegisterPage extends StatefulWidget {
-  final SubTheme theme;
   const RegisterPage({
     Key? key,
-    required this.theme,
   }) : super(key: key);
 
   @override
@@ -33,54 +32,9 @@ class _RegisterPageState extends State<RegisterPage>
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
 
-  GoogleSignIn googleSignIn = GoogleSignIn(
-    scopes: ['email'],
-  );
   @override
   initState() {
     super.initState();
-    googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      print(account);
-    });
-  }
-
-  Future<void> _handleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        return;
-      } else {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        if (googleAuth.accessToken != '') {
-          var accessToken = googleAuth.accessToken;
-          var yourAuthServerUrl = webUrl + 'api/gsign.php';
-          var response = await http.post(
-            Uri.parse(yourAuthServerUrl),
-            body: {
-              'access_token': accessToken,
-              'email': googleUser.email,
-              'name': googleUser.displayName,
-              'id': googleUser.id,
-              'photo': googleUser.photoUrl,
-            },
-          );
-          final responseData = json.decode(response.body);
-          if (response.statusCode == 200) {
-            getLogin(
-              response.body,
-              _emailController.text,
-              _passwordController.text,
-              context,
-            );
-          } else {
-            showErrorDialog(context, 'Something went wrong');
-          }
-        }
-      }
-    } catch (error) {
-      print(error);
-    }
   }
 
   register() async {
@@ -149,29 +103,41 @@ class _RegisterPageState extends State<RegisterPage>
             EntryField(
               title: "Fullname",
               controller: _fullnameController,
-              theme: widget.theme,
             ),
             EntryField(
               title: "Email Id",
               controller: _emailController,
-              theme: widget.theme,
               isEmail: true,
             ),
             EntryField(
               title: "Password",
               controller: _passwordController,
-              theme: widget.theme,
               isPassword: true,
+              isSubmit: register,
             ),
             const SizedBox(
               height: 20,
             ),
-            submitButton(
-              context,
-              register,
-              "Register",
-              widget.theme,
-              null,
+            NeoPopButton(
+              color: Color(0xFF30475E),
+              onTapUp: register,
+              onTapDown: () => HapticFeedback.vibrate(),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(
               height: 25,
@@ -182,9 +148,9 @@ class _RegisterPageState extends State<RegisterPage>
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    "Continue with",
+                    "Login With",
                     style: TextStyle(
-                      color: widget.theme.primary,
+                      color: Color(0xFF30475E),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -195,31 +161,36 @@ class _RegisterPageState extends State<RegisterPage>
             const SizedBox(
               height: 30,
             ),
-            MaterialBtn(
-              radius: BorderRadius.circular(100),
-              onPressed: _handleSignIn,
-              background: widget.theme.primary,
-              height: 50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icons/google_color.png',
-                    width: 25,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Text(
-                    "Register with Google",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+            NeoPopButton(
+              color: Color(0xFF30475E),
+              onTapUp: (){
+                handleSignIn(context);
+              },
+              onTapDown: () => HapticFeedback.vibrate(),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/google_color.png',
+                      width: 25,
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      "Continue with Google",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),

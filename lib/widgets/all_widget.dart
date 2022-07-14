@@ -4,7 +4,7 @@ import 'package:frontendforever/controllers/theme_controller.dart';
 
 import '../constants.dart';
 
-Widget buildTitle(context, SubTheme theme) {
+Widget buildTitle(context) {
   return Container(
     width: MediaQuery.of(context).size.width,
     padding: const EdgeInsets.all(20),
@@ -16,7 +16,7 @@ Widget buildTitle(context, SubTheme theme) {
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
-            color: theme.primary,
+            color: Color(0xFF30475E),
             fontFamily: GoogleFonts.poppins().fontFamily,
           ),
         ),
@@ -25,7 +25,7 @@ Widget buildTitle(context, SubTheme theme) {
           style: TextStyle(
             fontSize: 35,
             fontWeight: FontWeight.w900,
-            color: theme.primary,
+            color: Color(0xFF30475E),
             fontFamily: GoogleFonts.poppins().fontFamily,
           ),
         ),
@@ -34,7 +34,6 @@ Widget buildTitle(context, SubTheme theme) {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.normal,
-            color: theme.textSecondary,
           ),
         ),
       ],
@@ -68,7 +67,6 @@ Widget backButton(context) {
 class EntryField extends StatefulWidget {
   final String title;
   final TextEditingController controller;
-  final SubTheme theme;
   final bool isPassword;
   final bool isEmail;
   final Function? isSubmit;
@@ -76,7 +74,6 @@ class EntryField extends StatefulWidget {
     Key? key,
     required this.title,
     required this.controller,
-    required this.theme,
     this.isPassword = false,
     this.isEmail = false,
     this.isSubmit,
@@ -130,7 +127,7 @@ class _EntryFieldState extends State<EntryField> {
                       },
                       child: Icon(
                         isObsure ? Icons.visibility_off : Icons.visibility,
-                        color: widget.theme.primary,
+                        color: Color(0xFF30475E),
                       ),
                     )
                   : null,
@@ -142,8 +139,8 @@ class _EntryFieldState extends State<EntryField> {
   }
 }
 
-Widget submitButton(BuildContext context, Function onTap, String text,
-    SubTheme theme, Widget? child) {
+Widget submitButton(
+    BuildContext context, Function onTap, String text, Widget? child) {
   return InkWell(
     onTap: () {
       onTap();
@@ -168,8 +165,8 @@ Widget submitButton(BuildContext context, Function onTap, String text,
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             colors: [
-              theme.primary,
-              theme.primary.withOpacity(0.8),
+              Color(0xFF30475E),
+              Color(0xFF30475E).withOpacity(0.8),
             ]),
       ),
       child: child ??

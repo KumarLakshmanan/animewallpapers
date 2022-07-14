@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
 
@@ -19,12 +20,9 @@ class CustomBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.put(ThemeController());
-    SubTheme subTheme = Get.isDarkMode
-        ? themeController.currentTheme.dark
-        : themeController.currentTheme.light;
     return SafeArea(
-      child: SizedBox(
+      child: Ink(
+        color: Color(int.parse(Get.find<DataController>().prelogin!.theme.bottombar)),
         width: double.infinity,
         height: 56,
         child: Row(
@@ -37,7 +35,7 @@ class CustomBottomBar extends StatelessWidget {
               },
               child: Ink(
                 color: index == selectedIndex
-                    ? subTheme.secondary
+                    ? Color(int.parse(Get.find<DataController>().prelogin!.theme.bottombaractive))
                     : Colors.transparent,
                 height: double.maxFinite,
                 width: MediaQuery.of(context).size.width / items.length,

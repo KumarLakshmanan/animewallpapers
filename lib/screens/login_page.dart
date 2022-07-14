@@ -15,10 +15,8 @@ import 'package:frontendforever/widgets/buttons.dart';
 import '../functions.dart';
 
 class LoginPage extends StatefulWidget {
-  final SubTheme theme;
   const LoginPage({
     Key? key,
-    required this.theme,
   }) : super(key: key);
 
   @override
@@ -43,45 +41,6 @@ class _LoginPageState extends State<LoginPage>
       print(account);
     });
   }
-
-  Future<void> _handleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        return;
-      } else {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        if (googleAuth.accessToken != '') {
-          var accessToken = googleAuth.accessToken;
-          var yourAuthServerUrl = apiUrl;
-          var response = await http.post(
-            Uri.parse(yourAuthServerUrl),
-            body: {
-              'access_token': accessToken,
-              'email': googleUser.email,
-              'name': googleUser.displayName,
-              'id': googleUser.id,
-              'photo': googleUser.photoUrl,
-            },
-          );
-          if (response.statusCode == 200) {
-            getLogin(
-              response.body,
-              _emailController.text,
-              _passwordController.text,
-              context,
-            );
-          } else {
-            showErrorDialog(context, 'Something went wrong');
-          }
-        }
-      }
-    } catch (error) {
-      print(error);
-    }
-  }
-
   login() async {
     if (_emailController.text.isEmpty) {
       showAlertDialog(context, 'Email is empty');
@@ -146,29 +105,34 @@ class _LoginPageState extends State<LoginPage>
             EntryField(
               title: "Email Id",
               controller: _emailController,
-              theme: widget.theme,
               isEmail: true,
             ),
             EntryField(
               title: "Password",
               controller: _passwordController,
-              theme: widget.theme,
               isPassword: true,
               isSubmit: login,
             ),
             const SizedBox(height: 10),
             NeoPopButton(
-              color: Colors.white,
+              color: Color(0xFF30475E),
               onTapUp: () {
                 login();
               },
               onTapDown: () => HapticFeedback.vibrate(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    Text("Login"),
+                    Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -184,7 +148,7 @@ class _LoginPageState extends State<LoginPage>
                   child: Text(
                     "Login With",
                     style: TextStyle(
-                      color: widget.theme.primary,
+                      color: Color(0xFF30475E),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -195,29 +159,34 @@ class _LoginPageState extends State<LoginPage>
             const SizedBox(
               height: 30,
             ),
-            MaterialBtn(
-              radius: BorderRadius.circular(100),
-              onPressed: _handleSignIn,
-              background: widget.theme.primary,
-              height: 50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icons/google_color.png',
-                    width: 25,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Text(
-                    "Continue with Google",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+            NeoPopButton(
+              color: Color(0xFF30475E),
+              onTapUp: (){
+                handleSignIn(context);
+              },
+              onTapDown: () => HapticFeedback.vibrate(),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/google_color.png',
+                      width: 25,
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      "Continue with Google",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

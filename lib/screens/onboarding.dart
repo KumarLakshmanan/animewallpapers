@@ -20,7 +20,6 @@ class OnBoardingPage extends StatefulWidget {
 class _OnBoardingPageState extends State<OnBoardingPage> {
   int currentIndex = 0;
   final pageController = PageController();
-  final tc = Get.put(ThemeController());
   final dc = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
@@ -29,24 +28,9 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
         fontFamily: GoogleFonts.oswald().fontFamily,
       ),
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 60,
-          backgroundColor: tc.currentTheme.light.primary,
-          elevation: 0,
-          centerTitle: true,
-          title: Text(
-            kAppTitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: tc.currentTheme.light.secondary,
-            ),
-          ),
-          automaticallyImplyLeading: false,
-        ),
         extendBody: true,
         extendBodyBehindAppBar: true,
-        backgroundColor: tc.currentTheme.light.background,
+        backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
         body: Stack(
           children: [
             Positioned.fill(
@@ -88,7 +72,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                     //     style: TextStyle(
                     //       fontSize: 16,
                     //       fontWeight: FontWeight.bold,
-                    //       color: tc.currentTheme.light.secondary,
+                    //       color: Color(int.parse(dc.prelogin!.theme.secondary)),
                     //     ),
                     //     textAlign: TextAlign.start,
                     //   ),
@@ -137,7 +121,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: tc.currentTheme.light.secondary,
+                              color: Color(int.parse(dc.prelogin!.theme.secondary)),
                             ),
                             textAlign: TextAlign.end,
                           ),
@@ -145,7 +129,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                           Image.asset(
                             "assets/icons/next.png",
                             width: 25,
-                            color: tc.currentTheme.light.secondary,
+                            color: Color(int.parse(dc.prelogin!.theme.secondary)),
                             height: 25,
                           ),
                         ],
@@ -169,11 +153,11 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       width: 12,
       decoration: BoxDecoration(
         color: currentIndex == index
-            ? tc.currentTheme.light.secondary
+            ? Color(int.parse(dc.prelogin!.theme.secondary))
             : Colors.transparent,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: tc.currentTheme.light.secondary,
+          color: Color(int.parse(dc.prelogin!.theme.secondary)),
           width: 1,
         ),
       ),
@@ -189,7 +173,6 @@ class PageBuilderWidget extends StatelessWidget {
     required this.title,
     required this.imgurl,
   }) : super(key: key);
-  final tc = Get.find<ThemeController>();
   @override
   Widget build(BuildContext context) {
     return Container(

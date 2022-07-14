@@ -13,47 +13,43 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
-  final ThemeController themeController = Get.find<ThemeController>();
   final d = Get.find<DataController>();
   @override
   Widget build(BuildContext context) {
-    SubTheme subTheme = Get.isDarkMode
-        ? themeController.currentTheme.dark
-        : themeController.currentTheme.light;
     return ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
           decoration: BoxDecoration(
-            color: subTheme.background,
+            color: Color(int.parse(d.prelogin!.theme.secondary))
           ),
           currentAccountPicture: Stack(
             children: <Widget>[
               Initicon(
                 text: d.credentials!.name,
                 elevation: 2,
-                backgroundColor: const Color(0xFF0F4C75),
+                backgroundColor:  Color(int.parse(d.prelogin!.theme.primary)),
                 size: 60,
               ),
-              Positioned(
-                bottom: 10,
-                right: 10,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.yellow,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.yellow[900]!,
-                      width: 2,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(1),
-                  child: Icon(
-                    Icons.star,
-                    size: 14,
-                    color: Colors.yellow[900],
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   bottom: 10,
+              //   right: 10,
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //       color: Colors.yellow,
+              //       shape: BoxShape.circle,
+              //       border: Border.all(
+              //         color: Colors.yellow[900]!,
+              //         width: 2,
+              //       ),
+              //     ),
+              //     padding: const EdgeInsets.all(1),
+              //     child: Icon(
+              //       Icons.star,
+              //       size: 14,
+              //       color: Colors.yellow[900],
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           accountName: Text(d.credentials!.name),
@@ -72,34 +68,27 @@ class _HomeDrawerState extends State<HomeDrawer> {
           },
         ),
         // Leaderboard
-        ListTile(
-          leading: const Icon(
-            Icons.people,
-            color: Colors.black,
-          ),
-          title: const Text('Leaderboard'),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        ListTile(
-          leading: const Icon(
-            Icons.bookmark,
-            color: Colors.black,
-          ),
-          title: const Text('Bookmarks'),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
+        // ListTile(
+        //   leading: const Icon(
+        //     Icons.contact,
+        //     color: Colors.black,
+        //   ),
+        //   title: const Text('Leaderboard'),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
+        // ListTile(
+        //   leading: const Icon(
+        //     Icons.bookmark,
+        //     color: Colors.black,
+        //   ),
+        //   title: const Text('Bookmarks'),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
         // Divider
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Divider(
-            color: Colors.grey[200],
-            thickness: 1,
-          ),
-        ),
         // Invite Friends
         ListTile(
           leading: const Icon(
@@ -144,17 +133,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Navigator.pop(context);
           },
         ),
-        // settinngs
-        ListTile(
-          leading: const Icon(
-            Icons.settings,
-            color: Colors.black,
-          ),
-          title: const Text('Settings'),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
+        // // settinngs
+        // ListTile(
+        //   leading: const Icon(
+        //     Icons.settings,
+        //     color: Colors.black,
+        //   ),
+        //   title: const Text('Settings'),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
         // Logout
         ListTile(
           leading: const Icon(

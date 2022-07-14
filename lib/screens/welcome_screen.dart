@@ -17,7 +17,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final ThemeController themeController = Get.put(ThemeController());
   @override
   void initState() {
     _tabController = TabController(vsync: this, length: 2);
@@ -26,9 +25,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    SubTheme subTheme = Get.isDarkMode
-        ? themeController.currentTheme.dark
-        : themeController.currentTheme.light;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -39,17 +35,17 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           child: Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * .025),
-              buildTitle(context, subTheme),
+              buildTitle(context),
               Align(
                 alignment: Alignment.center,
                 child: TabBar(
                   isScrollable: true,
-                  labelColor: subTheme.primary,
+                  labelColor: Color(0xFF30475E),
                   unselectedLabelColor: Colors.grey[800],
                   indicatorWeight: 3.0,
                   indicator: UnderlineTabIndicator(
                     borderSide: BorderSide(
-                      color: subTheme.primary,
+                      color: Color(0xFF30475E),
                       width: 3.0,
                     ),
                     insets: const EdgeInsets.symmetric(
@@ -73,12 +69,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    LoginPage(
-                      theme: subTheme,
-                    ),
-                    RegisterPage(
-                      theme: subTheme,
-                    ),
+                    LoginPage(),
+                    RegisterPage(),
                   ],
                 ),
               ),
