@@ -63,9 +63,9 @@ class _BooksListState extends State<BooksList>
         prefs.setString('booksData', json.encode(codes));
         await searchIdCard(searchText.text);
         setState(() {});
-      }else if (data['error']["code"] == '#600') {
+      } else if (data['error']["code"] == '#600') {
         showLogoutDialog(context, data['error']["message"]);
-      }  else {
+      } else {
         showErrorDialog(context, data['error']['description']);
       }
     }

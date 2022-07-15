@@ -1,14 +1,19 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/api.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
+import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/types/single_blog.dart';
 import 'package:frontendforever/types/single_book.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:neopop/neopop.dart';
 import 'package:get/get.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class SingleBlogScreen extends StatefulWidget {
   final SingleBlog book;
@@ -20,6 +25,39 @@ class SingleBlogScreen extends StatefulWidget {
 
 class _SingleBlogScreenState extends State<SingleBlogScreen> {
   final d = Get.put(DataController());
+  bool isLoading = true;
+  Map<String, dynamic> jsonData = {};
+  @override
+  void initState() {
+    super.initState();
+    loadDataFromServer();
+  }
+
+  loadDataFromServer() async {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        "mode": "getsinglepost",
+        "id": widget.book.id.toString(),
+        "token": d.credentials!.token,
+        "email": d.credentials!.email,
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      if (data['error']['code'] == '#200') {
+        jsonData = data['data'];
+        setState(() {
+          isLoading = false;
+        });
+      } else if (data['error']["code"] == '#600') {
+        showLogoutDialog(context, data['error']["message"]);
+      } else {
+        showErrorDialog(context, data['error']['description']);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,16 +76,15 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
             child: ListView(
               children: <Widget>[
                 const SizedBox(height: 16),
-                Center(
-                  child: Hero(
+                for (final item in widget.book.thumb)
+                  Hero(
                     tag: widget.book.thumb,
                     child: CachedNetworkImage(
-                      imageUrl: webUrl + 'uploads/images/' + widget.book.thumb,
+                      imageUrl: webUrl + 'uploads/images/' + item,
                       fit: BoxFit.contain,
                       height: MediaQuery.of(context).size.height * 0.4,
                     ),
                   ),
-                ),
                 const SizedBox(height: 16),
                 Text(
                   widget.book.title,
@@ -103,15 +140,18 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                   ],
                 ),
                 SizedBox(
-                  height: 5,
+                  height: 10,
                 ),
                 Text(
                   "Tags",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(int.parse(d.prelogin!.theme.primary)),
                   ),
+                ),
+                SizedBox(
+                  height: 5,
                 ),
                 Wrap(
                   spacing: 2,
@@ -134,18 +174,32 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           ))
                       .toList(),
                 ),
-                Text(
-                  "About this code",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(int.parse(d.prelogin!.theme.primary)),
+                SizedBox(
+                  height: 10,
+                ),
+                if (widget.book.ytlink.length != 0)
+                  Text(
+                    "Youtube Video",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(int.parse(d.prelogin!.theme.primary)),
+                    ),
                   ),
-                ),
-                Html(
-                  data: widget.book.content,
-                ),
-                const SizedBox(height: 16),
+                if (widget.book.ytlink.length != 0)
+                  SizedBox(
+                    height: 5,
+                  ),
+                for (final item in widget.book.ytlink)
+                  BuildYoutubePlayer(link: item),
+                // isLoading
+                //     ? Center(
+                //         child: CircularProgressIndicator(),
+                //       )
+                //     : Html(
+                //         data: jsonData['content'],
+                //       ),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -155,57 +209,62 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
             right: 10,
             child: Row(
               children: [
-                NeoPopButton(
-                  color: Color(int.parse(d.prelogin!.theme.primary)),
-                  onTapUp: () {},
-                  onTapDown: () => HapticFeedback.vibrate(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Download",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                Expanded(
+                  child: NeoPopButton(
+                    color: Color(int.parse(d.prelogin!.theme.primary)),
+                    onTapUp: () {},
+                    onTapDown: () => HapticFeedback.vibrate(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            "Download",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.file_download,
-                          color: Colors.white,
-                        ),
-                      ],
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.file_download,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                NeoPopButton(
-                  color: Color(int.parse(d.prelogin!.theme.primary)),
-                  onTapUp: () {},
-                  onTapDown: () => HapticFeedback.vibrate(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Run",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: NeoPopButton(
+                    color: Color(int.parse(d.prelogin!.theme.primary)),
+                    onTapUp: () {},
+                    onTapDown: () => HapticFeedback.vibrate(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            "Run",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -213,6 +272,27 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class BuildYoutubePlayer extends StatelessWidget {
+  final String link;
+  const BuildYoutubePlayer({Key? key, required this.link}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    YoutubePlayerController _controller = YoutubePlayerController(
+      initialVideoId: link,
+      params: YoutubePlayerParams(
+        showControls: true,
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: YoutubePlayerIFrame(
+        controller: _controller,
       ),
     );
   }

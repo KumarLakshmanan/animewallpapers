@@ -4,6 +4,7 @@ class SingleBlog {
     required this.title,
     required this.thumb,
     required this.keywords,
+    required this.ytlink,
     required this.username,
     required this.createdAt,
     required this.views,
@@ -12,8 +13,9 @@ class SingleBlog {
 
   int id;
   String title;
-  String thumb;
+  List<String> thumb;
   List<String> keywords;
+  List<String> ytlink;
   String username;
   int createdAt;
   int views;
@@ -22,8 +24,9 @@ class SingleBlog {
   factory SingleBlog.fromJson(Map<String, dynamic> json) => SingleBlog(
         id: json["id"],
         title: json["title"],
-        thumb: json["thumb"],
+        thumb: List<String>.from(json["thumb"].map((x) => x)),
         keywords: List<String>.from(json["keywords"].map((x) => x)),
+        ytlink: List<String>.from(json["ytlink"].map((x) => x)),
         username: json["username"],
         createdAt: json["created_at"],
         views: json["views"],
@@ -33,8 +36,9 @@ class SingleBlog {
   Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
-        "thumb": thumb,
+        "thumb": List<dynamic>.from(thumb.map((x) => x)),
         "keywords": List<dynamic>.from(keywords.map((x) => x)),
+        "ytlink": List<dynamic>.from(ytlink.map((x) => x)),
         "username": username,
         "created_at": createdAt,
         "views": views,

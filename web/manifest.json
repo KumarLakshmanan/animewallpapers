@@ -1,6 +1,6 @@
 {
-    "name": "frontendforever",
-    "short_name": "frontendforever",
+    "name": "sourcehub",
+    "short_name": "sourcehub",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

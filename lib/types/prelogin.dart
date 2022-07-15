@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 class PreLogin {
   PreLogin({
     required this.website,

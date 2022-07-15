@@ -313,10 +313,13 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            webUrl + 'uploads/images/' + widget.code.thumb,
-                        fit: BoxFit.cover,
+                      child: Hero(
+                        tag: widget.code.thumb,
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              webUrl + 'uploads/images/' + widget.code.thumb[0],
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       height: 200,
                     ),
