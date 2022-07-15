@@ -5,30 +5,31 @@ import 'package:flutter/material.dart';
 import 'package:frontendforever/api.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/screens/single_blog.dart';
+import 'package:frontendforever/screens/single_book.dart';
 import 'package:frontendforever/types/single_blog.dart';
+import 'package:frontendforever/types/single_book.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class CodesList extends StatefulWidget {
-  const CodesList({
+class BooksList extends StatefulWidget {
+  const BooksList({
     Key? key,
   }) : super(key: key);
   @override
-  State<CodesList> createState() => _CodesListState();
+  State<BooksList> createState() => _BooksListState();
 }
 
-class _CodesListState extends State<CodesList>
-    with AutomaticKeepAliveClientMixin<CodesList> {
+class _BooksListState extends State<BooksList>
+    with AutomaticKeepAliveClientMixin<BooksList> {
   @override
   bool get wantKeepAlive => true;
 
   final DataController c = Get.put(DataController());
   bool isOpen = true;
-  List<SingleBlog> codes = [];
+  List<SingleBook> codes = [];
   TextEditingController searchText = TextEditingController(text: '');
   String sortBy = '';
   bool isAscending = true;
@@ -37,15 +38,15 @@ class _CodesListState extends State<CodesList>
 
   getDataFromAPI() async {
     final prefs = await SharedPreferences.getInstance();
-    var codesData = prefs.getString('codesData') ?? '[]';
-    var codesList = json.decode(codesData) as List<dynamic>;
+    var booksData = prefs.getString('booksData') ?? '[]';
+    var codesList = json.decode(booksData) as List<dynamic>;
     setState(() {
-      codes = codesList.map((e) => SingleBlog.fromJson(e)).toList();
+      codes = codesList.map((e) => SingleBook.fromJson(e)).toList();
     });
     var response = await http.post(
       Uri.parse(apiUrl),
       body: {
-        'mode': 'getposts',
+        'mode': 'getbooks',
         'email': c.credentials!.email,
         'token': c.credentials!.token,
         'page': pageNo.toString(),
@@ -56,38 +57,36 @@ class _CodesListState extends State<CodesList>
       if (data['error']['code'] == '#200') {
         for (var i = 0; i < data['data'].length; i++) {
           if (!codes.any((e) => e.id == data['data'][i]['id'])) {
-            codes.add(SingleBlog.fromJson(data['data'][i]));
+            codes.add(SingleBook.fromJson(data['data'][i]));
           }
         }
-        prefs.setString('codesData', json.encode(codes));
+        prefs.setString('booksData', json.encode(codes));
         await searchIdCard(searchText.text);
         setState(() {});
-      } else if (data['error']["code"] == '#600') {
+      }else if (data['error']["code"] == '#600') {
         showLogoutDialog(context, data['error']["message"]);
-      } else {
+      }  else {
         showErrorDialog(context, data['error']['description']);
       }
     }
   }
 
   searchIdCard(String value) async {
-    List<SingleBlog> myList = [];
+    List<SingleBook> myList = [];
     final prefs = await SharedPreferences.getInstance();
-    var codesData = prefs.getString('codesData') ?? '[]';
-    var codesList = json.decode(codesData) as List<dynamic>;
+    var booksData = prefs.getString('booksData') ?? '[]';
+    var codesList = json.decode(booksData) as List<dynamic>;
     for (var i = 0; i < codesList.length; i++) {
-      myList.add(SingleBlog.fromJson(codesList[i]));
+      myList.add(SingleBook.fromJson(codesList[i]));
     }
-    List<SingleBlog> tempList = [];
+    List<SingleBook> tempList = [];
     for (var i = 0; i < myList.length; i++) {
       if (myList[i].title.toLowerCase().contains(value.toLowerCase())) {
         tempList.add(myList[i]);
       }
-      for (var j = 0; j < myList[i].keywords.length; j++) {
-        if (myList[i].keywords[j].toLowerCase() == value.toLowerCase()) {
-          if (tempList.where((e) => e.id == myList[i].id).isEmpty) {
-            tempList.add(myList[i]);
-          }
+      if (myList[i].category.toLowerCase() == value.toLowerCase()) {
+        if (tempList.where((e) => e.id == myList[i].id).isEmpty) {
+          tempList.add(myList[i]);
         }
       }
     }
@@ -95,8 +94,8 @@ class _CodesListState extends State<CodesList>
       tempList.sort((a, b) => a.title.compareTo(b.title));
     } else if (sortBy == "createat") {
       tempList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    } else if (sortBy == "views") {
-      tempList.sort((a, b) => a.views.compareTo(b.views));
+    } else if (sortBy == "downloads") {
+      tempList.sort((a, b) => a.downloads.compareTo(b.downloads));
     }
     if (!isAscending) {
       tempList.reversed.toList();
@@ -234,8 +233,8 @@ class _CodesListState extends State<CodesList>
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                filterListBox("Title", "Title"),
-                                filterListBox("views", "Views Count"),
+                                filterListBox("title", "Book Name"),
+                                filterListBox("downloads", "Download Count"),
                                 filterListBox("createat", "Created Date"),
                               ],
                             ),
@@ -251,7 +250,7 @@ class _CodesListState extends State<CodesList>
                   itemCount: codes.length,
                   controller: _scrollController,
                   itemBuilder: (context, index) {
-                    return SingleBlogItem(
+                    return SingleBookItem(
                       code: codes[index],
                       searchFunction: searchIdCard,
                     );
@@ -266,18 +265,18 @@ class _CodesListState extends State<CodesList>
   }
 }
 
-class SingleBlogItem extends StatefulWidget {
-  const SingleBlogItem(
+class SingleBookItem extends StatefulWidget {
+  const SingleBookItem(
       {Key? key, required this.code, required this.searchFunction})
       : super(key: key);
-  final SingleBlog code;
+  final SingleBook code;
   final Function searchFunction;
 
   @override
-  State<SingleBlogItem> createState() => _SingleBlogItemState();
+  State<SingleBookItem> createState() => _SingleBookItemState();
 }
 
-class _SingleBlogItemState extends State<SingleBlogItem> {
+class _SingleBookItemState extends State<SingleBookItem> {
   final c = Get.find<DataController>();
   @override
   Widget build(BuildContext context) {
@@ -286,7 +285,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
       child: GestureDetector(
         onTap: () {
           Get.to(
-            SingleBlogScreen(book: widget.code),
+            SingleBookScreen(book: widget.code),
             transition: Transition.rightToLeft,
           );
         },
@@ -302,152 +301,125 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
               ),
             ],
           ),
-          child: Column(
+          child: Stack(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            webUrl + 'uploads/images/' + widget.code.thumb,
-                        fit: BoxFit.cover,
-                      ),
-                      height: 200,
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
                     ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Color(
-                            int.parse(c.prelogin!.theme.secondary),
-                          ),
-                        ),
-                        child: Text(
-                          DateFormat('dd MMMM yyyy').format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  widget.code.createdAt)),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
+                    child: SizedBox(
+                      width: 100,
+                      child: Hero(
+                        tag: widget.code.thumbnail,
+                        child: CachedNetworkImage(
+                          imageUrl: webUrl +
+                              'uploads/images/' +
+                              widget.code.thumbnail,
+                          fit: BoxFit.cover,
                         ),
                       ),
+                      height: 150,
                     ),
-                    Positioned(
-                      bottom: 5,
-                      right: 5,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Color(
-                            int.parse(c.prelogin!.theme.bottombaractive),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              NumberFormat.compact().format(widget.code.views),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.code.title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: GoogleFonts.nunito().fontFamily,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 5),
-                              child: CachedNetworkImage(
-                                imageUrl: webUrl +
-                                    c.prelogindynamic['assets']['fire'],
-                                height: 15,
-                                width: 15,
-                                fit: BoxFit.contain,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.code.title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.nunito().fontFamily,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      widget.code.content,
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.person,
-                          size: 14,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          widget.code.username,
-                          style: TextStyle(
-                            fontSize: 14,
+                            textAlign: TextAlign.left,
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Wrap(
-                      spacing: 2,
-                      runSpacing: 2,
-                      children: widget.code.keywords
-                          .map((keyword) => GestureDetector(
-                                onTap: () async {},
-                                child: Chip(
-                                  backgroundColor: Color(
-                                    int.parse(c.prelogin!.theme.secondary),
-                                  ),
-                                  label: Text(
-                                    keyword,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
-                                    ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.person,
+                                size: 14,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                widget.code.author,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 14,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                DateFormat('dd MMMM yyyy').format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                    widget.code.createdAt,
                                   ),
                                 ),
-                              ))
-                          .toList(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
+                ],
+              ),
+              Positioned(
+                bottom: 5,
+                right: 5,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Color(
+                      int.parse(c.prelogin!.theme.bottombaractive),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        NumberFormat.compact().format(widget.code.downloads),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: Icon(
+                          Icons.file_download,
+                          color: Colors.white,
+                          size: 15,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

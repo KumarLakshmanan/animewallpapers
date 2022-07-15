@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
+import 'package:frontendforever/pages/books.dart';
 import 'package:frontendforever/pages/codes.dart';
+import 'package:frontendforever/pages/profile.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/api.dart';
 import 'package:frontendforever/constants.dart';
@@ -103,12 +105,10 @@ class _MainScreenState extends State<MainScreen>
                 },
                 controller: mainController.pageViewController,
                 children: [
-                  const CodesList(
-                    title: "Codes",
-                  ),
-                  Container(),
-                  Container(),
-                  Container(),
+                  const CodesList(),
+                  const BooksList(),
+                  // Container(),
+                  ProfilePage(),
                 ],
               ),
             ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class _LoginPageState extends State<LoginPage>
   bool get wantKeepAlive => true;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  final d = Get.put(DataController());
   GoogleSignIn googleSignIn = GoogleSignIn(
     scopes: ['email'],
   );
@@ -41,22 +42,36 @@ class _LoginPageState extends State<LoginPage>
       print(account);
     });
   }
+
   login() async {
     if (_emailController.text.isEmpty) {
-      showAlertDialog(context, 'Email is empty');
-      return;
-    }
-    if (_passwordController.text.isEmpty) {
-      showAlertDialog(context, 'Password is empty');
-      return;
+      showAlertDialog(
+        context,
+        'Email is empty',
+        lottie: false,
+      );
+    } else if (_passwordController.text.isEmpty) {
+      showAlertDialog(
+        context,
+        'Password is empty',
+        lottie: false,
+      );
     } else {
       if (_passwordController.text.length < 4) {
-        showAlertDialog(context, 'Password must be at least 4 characters');
+        showAlertDialog(
+          context,
+          'Password must be at least 4 characters',
+          lottie: false,
+        );
         return;
       } else {
         if (!_emailController.text.contains(
             RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'))) {
-          showAlertDialog(context, 'Email is not valid');
+          showAlertDialog(
+            context,
+            'Email is not valid',
+            lottie: false,
+          );
           return;
         } else {
           showLoadingDialog();
@@ -78,10 +93,10 @@ class _LoginPageState extends State<LoginPage>
                 context,
               );
             } else {
-              showErrorDialog(context, 'Something went wrong');
+              showErrorDialog(context, 'Something went wrong', lottie: false);
             }
           } catch (e) {
-            showErrorDialog(context, e.toString());
+            showErrorDialog(context, e.toString(), lottie: false);
           }
         }
       }
@@ -94,7 +109,7 @@ class _LoginPageState extends State<LoginPage>
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + 40,
+          top: 20,
           left: 20,
           right: 20,
           bottom: 20,
@@ -115,7 +130,7 @@ class _LoginPageState extends State<LoginPage>
             ),
             const SizedBox(height: 10),
             NeoPopButton(
-              color: Color(0xFF30475E),
+              color: Color(int.parse(d.prelogin!.theme.primary)),
               onTapUp: () {
                 login();
               },
@@ -148,7 +163,7 @@ class _LoginPageState extends State<LoginPage>
                   child: Text(
                     "Login With",
                     style: TextStyle(
-                      color: Color(0xFF30475E),
+                      color: Color(int.parse(d.prelogin!.theme.primary)),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -160,8 +175,8 @@ class _LoginPageState extends State<LoginPage>
               height: 30,
             ),
             NeoPopButton(
-              color: Color(0xFF30475E),
-              onTapUp: (){
+              color: Color(int.parse(d.prelogin!.theme.primary)),
+              onTapUp: () {
                 handleSignIn(context);
               },
               onTapDown: () => HapticFeedback.vibrate(),

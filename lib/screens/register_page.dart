@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,6 +29,7 @@ class _RegisterPageState extends State<RegisterPage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  final d = Get.put(DataController());
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
@@ -39,24 +41,44 @@ class _RegisterPageState extends State<RegisterPage>
 
   register() async {
     if (_emailController.text.isEmpty) {
-      showAlertDialog(context, 'Email is empty');
+      showAlertDialog(
+        context,
+        'Email is empty',
+        lottie: false,
+      );
       return;
     }
     if (_passwordController.text.isEmpty) {
-      showAlertDialog(context, 'Password is empty');
+      showAlertDialog(
+        context,
+        'Password is empty',
+        lottie: false,
+      );
       return;
     } else {
       if (_emailController.text.length < 4) {
-        showAlertDialog(context, 'email must be at least 4 characters');
+        showAlertDialog(
+          context,
+          'email must be at least 4 characters',
+          lottie: false,
+        );
         return;
       } else {
         if (_passwordController.text.length < 4) {
-          showAlertDialog(context, 'Password must be at least 4 characters');
+          showAlertDialog(
+            context,
+            'Password must be at least 4 characters',
+            lottie: false,
+          );
           return;
         } else {
           if (!_emailController.text
               .contains(RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+'))) {
-            showAlertDialog(context, 'email is not valid.');
+            showAlertDialog(
+              context,
+              'email is not valid.',
+              lottie: false,
+            );
             return;
           } else {
             showLoadingDialog();
@@ -79,7 +101,11 @@ class _RegisterPageState extends State<RegisterPage>
                   context,
                 );
               } else {
-                showAlertDialog(context, 'Something went wrong');
+                showAlertDialog(
+                  context,
+                  'Something went wrong',
+                  lottie: false,
+                );
               }
             } catch (e) {
               print(e);
@@ -119,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage>
               height: 20,
             ),
             NeoPopButton(
-              color: Color(0xFF30475E),
+              color: Color(int.parse(d.prelogin!.theme.primary)),
               onTapUp: register,
               onTapDown: () => HapticFeedback.vibrate(),
               child: Padding(
@@ -150,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage>
                   child: Text(
                     "Login With",
                     style: TextStyle(
-                      color: Color(0xFF30475E),
+                      color: Color(int.parse(d.prelogin!.theme.primary)),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -162,8 +188,8 @@ class _RegisterPageState extends State<RegisterPage>
               height: 30,
             ),
             NeoPopButton(
-              color: Color(0xFF30475E),
-              onTapUp: (){
+              color: Color(int.parse(d.prelogin!.theme.primary)),
+              onTapUp: () {
                 handleSignIn(context);
               },
               onTapDown: () => HapticFeedback.vibrate(),

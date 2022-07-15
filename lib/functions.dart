@@ -43,15 +43,18 @@ showCallbackDialog(String message, Function onTap,
   );
 }
 
-showAlertDialog(context, text) {
+showAlertDialog(context, text, {lottie = true}) {
   Dialogs.materialDialog(
     color: Colors.white,
     msg: text,
     title: 'Warning',
-    lottieBuilder: Lottie.asset(
-      'assets/json/alert.json',
-      fit: BoxFit.contain,
-    ),
+    lottieBuilder: lottie
+        ? Lottie.asset(
+            'assets/json/alert.json',
+            repeat: false,
+            fit: BoxFit.contain,
+          )
+        : null,
     context: context,
     actions: [
       IconsOutlineButton(
@@ -67,15 +70,18 @@ showAlertDialog(context, text) {
   );
 }
 
-showErrorDialog(context, text) {
+showErrorDialog(context, text, {lottie = true}) {
   Dialogs.materialDialog(
     color: Colors.white,
     msg: text,
     title: 'Error',
-    lottieBuilder: Lottie.asset(
-      'assets/json/error.json',
-      fit: BoxFit.contain,
-    ),
+    lottieBuilder: lottie
+        ? Lottie.asset(
+            'assets/json/error.json',
+            repeat: false,
+            fit: BoxFit.contain,
+          )
+        : null,
     context: context,
     actions: [
       IconsOutlineButton(
@@ -108,7 +114,7 @@ showLoadingDialog() {
 logOutDialog() {
   return Get.dialog(
     AlertDialog(
-      title: const Text("Connfirm"),
+      title: const Text("Confirm"),
       content: const Text("Are you sure you want to logout?"),
       actions: [
         TextButton(
@@ -224,6 +230,8 @@ getLoginData(BuildContext c) async {
           jsonEncode(data['data']),
         );
         await prefs.setString('subjects', jsonEncode(data['data']['subjects']));
+      } else if (data['error']["code"] == '#600') {
+        showLogoutDialog(c, data['error']["message"]);
       } else {
         showErrorDialog(c, data['error']['description']);
       }
@@ -233,6 +241,31 @@ getLoginData(BuildContext c) async {
   } catch (e) {
     showErrorDialog(c, e.toString());
   }
+}
+
+showLogoutDialog(BuildContext c, String text) {
+  Dialogs.materialDialog(
+    barrierDismissible: false,
+    context: c,
+    title: 'Error',
+    msg: text,
+    actions: [
+      IconsOutlineButton(
+        onPressed: () {
+          Get.offAll(
+            SplashScreen(
+              logOut: true,
+            ),
+            transition: Transition.rightToLeft,
+          );
+        },
+        text: 'Login Again',
+        iconData: Icons.login_outlined,
+        textStyle: TextStyle(color: Colors.grey),
+        iconColor: Colors.grey,
+      ),
+    ],
+  );
 }
 
 getLogin(

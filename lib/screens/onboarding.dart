@@ -184,8 +184,8 @@ class PageBuilderWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Color(int.parse(Get.find<DataController>().prelogin!.theme.primary)),
               fontSize: 24,
               fontWeight: FontWeight.w700,
             ),

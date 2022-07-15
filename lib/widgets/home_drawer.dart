@@ -20,14 +20,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
       children: <Widget>[
         UserAccountsDrawerHeader(
           decoration: BoxDecoration(
-            color: Color(int.parse(d.prelogin!.theme.secondary))
+            color: Color(int.parse(d.prelogin!.theme.primary))
           ),
           currentAccountPicture: Stack(
             children: <Widget>[
               Initicon(
                 text: d.credentials!.name,
                 elevation: 2,
-                backgroundColor:  Color(int.parse(d.prelogin!.theme.primary)),
+                backgroundColor:  Color(int.parse(d.prelogin!.theme.secondary)),
                 size: 60,
               ),
               // Positioned(
