@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/types/single_book.dart';
 import 'package:intl/intl.dart';
@@ -120,10 +120,14 @@ class _SingleBookScreenState extends State<SingleBookScreen> {
                 SizedBox(
                   height: 5,
                 ),
-                Html(
-                  data: widget.book.content,
+                Flexible(
+                  child: Html(
+                    data: widget.book.content,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(
+                  height: 40,
+                ),
               ],
             ),
           ),
@@ -147,6 +151,13 @@ class _SingleBookScreenState extends State<SingleBookScreen> {
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Icon(
+                      Icons.file_download,
+                      color: Colors.white,
                     ),
                   ],
                 ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/screens/single_book.dart';
@@ -166,7 +166,7 @@ class _BooksListState extends State<BooksList>
           int.parse(c.prelogin!.theme.background),
         ),
         body: Container(
-          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          padding: const EdgeInsets.only(top: 10),
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [

@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/pages/books.dart';
 import 'package:frontendforever/pages/codes.dart';
 import 'package:frontendforever/pages/profile.dart';
 import 'package:get/get.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
 import 'package:frontendforever/functions.dart';
@@ -42,105 +43,114 @@ class _MainScreenState extends State<MainScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: mainController.mainScaffoldKey,
-      backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
-      onEndDrawerChanged: (bool open) {
-        if (open) {
-          menuAnimation.forward();
-        } else {
-          menuAnimation.reverse();
-        }
-        setState(() {
-          isOpened = open;
-        });
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
       },
-      endDrawer: const Drawer(child: HomeDrawer()),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              color: Color(int.parse(dc.prelogin!.theme.bottombar)),
-              height: 56,
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: AnimatedIcon(
-                            icon: AnimatedIcons.menu_close,
+      onSecondaryLongPress: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        key: mainController.mainScaffoldKey,
+        backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
+        onEndDrawerChanged: (bool open) {
+          if (open) {
+            menuAnimation.forward();
+          } else {
+            menuAnimation.reverse();
+          }
+          setState(() {
+            isOpened = open;
+          });
+        },
+        endDrawer: const Drawer(child: HomeDrawer()),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                color: Color(int.parse(dc.prelogin!.theme.bottombar)),
+                height: 56,
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: AnimatedIcon(
+                              icon: AnimatedIcons.menu_close,
+                              color: Colors.white,
+                              progress: menuAnimation,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                mainController.mainScaffoldKey.currentState!
+                                    .openEndDrawer();
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.only(left: 10),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.notifications),
                             color: Colors.white,
-                            progress: menuAnimation,
+                            onPressed: () {},
                           ),
-                          onPressed: () {
-                            setState(() {
-                              mainController.mainScaffoldKey.currentState!
-                                  .openEndDrawer();
-                            });
-                          },
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 10),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.notifications),
-                          color: Colors.white,
-                          onPressed: () {},
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: PageView(
+                  onPageChanged: (index) {
+                    FocusScope.of(context).unfocus();
+                    mainController.changeTabIndex(index);
+                  },
+                  controller: mainController.pageViewController,
+                  children: const [
+                     CodesList(),
+                     BooksList(),
+                    // Container(),
+                    ProfilePage(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: GetBuilder<MainScreenController>(
+          init: MainScreenController(),
+          builder: (controller) {
+            return CustomBottomBar(
+              selectedIndex: controller.tabIndex,
+              onItemSelected: (index) {
+                controller.changeTabIndex(index);
+                controller.changePage(index);
+              },
+              items: <BottomNavyBarItem>[
+                for (var i = 0; i < dc.prelogindynamic['bottombar'].length; i++)
+                  BottomNavyBarItem(
+                    title: dc.prelogindynamic['bottombar'][i]['title'],
+                    icon: CachedNetworkImage(
+                      imageUrl:
+                          webUrl + dc.prelogindynamic['bottombar'][i]['icon'],
+                      width: 25,
+                      height: 25,
+                      color: controller.tabIndex == i
+                          ? Colors.white
+                          : Colors.white38,
                     ),
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: PageView(
-                onPageChanged: (index) {
-                  mainController.changeTabIndex(index);
-                },
-                controller: mainController.pageViewController,
-                children: [
-                  const CodesList(),
-                  const BooksList(),
-                  // Container(),
-                  ProfilePage(),
-                ],
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
-      ),
-      bottomNavigationBar: GetBuilder<MainScreenController>(
-        init: MainScreenController(),
-        builder: (controller) {
-          return CustomBottomBar(
-            selectedIndex: controller.tabIndex,
-            onItemSelected: (index) {
-              controller.changeTabIndex(index);
-              controller.changePage(index);
-            },
-            items: <BottomNavyBarItem>[
-              for (var i = 0; i < dc.prelogindynamic['bottombar'].length; i++)
-                BottomNavyBarItem(
-                  title: dc.prelogindynamic['bottombar'][i]['title'],
-                  icon: CachedNetworkImage(
-                    imageUrl:
-                        webUrl + dc.prelogindynamic['bottombar'][i]['icon'],
-                    width: 25,
-                    height: 25,
-                    color: controller.tabIndex == i
-                        ? Colors.white
-                        : Colors.white38,
-                  ),
-                ),
-            ],
-          );
-        },
       ),
     );
   }

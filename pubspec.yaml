@@ -38,7 +38,6 @@ dependencies:
   neopop: ^1.0.2
   intl: ^0.17.0
   flutter_html: ^2.2.1
-  widget_with_codeview: ^2.0.1+2
   youtube_player_iframe: ^2.3.0
   shared_preferences: ^2.0.8
   http: ^0.13.4
@@ -52,6 +51,12 @@ dependencies:
   html_unescape: ^2.0.0
   firebase_core: ^1.17.1
   google_sign_in: ^5.3.2
+  flutter_local_notifications: ^9.1.4
+  firebase_messaging: ^12.0.0
+  flutter_highlight: ^0.7.0
+  code_editor: ^1.3.1
+  webviewx: ^0.2.1
+  pluto_code_editor: ^0.1.1
 
 dev_dependencies:
   flutter_test:
@@ -75,7 +80,6 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/intro/
     - assets/icons/
     - assets/json/
 

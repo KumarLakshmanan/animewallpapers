@@ -14,7 +14,7 @@ Widget buildTitle(context) {
         Text(
           "Welcome to",
           style: TextStyle(
-            fontSize: 25,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Color(0xFF30475E),
             fontFamily: GoogleFonts.poppins().fontFamily,
@@ -23,17 +23,10 @@ Widget buildTitle(context) {
         Text(
           kAppTitle,
           style: TextStyle(
-            fontSize: 35,
+            fontSize: 30,
             fontWeight: FontWeight.w900,
             color: Color(0xFF30475E),
             fontFamily: GoogleFonts.poppins().fontFamily,
-          ),
-        ),
-        Text(
-          kAppDescription,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
           ),
         ),
       ],
@@ -181,7 +174,7 @@ Widget submitButton(
 Expanded buildDivider() {
   return const Expanded(
     child: Divider(
-      color: Color(0xFFD9D9D9),
+      color: Color(0xFF989898),
       height: 1.5,
     ),
   );

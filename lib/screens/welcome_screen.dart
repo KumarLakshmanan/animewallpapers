@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
@@ -16,7 +17,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
+  final c = Get.put(DataController());
   @override
   void initState() {
     _tabController = TabController(vsync: this, length: 2);
@@ -40,12 +41,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 alignment: Alignment.center,
                 child: TabBar(
                   isScrollable: true,
-                  labelColor: Color(0xFF30475E),
+                  labelColor: Color(int.parse(c.prelogin!.theme.primary)),
                   unselectedLabelColor: Colors.grey[800],
                   indicatorWeight: 3.0,
                   indicator: UnderlineTabIndicator(
                     borderSide: BorderSide(
-                      color: Color(0xFF30475E),
+                      color: Color(int.parse(c.prelogin!.theme.primary)),
                       width: 3.0,
                     ),
                     insets: const EdgeInsets.symmetric(

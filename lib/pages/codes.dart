@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/screens/single_blog.dart';
@@ -91,9 +91,7 @@ class _CodesListState extends State<CodesList>
         }
       }
     }
-    if (sortBy == "title") {
-      tempList.sort((a, b) => a.title.compareTo(b.title));
-    } else if (sortBy == "createat") {
+    if (sortBy == "createat") {
       tempList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     } else if (sortBy == "views") {
       tempList.sort((a, b) => a.views.compareTo(b.views));
@@ -101,7 +99,7 @@ class _CodesListState extends State<CodesList>
     if (!isAscending) {
       tempList.reversed.toList();
     }
-    codes = await tempList;
+    codes = tempList;
     setState(() {});
   }
 
@@ -167,7 +165,7 @@ class _CodesListState extends State<CodesList>
           int.parse(c.prelogin!.theme.background),
         ),
         body: Container(
-          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          padding: const EdgeInsets.only(top: 10),
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
@@ -234,7 +232,6 @@ class _CodesListState extends State<CodesList>
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                filterListBox("Title", "Title"),
                                 filterListBox("views", "Views Count"),
                                 filterListBox("createat", "Created Date"),
                               ],

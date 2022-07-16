@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendforever/constants.dart';
+import 'package:frontendforever/notification.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_dialogs/material_dialogs.dart';
-import 'package:frontendforever/api.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/screens/onboarding.dart';
 import 'package:frontendforever/screens/splash_screen.dart';
@@ -302,43 +305,50 @@ getLogin(
   }
 }
 
-Future<void> handleSignIn(BuildContext context) async {
-  try {
-    GoogleSignIn googleSignIn = GoogleSignIn(
-      scopes: ['email'],
-    );
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      return;
-    } else {
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      if (googleAuth.accessToken != '') {
-        var accessToken = googleAuth.accessToken;
-        var yourAuthServerUrl = apiUrl;
-        var response = await http.post(
-          Uri.parse(yourAuthServerUrl),
-          body: {
-            'access_token': accessToken,
-            'email': googleUser.email,
-            'name': googleUser.displayName,
-            'id': googleUser.id,
-            'photo': googleUser.photoUrl,
-          },
-        );
-        if (response.statusCode == 200) {
-          getLogin(
-            response.body,
-            googleUser.email,
-            googleUser.id,
-            context,
-          );
-        } else {
-          showErrorDialog(context, 'Something went wrong');
-        }
-      }
-    }
-  } catch (error) {
-    print(error);
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message from firebase");
+  print(message.data);
+  _messageHandler(message);
+}
+
+firebaseCloudMessagingListeners() {
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
+    _messageHandler(message);
+  });
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    _messageHandler(message);
+  });
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    _messageHandler(message);
+  });
+}
+
+Future<void> _messageHandler(RemoteMessage message) async {
+  Map<String, dynamic> data = message.data;
+  if (kDebugMode) {
+    print(data);
   }
+  await NotificationService().showNotify(
+    body: data,
+  );
+}
+
+Future<String> getAndroidRegId() async {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  String? androidRegId = await _firebaseMessaging.getToken();
+  var httpsRes =
+      await http.post(Uri.parse('http://api.frontendforever.com/manvaasam/push.php'), body: {
+    "regid": androidRegId,
+    "mode": "saveregid",
+  });
+  if (httpsRes.statusCode == 200) {
+    if (kDebugMode) {
+      print(httpsRes.body);
+    }
+  }
+  if (kDebugMode) {
+    print(androidRegId);
+  }
+  return androidRegId!;
 }

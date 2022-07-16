@@ -4,9 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
+import 'package:frontendforever/screens/tryit.dart';
 import 'package:frontendforever/types/single_blog.dart';
 import 'package:frontendforever/types/single_book.dart';
 import 'package:intl/intl.dart';
@@ -65,14 +66,14 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
         backgroundColor: Color(int.parse(d.prelogin!.theme.primary)),
         title: Text(widget.book.title),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(left: 8.0, bottom: 60),
             child: ListView(
               children: <Widget>[
                 const SizedBox(height: 16),
@@ -94,37 +95,37 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                     color: Color(int.parse(d.prelogin!.theme.primary)),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.person,
                       size: 14,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Text(
                       widget.book.username,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.calendar_today,
                       size: 14,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Text(
@@ -133,13 +134,13 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           widget.book.createdAt,
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
@@ -150,7 +151,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                     color: Color(int.parse(d.prelogin!.theme.primary)),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Wrap(
@@ -165,7 +166,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                               ),
                               label: Text(
                                 keyword,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.white,
                                 ),
@@ -174,10 +175,15 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           ))
                       .toList(),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                if (widget.book.ytlink.length != 0)
+                if (!isLoading)
+                  if (jsonData['content'] != null)
+                    Html(
+                      data: jsonData['content'],
+                    ),
+                if (widget.book.ytlink.isNotEmpty)
                   Text(
                     "Youtube Video",
                     style: TextStyle(
@@ -186,19 +192,12 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                       color: Color(int.parse(d.prelogin!.theme.primary)),
                     ),
                   ),
-                if (widget.book.ytlink.length != 0)
-                  SizedBox(
+                if (widget.book.ytlink.isNotEmpty)
+                  const SizedBox(
                     height: 5,
                   ),
                 for (final item in widget.book.ytlink)
                   BuildYoutubePlayer(link: item),
-                // isLoading
-                //     ? Center(
-                //         child: CircularProgressIndicator(),
-                //       )
-                //     : Html(
-                //         data: jsonData['content'],
-                //       ),
                 const SizedBox(height: 40),
               ],
             ),
@@ -207,68 +206,81 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
             left: 10,
             bottom: 10,
             right: 10,
-            child: Row(
-              children: [
-                Expanded(
-                  child: NeoPopButton(
-                    color: Color(int.parse(d.prelogin!.theme.primary)),
-                    onTapUp: () {},
-                    onTapDown: () => HapticFeedback.vibrate(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "Download",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
+            child: Container(
+              color: Colors.white,
+              height: 50,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: NeoPopButton(
+                      color: Color(int.parse(d.prelogin!.theme.primary)),
+                      onTapUp: () {},
+                      onTapDown: () => HapticFeedback.vibrate(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              "Download",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Icon(
-                            Icons.file_download,
-                            color: Colors.white,
-                          ),
-                        ],
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              Icons.file_download,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: NeoPopButton(
-                    color: Color(int.parse(d.prelogin!.theme.primary)),
-                    onTapUp: () {},
-                    onTapDown: () => HapticFeedback.vibrate(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "Run",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: NeoPopButton(
+                      color: Color(int.parse(d.prelogin!.theme.primary)),
+                      onTapUp: () {
+                        Get.to(
+                          TryIt(
+                            css: jsonData['css'],
+                            html: jsonData['html'],
+                            js: jsonData['js'],
+                          ),
+                          transition: Transition.rightToLeft,
+                        );
+                      },
+                      onTapDown: () => HapticFeedback.vibrate(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              "Run",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                          ),
-                        ],
+                            SizedBox(width: 10),
+                            Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -285,7 +297,7 @@ class BuildYoutubePlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     YoutubePlayerController _controller = YoutubePlayerController(
       initialVideoId: link,
-      params: YoutubePlayerParams(
+      params: const YoutubePlayerParams(
         showControls: true,
       ),
     );

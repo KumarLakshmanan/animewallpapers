@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
@@ -23,124 +23,126 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   final dc = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: ThemeData(
-        fontFamily: GoogleFonts.oswald().fontFamily,
-      ),
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: PageView.builder(
-                onPageChanged: (value) {
-                  setState(() {
-                    currentIndex = value;
-                  });
-                },
-                controller: pageController,
-                itemCount: dc.prelogindynamic['onboarding'].length,
-                itemBuilder: (context, index) {
-                  return PageBuilderWidget(
-                    title: dc.prelogindynamic['onboarding'][index]['title'],
-                    imgurl: dc.prelogindynamic['onboarding'][index]['image'],
-                  );
-                },
-              ),
+    return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: PageView.builder(
+              onPageChanged: (value) {
+                setState(() {
+                  currentIndex = value;
+                });
+              },
+              controller: pageController,
+              itemCount: dc.prelogindynamic['onboarding'].length,
+              itemBuilder: (context, index) {
+                return PageBuilderWidget(
+                  title: dc.prelogindynamic['onboarding'][index]['title'],
+                  imgurl: dc.prelogindynamic['onboarding'][index]['image'],
+                );
+              },
             ),
-            Positioned(
-              bottom: 20,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    height: 50,
-                    width: 100,
-                    // child: MaterialButton(
-                    //   onPressed: () {
-                    //     pageController.animateToPage(
-                    //       dc.prelogindynamic['onboarding'].length - 1,
-                    //       duration: kAnimationDuration,
-                    //       curve: Curves.easeInOut,
-                    //     );
-                    //   },
-                    //   child: Text(
-                    //     "Next",
-                    //     style: TextStyle(
-                    //       fontSize: 16,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: Color(int.parse(dc.prelogin!.theme.secondary)),
-                    //     ),
-                    //     textAlign: TextAlign.start,
-                    //   ),
-                    //   elevation: 0,
-                    //   focusElevation: 0,
-                    //   hoverElevation: 0,
-                    //   highlightElevation: 0,
-                    // ),
-                  ),
-                  Expanded(
+          ),
+          Positioned(
+            bottom: 20,
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 50,
+                  width: 100,
+                  child: MaterialButton(
+                    elevation: 0,
+                    focusElevation: 0,
+                    hoverElevation: 0,
+                    highlightElevation: 0,
+                    onPressed: () {
+                      Get.offAll(
+                        const MainScreen(),
+                        transition: Transition.rightToLeft,
+                      );
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        dc.prelogindynamic['onboarding'].length,
-                        (index) => buildDot(index: index),
-                      ),
+                      children: [
+                        Text(
+                          "Skip",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Color(int.parse(dc.prelogin!.theme.secondary)),
+                          ),
+                          textAlign: TextAlign.end,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 50,
-                    width: 100,
-                    child: MaterialButton(
-                      elevation: 0,
-                      focusElevation: 0,
-                      hoverElevation: 0,
-                      highlightElevation: 0,
-                      onPressed: () {
-                        if (currentIndex ==
-                            dc.prelogindynamic['onboarding'].length - 1) {
-                          Get.offAll(
-                            const MainScreen(),
-                            transition: Transition.rightToLeft,
-                          );
-                        } else {
-                          pageController.nextPage(
-                            duration: kAnimationDuration,
-                            curve: Curves.fastLinearToSlowEaseIn,
-                          );
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Next",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(int.parse(dc.prelogin!.theme.secondary)),
-                            ),
-                            textAlign: TextAlign.end,
-                          ),
-                          const SizedBox(width: 5),
-                          Image.asset(
-                            "assets/icons/next.png",
-                            width: 25,
-                            color: Color(int.parse(dc.prelogin!.theme.secondary)),
-                            height: 25,
-                          ),
-                        ],
-                      ),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      dc.prelogindynamic['onboarding'].length,
+                      (index) => buildDot(index: index),
                     ),
                   ),
-                ],
-              ),
-            )
-          ],
-        ),
+                ),
+                SizedBox(
+                  height: 50,
+                  width: 100,
+                  child: MaterialButton(
+                    elevation: 0,
+                    focusElevation: 0,
+                    hoverElevation: 0,
+                    highlightElevation: 0,
+                    onPressed: () {
+                      if (currentIndex ==
+                          dc.prelogindynamic['onboarding'].length - 1) {
+                        Get.offAll(
+                          const MainScreen(),
+                          transition: Transition.rightToLeft,
+                        );
+                      } else {
+                        pageController.nextPage(
+                          duration: kAnimationDuration,
+                          curve: Curves.fastLinearToSlowEaseIn,
+                        );
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Next",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Color(int.parse(dc.prelogin!.theme.secondary)),
+                          ),
+                          textAlign: TextAlign.end,
+                        ),
+                        const SizedBox(width: 5),
+                        CachedNetworkImage(
+                          imageUrl: webUrl +
+                              dc.prelogindynamic['assets']['next'],
+                          width: 25,
+                          color: Color(int.parse(dc.prelogin!.theme.secondary)),
+                          height: 25,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -185,7 +187,8 @@ class PageBuilderWidget extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: Color(int.parse(Get.find<DataController>().prelogin!.theme.primary)),
+              color: Color(int.parse(
+                  Get.find<DataController>().prelogin!.theme.primary)),
               fontSize: 24,
               fontWeight: FontWeight.w700,
             ),

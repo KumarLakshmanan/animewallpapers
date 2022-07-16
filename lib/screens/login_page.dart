@@ -6,7 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:frontendforever/api.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
 import 'package:frontendforever/widgets/all_widget.dart';
 import 'package:neopop/neopop.dart';
@@ -43,25 +43,67 @@ class _LoginPageState extends State<LoginPage>
     });
   }
 
+  Future<void> handleSignIn(BuildContext context) async {
+    try {
+      GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email'],
+      );
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return;
+      } else {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        if (googleAuth.accessToken != '') {
+          var accessToken = googleAuth.accessToken;
+          var response = await http.post(
+            Uri.parse(apiUrl),
+            body: {
+              'mode': 'glogin',
+              'access_token': accessToken,
+              'email': googleUser.email,
+              'name': googleUser.displayName,
+              'id': googleUser.id,
+              'photo': googleUser.photoUrl,
+            },
+          );
+          print(response.body);
+          if (response.statusCode == 200) {
+            getLogin(
+              response.body,
+              googleUser.email,
+              googleUser.id,
+              context,
+            );
+          } else {
+            showErrorDialog(context, 'Something went wrong');
+          }
+        }
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
+
   login() async {
     if (_emailController.text.isEmpty) {
       showAlertDialog(
         context,
         'Email is empty',
-        lottie: false,
+        lottie: true,
       );
     } else if (_passwordController.text.isEmpty) {
       showAlertDialog(
         context,
         'Password is empty',
-        lottie: false,
+        lottie: true,
       );
     } else {
       if (_passwordController.text.length < 4) {
         showAlertDialog(
           context,
           'Password must be at least 4 characters',
-          lottie: false,
+          lottie: true,
         );
         return;
       } else {
@@ -70,7 +112,7 @@ class _LoginPageState extends State<LoginPage>
           showAlertDialog(
             context,
             'Email is not valid',
-            lottie: false,
+            lottie: true,
           );
           return;
         } else {
@@ -137,7 +179,7 @@ class _LoginPageState extends State<LoginPage>
               onTapDown: () => HapticFeedback.vibrate(),
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
