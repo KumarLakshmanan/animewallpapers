@@ -6,8 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:frontendforever/screens/success.dart';
-import 'controllers/theme_controller.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'notification.dart';
 import 'screens/splash_screen.dart';
 
@@ -23,14 +22,16 @@ void main() async {
   );
   if (!kIsWeb) {
     await Firebase.initializeApp();
-      firebaseCloudMessagingListeners();
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+    firebaseCloudMessagingListeners();
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
     await NotificationService().init();
-}
+    await MobileAds.instance.initialize();
+  }
   runApp(const MyApp());
 }
 
@@ -42,8 +43,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Frontend Forever',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
       theme: ThemeData(
+        primarySwatch: createMaterialColor(const Color(0xFF395B64)),
+        primaryColor: const Color(0xFF395B64),
         fontFamily: GoogleFonts.lato().fontFamily,
       ),
     );

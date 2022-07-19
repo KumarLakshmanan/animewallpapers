@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:frontendforever/constants.dart';
+import 'package:frontendforever/screens/feeback.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
@@ -25,12 +26,37 @@ class _HomeDrawerState extends State<HomeDrawer> {
               BoxDecoration(color: Color(int.parse(d.prelogin!.theme.primary))),
           currentAccountPicture: Stack(
             children: <Widget>[
-              Initicon(
-                text: d.credentials!.name,
-                elevation: 2,
-                backgroundColor: Color(int.parse(d.prelogin!.theme.secondary)),
-                size: 60,
-              ),
+              d.credentials!.photo == ""
+                  ? Initicon(
+                      text: d.credentials!.name,
+                      elevation: 2,
+                      backgroundColor:
+                          Color(int.parse(d.prelogin!.theme.secondary)),
+                      size: 60,
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(60),
+                      child: CachedNetworkImage(
+                        imageUrl: d.credentials!.photo,
+                        fit: BoxFit.cover,
+                        height: 60,
+                        width: 60,
+                        placeholder: (context, url) => Initicon(
+                          text: d.credentials!.name,
+                          elevation: 2,
+                          backgroundColor:
+                              Color(int.parse(d.prelogin!.theme.secondary)),
+                          size: 60,
+                        ),
+                        errorWidget: (context, url, error) => Initicon(
+                          text: d.credentials!.name,
+                          elevation: 2,
+                          backgroundColor:
+                              Color(int.parse(d.prelogin!.theme.secondary)),
+                          size: 60,
+                        ),
+                      ),
+                    ),
             ],
           ),
           accountName: Text(d.credentials!.name),
@@ -89,6 +115,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
           title: const Text('Help & Feedback'),
           onTap: () {
             Navigator.pop(context);
+            Get.to(
+              const FeedbackScreen(),
+              transition: Transition.rightToLeft,
+            );
           },
         ),
         // // settinngs

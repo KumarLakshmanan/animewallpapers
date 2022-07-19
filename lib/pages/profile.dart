@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
@@ -16,6 +18,21 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final d = Get.find<DataController>();
+  PackageInfo? packageInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    initPackageInfo();
+  }
+
+  Future<void> initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,12 +40,37 @@ class _ProfilePageState extends State<ProfilePage> {
         children: <Widget>[
           const SizedBox(height: 20),
           Center(
-            child: Initicon(
-              text: d.credentials!.name,
-              elevation: 2,
-              backgroundColor: Color(int.parse(d.prelogin!.theme.secondary)),
-              size: 120,
-            ),
+            child: d.credentials!.photo == ""
+                ? Initicon(
+                    text: d.credentials!.name,
+                    elevation: 2,
+                    backgroundColor:
+                        Color(int.parse(d.prelogin!.theme.secondary)),
+                    size: 120,
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child: CachedNetworkImage(
+                      imageUrl: d.credentials!.photo,
+                      fit: BoxFit.cover,
+                      height: 120,
+                      width: 120,
+                      placeholder: (context, url) => Initicon(
+                        text: d.credentials!.name,
+                        elevation: 2,
+                        backgroundColor:
+                            Color(int.parse(d.prelogin!.theme.secondary)),
+                        size: 60,
+                      ),
+                      errorWidget: (context, url, error) => Initicon(
+                        text: d.credentials!.name,
+                        elevation: 2,
+                        backgroundColor:
+                            Color(int.parse(d.prelogin!.theme.secondary)),
+                        size: 60,
+                      ),
+                    ),
+                  ),
           ),
           const SizedBox(height: 5),
           Center(
@@ -96,17 +138,30 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          Text(
-            'Version: ' + d.prelogindynamic['version'],
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(int.parse(d.prelogin!.theme.primary)),
-            ),
-            textAlign: TextAlign.center,
-          ),
+          const SizedBox(height: 10),
+          packageInfo != null
+              ? Text(
+                  'Version: ' +
+                      packageInfo!.version +
+                      "+" +
+                      packageInfo!.buildNumber,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(int.parse(d.prelogin!.theme.primary)),
+                  ),
+                  textAlign: TextAlign.center,
+                )
+              : Container(),
         ],
       ),
     );
   }
+}
+
+Widget _infoTile(String title, String subtitle) {
+  return ListTile(
+    title: Text(title),
+    subtitle: Text(subtitle.isEmpty ? 'Not set' : subtitle),
+  );
 }

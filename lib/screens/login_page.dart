@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage>
             await googleUser.authentication;
         if (googleAuth.accessToken != '') {
           var accessToken = googleAuth.accessToken;
+          var regId = await getAndroidRegId();
           var response = await http.post(
             Uri.parse(apiUrl),
             body: {
@@ -65,6 +66,7 @@ class _LoginPageState extends State<LoginPage>
               'name': googleUser.displayName,
               'id': googleUser.id,
               'photo': googleUser.photoUrl,
+              'regid': regId,
             },
           );
           print(response.body);
@@ -118,12 +120,14 @@ class _LoginPageState extends State<LoginPage>
         } else {
           showLoadingDialog();
           try {
+            var regId = await getAndroidRegId();
             var response = await http.post(
               Uri.parse(apiUrl),
               body: {
                 'mode': "login",
                 'email': _emailController.text,
                 'password': _passwordController.text,
+                'regid': regId,
               },
             );
             Get.back();

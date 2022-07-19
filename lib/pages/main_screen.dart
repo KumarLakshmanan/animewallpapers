@@ -35,7 +35,6 @@ class _MainScreenState extends State<MainScreen>
   @override
   void initState() {
     loadData();
-    getLoginData(context);
     menuAnimation = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 450));
     super.initState();
@@ -64,65 +63,38 @@ class _MainScreenState extends State<MainScreen>
           });
         },
         endDrawer: const Drawer(child: HomeDrawer()),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                color: Color(int.parse(dc.prelogin!.theme.bottombar)),
-                height: 56,
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: AnimatedIcon(
-                              icon: AnimatedIcons.menu_close,
-                              color: Colors.white,
-                              progress: menuAnimation,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                mainController.mainScaffoldKey.currentState!
-                                    .openEndDrawer();
-                              });
-                            },
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.only(left: 10),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.notifications),
-                            color: Colors.white,
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: PageView(
-                  onPageChanged: (index) {
-                    FocusScope.of(context).unfocus();
-                    mainController.changeTabIndex(index);
-                  },
-                  controller: mainController.pageViewController,
-                  children: const [
-                     CodesList(),
-                     BooksList(),
-                    // Container(),
-                    ProfilePage(),
-                  ],
-                ),
-              ),
-            ],
+        appBar: AppBar(
+          actions: [
+            Container(
+              width: 40,
+            ),
+          ],
+          automaticallyImplyLeading: false,
+          backgroundColor: Color(int.parse(dc.prelogin!.theme.bottombar)),
+          leading: IconButton(
+            icon: AnimatedIcon(
+              icon: AnimatedIcons.menu_close,
+              color: Colors.white,
+              progress: menuAnimation,
+            ),
+            onPressed: () {
+              setState(() {
+                mainController.mainScaffoldKey.currentState!.openEndDrawer();
+              });
+            },
           ),
+        ),
+        body: PageView(
+          onPageChanged: (index) {
+            FocusScope.of(context).unfocus();
+            mainController.changeTabIndex(index);
+          },
+          controller: mainController.pageViewController,
+          children: const [
+            CodesList(),
+            BooksList(),
+            ProfilePage(),
+          ],
         ),
         bottomNavigationBar: GetBuilder<MainScreenController>(
           init: MainScreenController(),

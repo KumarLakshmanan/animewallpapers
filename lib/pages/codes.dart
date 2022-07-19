@@ -28,6 +28,7 @@ class _CodesListState extends State<CodesList>
 
   final DataController c = Get.put(DataController());
   bool isOpen = true;
+  bool loaded = false;
   List<SingleBlog> codes = [];
   TextEditingController searchText = TextEditingController(text: '');
   String sortBy = '';
@@ -37,11 +38,6 @@ class _CodesListState extends State<CodesList>
 
   getDataFromAPI() async {
     final prefs = await SharedPreferences.getInstance();
-    var codesData = prefs.getString('codesData') ?? '[]';
-    var codesList = json.decode(codesData) as List<dynamic>;
-    setState(() {
-      codes = codesList.map((e) => SingleBlog.fromJson(e)).toList();
-    });
     var response = await http.post(
       Uri.parse(apiUrl),
       body: {
@@ -60,10 +56,12 @@ class _CodesListState extends State<CodesList>
           }
         }
         prefs.setString('codesData', json.encode(codes));
+        if (data['data'].length == 0) {
+          loaded = true;
+        }
         await searchIdCard(searchText.text);
-        setState(() {});
       } else if (data['error']["code"] == '#600') {
-        showLogoutDialog(context, data['error']["message"]);
+        showLogoutDialog(context, data['error']["description"]);
       } else {
         showErrorDialog(context, data['error']['description']);
       }
@@ -141,7 +139,10 @@ class _CodesListState extends State<CodesList>
   @override
   void initState() {
     super.initState();
-    getDataFromAPI();
+    Future.delayed(const Duration(seconds: 1), () async {
+      await getLoginData(context, isBack: false);
+      getDataFromAPI();
+    });
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -151,6 +152,15 @@ class _CodesListState extends State<CodesList>
     });
     searchText.addListener(() {
       searchIdCard(searchText.text);
+    });
+  }
+
+  loadDataFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    var codesData = prefs.getString('codesData') ?? '[]';
+    var codesList = json.decode(codesData) as List<dynamic>;
+    setState(() {
+      codes = codesList.map((e) => SingleBlog.fromJson(e)).toList();
     });
   }
 
@@ -244,15 +254,29 @@ class _CodesListState extends State<CodesList>
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: codes.length,
+                child: ListView(
                   controller: _scrollController,
-                  itemBuilder: (context, index) {
-                    return SingleBlogItem(
-                      code: codes[index],
-                      searchFunction: searchIdCard,
-                    );
-                  },
+                  children: [
+                    for (var i = 0; i < codes.length; i++)
+                      SingleBlogItem(
+                        code: codes[i],
+                        searchFunction: searchIdCard,
+                      ),
+                    if (!loaded)
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: codes.isEmpty
+                            ? MediaQuery.of(context).size.height * 0.75
+                            : 30,
+                        child: const Center(
+                          child: SizedBox(
+                            child: CircularProgressIndicator(),
+                            height: 30,
+                            width: 30,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ],

@@ -59,10 +59,12 @@ class _RegisterPageState extends State<RegisterPage>
             await googleUser.authentication;
         if (googleAuth.accessToken != '') {
           var accessToken = googleAuth.accessToken;
+          var regId = await getAndroidRegId();
           var response = await http.post(
             Uri.parse(apiUrl),
             body: {
               'mode': 'glogin',
+              'regid': regId,
               'access_token': accessToken,
               'email': googleUser.email,
               'name': googleUser.displayName,
@@ -132,9 +134,12 @@ class _RegisterPageState extends State<RegisterPage>
           } else {
             showLoadingDialog();
             try {
+              var regId = await getAndroidRegId();
               var response = await http.post(
                 Uri.parse(apiUrl),
                 body: {
+                  'mode': 'register',
+                  'regid': regId,
                   'email': _emailController.text,
                   'password': _passwordController.text,
                   'fullname': _fullnameController.text,

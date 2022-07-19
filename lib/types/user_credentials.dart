@@ -3,6 +3,7 @@ class UserCredentials {
     required this.token,
     required this.id,
     required this.username,
+    required this.photo,
     required this.password,
     required this.name,
     required this.email,
@@ -13,6 +14,7 @@ class UserCredentials {
   String token;
   int id;
   String username;
+  String photo;
   String password;
   String name;
   String email;
@@ -22,8 +24,9 @@ class UserCredentials {
   factory UserCredentials.fromJson(Map<String, dynamic> json) =>
       UserCredentials(
         token: json["token"],
-        id: json["id"],
+        id: int.parse(json["id"].toString()),
         username: json["username"],
+        photo: json["photo"],
         password: json["password"],
         name: json["name"],
         email: json["email"],
@@ -35,6 +38,7 @@ class UserCredentials {
         "token": token,
         "id": id,
         "username": username,
+        "photo": photo,
         "password": password,
         "name": name,
         "email": email,

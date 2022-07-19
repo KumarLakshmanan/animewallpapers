@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/pages/main_screen.dart';
@@ -43,8 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future _checkLogin() async {
-    if (!kIsWeb) {
-    }
+    if (!kIsWeb) {}
 
     Future.delayed(const Duration(seconds: 2), () async {
       final prefs = await SharedPreferences.getInstance();
@@ -101,9 +99,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/logo.png',
+              width: MediaQuery.of(context).size.width * 0.6,
+            ),
+            const SizedBox(height: 20),
+            const CircularProgressIndicator(
+              color: Color(0xFF222831),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -33,16 +33,12 @@ class _BooksListState extends State<BooksList>
   TextEditingController searchText = TextEditingController(text: '');
   String sortBy = '';
   bool isAscending = true;
+  bool loaded = false;
   int pageNo = 1;
   final ScrollController _scrollController = ScrollController();
 
   getDataFromAPI() async {
     final prefs = await SharedPreferences.getInstance();
-    var booksData = prefs.getString('booksData') ?? '[]';
-    var codesList = json.decode(booksData) as List<dynamic>;
-    setState(() {
-      codes = codesList.map((e) => SingleBook.fromJson(e)).toList();
-    });
     var response = await http.post(
       Uri.parse(apiUrl),
       body: {
@@ -61,10 +57,12 @@ class _BooksListState extends State<BooksList>
           }
         }
         prefs.setString('booksData', json.encode(codes));
+        if (data['data'].length == 0) {
+          loaded = true;
+        }
         await searchIdCard(searchText.text);
-        setState(() {});
       } else if (data['error']["code"] == '#600') {
-        showLogoutDialog(context, data['error']["message"]);
+        showLogoutDialog(context, data['error']["description"]);
       } else {
         showErrorDialog(context, data['error']['description']);
       }
@@ -100,7 +98,7 @@ class _BooksListState extends State<BooksList>
     if (!isAscending) {
       tempList.reversed.toList();
     }
-    codes = await tempList;
+    codes = tempList;
     setState(() {});
   }
 
@@ -142,6 +140,7 @@ class _BooksListState extends State<BooksList>
   @override
   void initState() {
     super.initState();
+    loadDataFromPrefs();
     getDataFromAPI();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -152,6 +151,15 @@ class _BooksListState extends State<BooksList>
     });
     searchText.addListener(() {
       searchIdCard(searchText.text);
+    });
+  }
+
+  loadDataFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    var booksData = prefs.getString('booksData') ?? '[]';
+    var codesList = json.decode(booksData) as List<dynamic>;
+    setState(() {
+      codes = codesList.map((e) => SingleBook.fromJson(e)).toList();
     });
   }
 
@@ -246,15 +254,29 @@ class _BooksListState extends State<BooksList>
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: codes.length,
+                child: ListView(
                   controller: _scrollController,
-                  itemBuilder: (context, index) {
-                    return SingleBookItem(
-                      code: codes[index],
-                      searchFunction: searchIdCard,
-                    );
-                  },
+                  children: [
+                    for (var i = 0; i < codes.length; i++)
+                      SingleBookItem(
+                        code: codes[i],
+                        searchFunction: searchIdCard,
+                      ),
+                    if (!loaded)
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: codes.isEmpty
+                            ? MediaQuery.of(context).size.height * 0.75
+                            : 30,
+                        child: const Center(
+                          child: SizedBox(
+                            child: CircularProgressIndicator(),
+                            height: 30,
+                            width: 30,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ],
@@ -306,7 +328,7 @@ class _SingleBookItemState extends State<SingleBookItem> {
               Row(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
                     ),

@@ -52,7 +52,7 @@ class _TryItState extends State<TryIt> with SingleTickerProviderStateMixin {
   PlutoCodeEditorController jsContoller = PlutoCodeEditorController(
     code: "",
     theme: EditorTheme(syntaxTheme: atomOneDarkTheme),
-    language: 'javscript',
+    language: 'javascript',
   );
 
   StreamController streamController = StreamController.broadcast();

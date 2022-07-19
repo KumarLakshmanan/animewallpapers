@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -6,7 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/notification.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:frontendforever/screens/pdf.dart';
+import 'package:frontendforever/types/single_blog.dart';
+import 'package:frontendforever/types/single_book.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -14,12 +17,13 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/screens/onboarding.dart';
 import 'package:frontendforever/screens/splash_screen.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontendforever/types/prelogin.dart';
 import 'package:frontendforever/types/user_credentials.dart';
-
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 showCallbackDialog(String message, Function onTap,
     {bool barrierDismissible = true, bool showCancel = true}) {
@@ -171,14 +175,6 @@ convertEpochtoTimeAgo(int epoch) {
 loadData() async {
   final d = Get.put(DataController());
   final prefs = await SharedPreferences.getInstance();
-  final keys = prefs.getKeys();
-  for (String key in keys) {
-    if (key.startsWith('subject_')) {
-      d.subjectQuestion[key.replaceAll('subject_', '')] = json.decode(
-        prefs.getString(key)!,
-      );
-    }
-  }
   d.credentials = prefs.getString('userCredentials') != null
       ? UserCredentials.fromJson(
           json.decode(prefs.getString('userCredentials')!))
@@ -210,18 +206,24 @@ logout() async {
   await dController.logOut();
 }
 
-getLoginData(BuildContext c) async {
+getLoginData(BuildContext c, {isBack = true}) async {
   final d = Get.put(DataController());
   try {
+    var regId = await getAndroidRegId();
     var response = await http.post(
       Uri.parse(apiUrl),
       body: {
         'mode': 'refresh',
+        'regid': regId,
         'email': d.credentials!.email,
         'token': d.credentials!.token,
       },
     );
-    Get.back();
+    print(webUrl + '?token=' + d.credentials!.token);
+    print(response.body);
+    if (isBack) {
+      Get.back();
+    }
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       if (data['error']["code"] == '#200') {
@@ -232,9 +234,10 @@ getLoginData(BuildContext c) async {
           'userCredentials',
           jsonEncode(data['data']),
         );
-        await prefs.setString('subjects', jsonEncode(data['data']['subjects']));
+        d.credentials = UserCredentials.fromJson(data['data']);
+        d.update();
       } else if (data['error']["code"] == '#600') {
-        showLogoutDialog(c, data['error']["message"]);
+        showLogoutDialog(c, data['error']["description"]);
       } else {
         showErrorDialog(c, data['error']['description']);
       }
@@ -250,7 +253,12 @@ showLogoutDialog(BuildContext c, String text) {
   Dialogs.materialDialog(
     barrierDismissible: false,
     context: c,
-    title: 'Error',
+    lottieBuilder: Lottie.asset(
+      'assets/json/error.json',
+      repeat: false,
+      fit: BoxFit.contain,
+    ),
+    title: 'Logout',
     msg: text,
     actions: [
       IconsOutlineButton(
@@ -335,20 +343,134 @@ Future<void> _messageHandler(RemoteMessage message) async {
 }
 
 Future<String> getAndroidRegId() async {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  String? androidRegId = await _firebaseMessaging.getToken();
-  var httpsRes =
-      await http.post(Uri.parse('http://api.frontendforever.com/manvaasam/push.php'), body: {
-    "regid": androidRegId,
-    "mode": "saveregid",
-  });
-  if (httpsRes.statusCode == 200) {
-    if (kDebugMode) {
-      print(httpsRes.body);
+  if (!kIsWeb) {
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+    String? androidRegId = await _firebaseMessaging.getToken();
+    return androidRegId!;
+  } else {
+    return "";
+  }
+}
+
+Future downloadBook(SingleBook book, BuildContext context) async {
+  try {
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        'mode': 'downloadbook',
+        'id': book.id.toString(),
+        'pdf': book.pdf,
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data['error']["code"] == '#200') {
+        var dir = await getApplicationDocumentsDirectory();
+        var path = dir.path;
+        var file = File('$path/${book.title}.pdf');
+        // file already there
+        if (file.existsSync()) {
+          Get.to(
+            PdfViewer(
+              file: File('${file.path}/${book.title}.pdf'),
+              title: book.title,
+            ),
+            transition: Transition.rightToLeft,
+          );
+        } else {
+          var response = await http.get(Uri.parse(data['data']['url']));
+
+          await NotificationService().showNotify(
+            body: {
+              'title': book.title,
+              'message': 'Your book has been downloaded.',
+              'module': 'pdf',
+            },
+          );
+          await file.writeAsBytes(response.bodyBytes);
+          Get.to(
+            PdfViewer(
+              file: File('${file.path}/${book.title}.pdf'),
+              title: book.title,
+            ),
+            transition: Transition.rightToLeft,
+          );
+        }
+      } else {
+        await NotificationService().showNotify(
+          body: {
+            'title': "Error while Downloading Book",
+            'message': data['error']['description'],
+            'module': 'pdf',
+          },
+        );
+      }
     }
+  } catch (e) {
+    showErrorDialog(context, e.toString());
   }
-  if (kDebugMode) {
-    print(androidRegId);
+}
+
+Future downloadCode(SingleBlog blog, BuildContext context) async {
+  try {
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        'mode': 'downloadcode',
+        'id': blog.id.toString(),
+        'title': blog.title,
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data['error']["code"] == '#200') {
+        await NotificationService().showNotify(
+          body: {
+            'title': "Code Downloaded",
+            'message': "You will be redirected to the code download page.",
+            'module': 'code',
+          },
+        );
+        await launch(data['data']['url']);
+      } else {
+        await NotificationService().showNotify(
+          body: {
+            'title': "Error while Downloading Book",
+            'message': data['error']['description'],
+            'module': 'pdf',
+          },
+        );
+      }
+    } else {
+      await NotificationService().showNotify(
+        body: {
+          'title': "Error while Downloading Code",
+          'message': response.bodyBytes,
+          'module': 'pdf',
+        },
+      );
+    }
+  } catch (e) {
+    showErrorDialog(context, e.toString());
   }
-  return androidRegId!;
+}
+
+MaterialColor createMaterialColor(Color color) {
+  final strengths = <double>[.05];
+  final swatch = <int, Color>{};
+  final int r = color.red, g = color.green, b = color.blue;
+
+  for (int i = 1; i < 10; i++) {
+    strengths.add(0.1 * i);
+  }
+  for (final strength in strengths) {
+    final double ds = 0.5 - strength;
+    swatch[(strength * 1000).round()] = Color.fromRGBO(
+      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+      1,
+    );
+  }
+  return MaterialColor(color.value, swatch);
 }

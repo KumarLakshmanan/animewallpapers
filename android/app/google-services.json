@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "508745024176-ogs5b2s6mhsd72aso96gnocmn56jhqh4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.frontendforever",
+            "certificate_hash": "9d16f4df480c460ac1e084be96cda642ebc9647e"
+          }
+        },
+        {
           "client_id": "508745024176-gnjuvqubcediqvgfk61hstru7u26265o.apps.googleusercontent.com",
           "client_type": 3
         }
