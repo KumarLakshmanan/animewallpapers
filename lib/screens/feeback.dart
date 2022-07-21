@@ -1,11 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
+import 'package:frontendforever/functions.dart';
+import 'package:frontendforever/widgets/dropdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/widgets/all_widget.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:neopop/neopop.dart';
 
 class FeedbackScreen extends StatefulWidget {
@@ -21,6 +26,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   final TextEditingController feebackController = TextEditingController();
   final d = Get.put(DataController());
   int sended = -1;
+  String? feebackCategory;
   @override
   initState() {
     super.initState();
@@ -44,15 +50,63 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: feebackController,
-                maxLines: 10,
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  labelText: 'Feeback',
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Container(
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.0),
+                        border: Border.all(
+                          color: Color(int.parse(d.prelogin!.theme.primary)),
+                          width: 1,
+                        ),
+                      ),
+                      child: DropdownButton(
+                        hint: const Text('Select Category'),
+                        underline: const SizedBox(),
+                        isExpanded: true,
+                        items: d.prelogin!.feedback.map((String category) {
+                          return DropdownMenuItem(
+                            value: category,
+                            child: Text(category),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            feebackCategory = newValue;
+                          });
+                        },
+                        value: feebackCategory,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: feebackController,
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(int.parse(d.prelogin!.theme.primary)),
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(int.parse(d.prelogin!.theme.primary)),
+                            width: 2,
+                          ),
+                        ),
+                        labelText: 'Enter the Feeback',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -64,6 +118,59 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 color: Color(int.parse(d.prelogin!.theme.primary)),
                 onTapUp: () async {
                   if (sended == -1) {
+                    if (feebackCategory == null) {
+                      showAlertDialog(context, 'Please select a category');
+                    } else if (feebackController.text.length == 0) {
+                      showAlertDialog(context, 'Please enter a feeback');
+                    }
+                    setState(() {
+                      sended = 0;
+                    });
+                    var response = await http.post(
+                      Uri.parse(apiUrl),
+                      body: {
+                        'mode': 'contactMessage',
+                        'name': d.credentials!.name +
+                            ' @' +
+                            d.credentials!.username,
+                        'email': d.credentials!.email,
+                        'message':
+                            feebackCategory! + "\n\n" + feebackController.text,
+                      },
+                    );
+                    if (response.statusCode == 200) {
+                      var data = json.decode(response.body);
+                      if (data['error']["code"] == '#200') {
+                        feebackController.clear();
+                        feebackCategory = null;
+                        setState(() {
+                          sended = 1;
+                        });
+                        Dialogs.materialDialog(
+                          context: context,
+                          titleAlign: TextAlign.center,
+                          title: 'Feeback Sent Successfully',
+                          lottieBuilder: Lottie.asset(
+                            'assets/json/success.json',
+                            repeat: false,
+                            fit: BoxFit.contain,
+                          ),
+                          actions: [
+                            IconsOutlineButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              text: 'Continue',
+                              iconData: Icons.arrow_forward_outlined,
+                            ),
+                          ],
+                        );
+                      } else {
+                        showErrorDialog(context, data['error']['description']);
+                      }
+                    } else {
+                      showErrorDialog(context, 'Something went wrong');
+                    }
                   } else {}
                 },
                 onTapDown: () => HapticFeedback.vibrate(),

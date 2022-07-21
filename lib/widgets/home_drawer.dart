@@ -2,11 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:frontendforever/constants.dart';
+import 'package:frontendforever/pages/settings.dart';
 import 'package:frontendforever/screens/feeback.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
 import 'package:frontendforever/functions.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key? key}) : super(key: key);
@@ -26,37 +29,45 @@ class _HomeDrawerState extends State<HomeDrawer> {
               BoxDecoration(color: Color(int.parse(d.prelogin!.theme.primary))),
           currentAccountPicture: Stack(
             children: <Widget>[
-              d.credentials!.photo == ""
-                  ? Initicon(
-                      text: d.credentials!.name,
-                      elevation: 2,
-                      backgroundColor:
-                          Color(int.parse(d.prelogin!.theme.secondary)),
-                      size: 60,
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: CachedNetworkImage(
-                        imageUrl: d.credentials!.photo,
-                        fit: BoxFit.cover,
-                        height: 60,
-                        width: 60,
-                        placeholder: (context, url) => Initicon(
-                          text: d.credentials!.name,
-                          elevation: 2,
-                          backgroundColor:
-                              Color(int.parse(d.prelogin!.theme.secondary)),
-                          size: 60,
-                        ),
-                        errorWidget: (context, url, error) => Initicon(
-                          text: d.credentials!.name,
-                          elevation: 2,
-                          backgroundColor:
-                              Color(int.parse(d.prelogin!.theme.secondary)),
-                          size: 60,
-                        ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: CachedNetworkImage(
+                  imageUrl: d.credentials!.photo != ""
+                      ? d.credentials!.photo
+                      : webUrl +
+                          "api/avatar.php?username=" +
+                          d.credentials!.username,
+                  fit: BoxFit.cover,
+                  height: 60,
+                  width: 60,
+                ),
+              ),
+              if (d.credentials!.pro)
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: Container(
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      color: Colors.yellow,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.yellow[900]!,
+                        width: 2,
                       ),
                     ),
+                    child: Center(
+                      child: CachedNetworkImage(
+                        imageUrl: webUrl + d.prelogindynamic['assets']['royal'],
+                        fit: BoxFit.contain,
+                        height: 14,
+                        width: 14,
+                        color: Colors.yellow[900],
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
           accountName: Text(d.credentials!.name),
@@ -71,7 +82,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Get Pro Version'),
           onTap: () {
-            Navigator.pop(context);
+            Get.back();
           },
         ),
         ListTile(
@@ -81,7 +92,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Invite Friends'),
           onTap: () {
-            Navigator.pop(context);
+            Get.back();
+            Share.share(
+              'Check out this awesome app called Frontend Forever. It\'s a free app that helps you to create and share code. Download it now from https://play.google.com/store/apps/details?id=com.frontendforever',
+            );
           },
         ),
         // Donate us
@@ -92,7 +106,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Donate us'),
           onTap: () {
-            Navigator.pop(context);
+            Get.back();
           },
         ),
         // Rate us
@@ -102,8 +116,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
             color: Colors.black,
           ),
           title: const Text('Rate us'),
-          onTap: () {
-            Navigator.pop(context);
+          onTap: () async {
+            await launch(
+              'https://play.google.com/store/apps/details?id=com.frontendforever',
+            );
+            Get.back();
           },
         ),
         // Help & Feedback
@@ -114,25 +131,27 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Help & Feedback'),
           onTap: () {
-            Navigator.pop(context);
+            Get.back();
             Get.to(
               const FeedbackScreen(),
               transition: Transition.rightToLeft,
             );
           },
         ),
-        // // settinngs
-        // ListTile(
-        //   leading: const Icon(
-        //     Icons.settings,
-        //     color: Colors.black,
-        //   ),
-        //   title: const Text('Settings'),
-        //   onTap: () {
-        //     Navigator.pop(context);
-        //   },
-        // ),
-        // Logout
+        ListTile(
+          leading: const Icon(
+            Icons.settings,
+            color: Colors.black,
+          ),
+          title: const Text('Settings'),
+          onTap: () {
+            Get.back();
+            Get.to(
+              const Settings(),
+              transition: Transition.rightToLeft,
+            );
+          },
+        ),
         ListTile(
           leading: const Icon(
             Icons.exit_to_app,
@@ -140,7 +159,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Logout'),
           onTap: () {
-            logOutDialog();
+            Get.back();
+            logOutDialog(context);
           },
         ),
       ],

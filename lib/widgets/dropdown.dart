@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:get/get.dart';
-import 'package:frontendforever/controllers/theme_controller.dart';
 
 class InlineDropDown extends StatefulWidget {
   final List<String> items;
-  final String selectedItem;
+  final String? selectedItem;
   final Function(String?) onChanged;
   final bool isDark;
   const InlineDropDown({
@@ -20,13 +20,14 @@ class InlineDropDown extends StatefulWidget {
 }
 
 class _InlineDropDownState extends State<InlineDropDown> {
+  final dc = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          color: Color(0xFF30475E),
+          color: Color(int.parse(dc.prelogin!.theme.primary)).withOpacity(0.1),
           borderRadius: BorderRadius.circular(4.0),
           boxShadow: widget.isDark
               ? null
@@ -54,12 +55,13 @@ class _InlineDropDownState extends State<InlineDropDown> {
         selectedItemBuilder: (context) {
           return widget.items.map<Widget>((String item) {
             return Center(
-                child: Text(
-              item,
-              style: const TextStyle(
-                color: Colors.black,
+              child: Text(
+                item,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
               ),
-            ));
+            );
           }).toList();
         },
         underline: Container(),

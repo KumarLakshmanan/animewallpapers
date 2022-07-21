@@ -62,12 +62,14 @@ class EntryField extends StatefulWidget {
   final TextEditingController controller;
   final bool isPassword;
   final bool isEmail;
+  final Color color;
   final Function? isSubmit;
   const EntryField({
     Key? key,
     required this.title,
     required this.controller,
     this.isPassword = false,
+    this.color = Colors.black,
     this.isEmail = false,
     this.isSubmit,
   }) : super(key: key);
@@ -86,47 +88,52 @@ class _EntryFieldState extends State<EntryField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextField(
-            controller: widget.controller,
-            obscureText: isObsure,
-            keyboardType: widget.isEmail
-                ? TextInputType.emailAddress
-                : widget.isPassword
-                    ? TextInputType.visiblePassword
-                    : TextInputType.text,
-            onSubmitted: (value) {
-              widget.isSubmit!();
-            },
-            textInputAction: widget.isSubmit != null
-                ? TextInputAction.done
-                : TextInputAction.next,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              fillColor: const Color(0xfff3f3f4),
-              filled: true,
-              hintText: "Enter Your " + widget.title,
-              labelText: widget.title,
-              suffixIcon: widget.isPassword
-                  ? GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isObsure = !isObsure;
-                        });
-                      },
-                      child: Icon(
-                        isObsure ? Icons.visibility_off : Icons.visibility,
-                        color: Color(0xFF30475E),
-                      ),
-                    )
-                  : null,
-            ),
-          )
-        ],
+    return TextField(
+      controller: widget.controller,
+      obscureText: isObsure,
+      keyboardType: widget.isEmail
+          ? TextInputType.emailAddress
+          : widget.isPassword
+              ? TextInputType.visiblePassword
+              : TextInputType.text,
+      onSubmitted: (value) {
+        widget.isSubmit!();
+      },
+      textInputAction:
+          widget.isSubmit != null ? TextInputAction.done : TextInputAction.next,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(16),
+        isDense: true,
+        border: const OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: widget.color,
+            width: 1.2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: widget.color,
+            width: 2,
+          ),
+        ),
+        labelText: widget.title,
+        suffixIcon: widget.isPassword
+            ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isObsure = !isObsure;
+                  });
+                },
+                child: Icon(
+                  isObsure ? Icons.visibility_off : Icons.visibility,
+                  color: widget.color,
+                ),
+              )
+            : const Icon(
+                Icons.email,
+                color: Colors.transparent,
+              ),
       ),
     );
   }

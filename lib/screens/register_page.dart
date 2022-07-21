@@ -110,7 +110,7 @@ class _RegisterPageState extends State<RegisterPage>
       if (_emailController.text.length < 4) {
         showAlertDialog(
           context,
-          'email must be at least 4 characters',
+          'Email must be at least 4 characters',
           lottie: true,
         );
         return;
@@ -184,10 +184,16 @@ class _RegisterPageState extends State<RegisterPage>
               title: "Fullname",
               controller: _fullnameController,
             ),
+            const SizedBox(
+              height: 10,
+            ),
             EntryField(
               title: "Email Id",
               controller: _emailController,
               isEmail: true,
+            ),
+            const SizedBox(
+              height: 10,
             ),
             EntryField(
               title: "Password",

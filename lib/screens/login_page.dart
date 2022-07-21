@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage>
     if (_emailController.text.isEmpty) {
       showAlertDialog(
         context,
-        'Email is empty',
+        'Email or Username is empty',
         lottie: true,
       );
     } else if (_passwordController.text.isEmpty) {
@@ -109,41 +109,31 @@ class _LoginPageState extends State<LoginPage>
         );
         return;
       } else {
-        if (!_emailController.text.contains(
-            RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'))) {
-          showAlertDialog(
-            context,
-            'Email is not valid',
-            lottie: true,
+        showLoadingDialog();
+        try {
+          var regId = await getAndroidRegId();
+          var response = await http.post(
+            Uri.parse(apiUrl),
+            body: {
+              'mode': "login",
+              'email': _emailController.text,
+              'password': _passwordController.text,
+              'regid': regId,
+            },
           );
-          return;
-        } else {
-          showLoadingDialog();
-          try {
-            var regId = await getAndroidRegId();
-            var response = await http.post(
-              Uri.parse(apiUrl),
-              body: {
-                'mode': "login",
-                'email': _emailController.text,
-                'password': _passwordController.text,
-                'regid': regId,
-              },
+          Get.back();
+          if (response.statusCode == 200) {
+            getLogin(
+              response.body,
+              _emailController.text,
+              _passwordController.text,
+              context,
             );
-            Get.back();
-            if (response.statusCode == 200) {
-              getLogin(
-                response.body,
-                _emailController.text,
-                _passwordController.text,
-                context,
-              );
-            } else {
-              showErrorDialog(context, 'Something went wrong', lottie: false);
-            }
-          } catch (e) {
-            showErrorDialog(context, e.toString(), lottie: false);
+          } else {
+            showErrorDialog(context, 'Something went wrong', lottie: false);
           }
+        } catch (e) {
+          showErrorDialog(context, e.toString(), lottie: false);
         }
       }
     }
@@ -154,7 +144,7 @@ class _LoginPageState extends State<LoginPage>
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           top: 20,
           left: 20,
           right: 20,
@@ -164,15 +154,19 @@ class _LoginPageState extends State<LoginPage>
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             EntryField(
-              title: "Email Id",
+              title: "Email or Username",
               controller: _emailController,
-              isEmail: true,
+              color: Color(int.parse(d.prelogin!.theme.primary)),
+            ),
+            const SizedBox(
+              height: 10,
             ),
             EntryField(
               title: "Password",
               controller: _passwordController,
               isPassword: true,
               isSubmit: login,
+              color: Color(int.parse(d.prelogin!.theme.primary)),
             ),
             const SizedBox(height: 10),
             NeoPopButton(

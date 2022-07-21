@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendforever/blogs/single_blog.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/screens/single_blog.dart';
-import 'package:frontendforever/types/single_blog.dart';
+import 'package:frontendforever/models/single_blog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,7 +31,7 @@ class _CodesListState extends State<CodesList>
   bool loaded = false;
   List<SingleBlog> codes = [];
   TextEditingController searchText = TextEditingController(text: '');
-  String sortBy = '';
+  String sortBy = 'createat';
   bool isAscending = true;
   int pageNo = 1;
   final ScrollController _scrollController = ScrollController();
@@ -47,16 +47,31 @@ class _CodesListState extends State<CodesList>
         'page': pageNo.toString(),
       },
     );
+    print(response.body);
+    print(apiUrl +
+        "?mode=getposts&email=" +
+        c.credentials!.email +
+        "&token=" +
+        c.credentials!.token +
+        "&page=" +
+        pageNo.toString());
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
+        if (pageNo == 1) {
+          codes = [];
+        }
         for (var i = 0; i < data['data'].length; i++) {
           if (!codes.any((e) => e.id == data['data'][i]['id'])) {
             codes.add(SingleBlog.fromJson(data['data'][i]));
+          } else {
+            codes.removeWhere((e) => e.id == data['data'][i]['id']);
+            codes.add(SingleBlog.fromJson(data['data'][i]));
           }
         }
+        codes.sort((b, a) => a.createdAt.compareTo(b.createdAt));
         prefs.setString('codesData', json.encode(codes));
-        if (data['data'].length == 0) {
+        if (data['data'].length != 10) {
           loaded = true;
         }
         await searchIdCard(searchText.text);
@@ -90,12 +105,17 @@ class _CodesListState extends State<CodesList>
       }
     }
     if (sortBy == "createat") {
-      tempList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      if (isAscending) {
+        tempList.sort((b, a) => a.createdAt.compareTo(b.createdAt));
+      } else {
+        tempList.sort((b, a) => b.createdAt.compareTo(a.createdAt));
+      }
     } else if (sortBy == "views") {
-      tempList.sort((a, b) => a.views.compareTo(b.views));
-    }
-    if (!isAscending) {
-      tempList.reversed.toList();
+      if (isAscending) {
+        tempList.sort((b, a) => a.views.compareTo(b.views));
+      } else {
+        tempList.sort((b, a) => b.views.compareTo(a.views));
+      }
     }
     codes = tempList;
     setState(() {});
@@ -106,7 +126,7 @@ class _CodesListState extends State<CodesList>
       minLeadingWidth: 0,
       contentPadding: EdgeInsets.zero,
       leading: sortBy == key
-          ? isAscending
+          ? !isAscending
               ? CachedNetworkImage(
                   imageUrl: webUrl + c.prelogindynamic['assets']['sort_asc'],
                   width: 20,
@@ -130,6 +150,9 @@ class _CodesListState extends State<CodesList>
       onTap: () async {
         isAscending = !isAscending;
         sortBy = key;
+        print(sortBy);
+        print(isAscending);
+        setState(() {});
         await searchIdCard(searchText.text);
         Get.back();
       },
@@ -139,6 +162,7 @@ class _CodesListState extends State<CodesList>
   @override
   void initState() {
     super.initState();
+    loadDataFromPrefs();
     Future.delayed(const Duration(seconds: 1), () async {
       await getLoginData(context, isBack: false);
       getDataFromAPI();
@@ -159,12 +183,13 @@ class _CodesListState extends State<CodesList>
     final prefs = await SharedPreferences.getInstance();
     var codesData = prefs.getString('codesData') ?? '[]';
     var codesList = json.decode(codesData) as List<dynamic>;
-    setState(() {
-      codes = codesList.map((e) => SingleBlog.fromJson(e)).toList();
-    });
+    codes = codesList.map((e) => SingleBlog.fromJson(e)).toList();
+    codes.sort((b, a) => a.createdAt.compareTo(b.createdAt));
+    setState(() {});
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -254,29 +279,37 @@ class _CodesListState extends State<CodesList>
                 ),
               ),
               Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  children: [
-                    for (var i = 0; i < codes.length; i++)
-                      SingleBlogItem(
-                        code: codes[i],
-                        searchFunction: searchIdCard,
-                      ),
-                    if (!loaded)
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: codes.isEmpty
-                            ? MediaQuery.of(context).size.height * 0.75
-                            : 30,
-                        child: const Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(),
-                            height: 30,
-                            width: 30,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    pageNo = 1;
+                    codes = [];
+                    setState(() {});
+                    await getDataFromAPI();
+                  },
+                  child: ListView(
+                    controller: _scrollController,
+                    children: [
+                      for (var i = 0; i < codes.length; i++)
+                        SingleBlogItem(
+                          code: codes[i],
+                          searchFunction: searchIdCard,
+                        ),
+                      if (!loaded)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: codes.isEmpty
+                              ? MediaQuery.of(context).size.height * 0.75
+                              : 30,
+                          child: const Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 30,
+                              width: 30,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -326,7 +359,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
           child: Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
@@ -358,7 +391,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                           DateFormat('dd MMMM yyyy').format(
                               DateTime.fromMillisecondsSinceEpoch(
                                   widget.code.createdAt)),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                           ),
@@ -380,7 +413,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                           children: [
                             Text(
                               NumberFormat.compact().format(widget.code.views),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
                               ),
@@ -417,37 +450,37 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Text(
                       widget.code.content,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.person,
                           size: 14,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
                         Text(
                           widget.code.username,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     Wrap(
@@ -462,7 +495,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                                   ),
                                   label: Text(
                                     keyword,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.white,
                                     ),

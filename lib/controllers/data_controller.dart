@@ -1,7 +1,7 @@
 
 import 'package:get/get.dart';
-import 'package:frontendforever/types/prelogin.dart';
-import 'package:frontendforever/types/user_credentials.dart';
+import 'package:frontendforever/models/prelogin.dart';
+import 'package:frontendforever/models/user_credentials.dart';
 
 class DataController extends GetxController {
   UserCredentials? credentials;

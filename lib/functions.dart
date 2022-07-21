@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/notification.dart';
 import 'package:frontendforever/screens/pdf.dart';
-import 'package:frontendforever/types/single_blog.dart';
-import 'package:frontendforever/types/single_book.dart';
+import 'package:frontendforever/models/single_blog.dart';
+import 'package:frontendforever/models/single_book.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -17,11 +17,10 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/screens/onboarding.dart';
 import 'package:frontendforever/screens/splash_screen.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:frontendforever/types/prelogin.dart';
-import 'package:frontendforever/types/user_credentials.dart';
+import 'package:frontendforever/models/prelogin.dart';
+import 'package:frontendforever/models/user_credentials.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -63,6 +62,8 @@ showAlertDialog(context, text, {lottie = true}) {
           )
         : null,
     context: context,
+    titleAlign: TextAlign.center,
+    msgAlign: TextAlign.center,
     actions: [
       IconsOutlineButton(
         onPressed: () {
@@ -81,6 +82,8 @@ showErrorDialog(context, text, {lottie = true}) {
   Dialogs.materialDialog(
     color: Colors.white,
     msg: text,
+    titleAlign: TextAlign.center,
+    msgAlign: TextAlign.center,
     title: 'Error',
     lottieBuilder: lottie
         ? Lottie.asset(
@@ -118,58 +121,62 @@ showLoadingDialog() {
   );
 }
 
-logOutDialog() {
-  return Get.dialog(
-    AlertDialog(
-      title: const Text("Confirm"),
-      content: const Text("Are you sure you want to logout?"),
-      actions: [
-        TextButton(
-          child: const Text("Yes"),
-          onPressed: () {
-            Get.offAll(
-              const SplashScreen(
-                logOut: true,
-              ),
-            );
-          },
-        ),
-        TextButton(
-          child: const Text("No"),
-          onPressed: () {
-            Get.back();
-          },
-        )
-      ],
+logOutDialog(context) {
+  Dialogs.bottomMaterialDialog(
+    context: context,
+    title: 'Logout',
+    msg: 'Are you sure you want to logout?',
+    lottieBuilder: Lottie.asset(
+      'assets/json/exit.json',
+      repeat: false,
+      fit: BoxFit.contain,
     ),
+    actions: [
+      IconsOutlineButton(
+        iconData: Icons.cancel_outlined,
+        onPressed: () {
+          Get.back();
+        },
+        text: 'Cancel',
+      ),
+      IconsOutlineButton(
+        iconData: Icons.exit_to_app_outlined,
+        onPressed: () {
+          Get.offAll(
+            const SplashScreen(
+              logOut: true,
+            ),
+            transition: Transition.rightToLeft,
+          );
+        },
+        text: 'Logout',
+      ),
+    ],
   );
-}
-
-convertEpochtoTimeAgo(int epoch) {
-// Change the Epoch time to time ago
-//   hh:mm AM/PM
-//   Yesterday
-//   Oct 10
-//   Last Year
-  var date = DateTime.fromMillisecondsSinceEpoch(epoch);
-  var now = DateTime.now();
-  var difference = now.difference(date);
-  var timeAgo = '';
-  if (difference.inSeconds <= 0 ||
-      difference.inSeconds > 0 && difference.inMinutes == 0 ||
-      difference.inMinutes > 0 && difference.inHours == 0 ||
-      difference.inHours > 0 && difference.inDays == 0) {
-    // Return HH:MM AM/PM
-    timeAgo = DateFormat('hh:mm a').format(date);
-  } else if (difference.inDays == 1) {
-    timeAgo = 'Yesterday';
-  } else if (difference.inDays > 1) {
-    if (difference.inDays > 365) {
-      timeAgo = (difference.inDays / 365).floor().toString() + ' Years Ago';
-    }
-    timeAgo = DateFormat('MMM dd').format(date);
-  }
-  return timeAgo;
+  // return Get.dialog(
+  //   AlertDialog(
+  //     title: const Text("Confirm"),
+  //     content: const Text("Are you sure you want to logout?"),
+  //     actions: [
+  //       TextButton(
+  //         child: const Text("Yes"),
+  //         onPressed: () {
+  //           Get.offAll(
+  //             const SplashScreen(
+  //               logOut: true,
+  //             ),
+  //           );
+  //         },
+  //       ),
+  //       TextButton(
+  //         child: const Text("No"),
+  //         onPressed: () {
+  //           Get.back();
+  //         },
+  //       )
+  //     ],
+  //   ),
+  // );
 }
 
 loadData() async {
@@ -219,7 +226,13 @@ getLoginData(BuildContext c, {isBack = true}) async {
         'token': d.credentials!.token,
       },
     );
-    print(webUrl + '?token=' + d.credentials!.token);
+    print(webUrl +
+        '?mode=refresh&regid=' +
+        regId +
+        '&email=' +
+        d.credentials!.email +
+        '&token=' +
+        d.credentials!.token);
     print(response.body);
     if (isBack) {
       Get.back();
@@ -284,7 +297,6 @@ getLogin(
   var data = jsonDecode(jsonMap);
   if (data['error']["code"] == '#200') {
     final prefs = await SharedPreferences.getInstance();
-    data['data']['email'] = email;
     data['data']['password'] = pass;
     await prefs.setString(
       'userCredentials',
@@ -473,4 +485,40 @@ MaterialColor createMaterialColor(Color color) {
     );
   }
   return MaterialColor(color.value, swatch);
+}
+
+int getMilliSecondsTime(dynamic timeInEpoch) {
+  if (timeInEpoch is String) {
+    timeInEpoch = int.parse(timeInEpoch);
+  }
+  if (timeInEpoch.toString().length <= 11) {
+    return timeInEpoch * 1000;
+  } else {
+    return timeInEpoch;
+  }
+}
+
+convertEpochtoTimeAgo(int epoch) {
+  epoch = getMilliSecondsTime(epoch);
+  var date = DateTime.fromMillisecondsSinceEpoch(epoch);
+  var now = DateTime.now();
+  var difference = now.difference(date);
+  var timeAgo = '';
+  if (difference.inSeconds <= 0 ||
+      difference.inSeconds > 0 && difference.inMinutes == 0 ||
+      difference.inMinutes > 0 && difference.inHours == 0 ||
+      difference.inHours > 0 && difference.inDays == 0) {
+    timeAgo = DateFormat('hh:mm a').format(date);
+  } else if (difference.inDays == 1) {
+    timeAgo = 'Yesterday';
+  } else {
+    if (difference.inDays <= 30) {
+      timeAgo = difference.inDays.toString() + ' days ago';
+    } else if (difference.inDays > 30 && difference.inDays <= 365) {
+      timeAgo = (difference.inDays / 30).floor().toString() + ' months ago';
+    } else {
+      timeAgo = (difference.inDays / 365).floor().toString() + ' years ago';
+    }
+  }
+  return timeAgo;
 }

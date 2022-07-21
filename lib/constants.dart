@@ -14,4 +14,4 @@ List<BoxShadow> boxShadow = [
 ];
 
 String webUrl = "https://frontendforever.com/";
-String apiUrl = "https://frontendforever.com/api/api.php";
+String apiUrl = "https://frontendforever.com/api/v3.php";

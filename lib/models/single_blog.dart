@@ -22,7 +22,7 @@ class SingleBlog {
   String content;
 
   factory SingleBlog.fromJson(Map<String, dynamic> json) => SingleBlog(
-        id: json["id"],
+        id: int.parse(json["id"].toString()),
         title: json["title"],
         thumb: List<String>.from(json["thumb"].map((x) => x)),
         keywords: List<String>.from(json["keywords"].map((x) => x)),

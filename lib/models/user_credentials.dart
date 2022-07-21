@@ -8,6 +8,7 @@ class UserCredentials {
     required this.name,
     required this.email,
     required this.role,
+    required this.pro,
     required this.createdAt,
   });
 
@@ -19,6 +20,7 @@ class UserCredentials {
   String name;
   String email;
   String role;
+  bool pro;
   int createdAt;
 
   factory UserCredentials.fromJson(Map<String, dynamic> json) =>
@@ -31,6 +33,7 @@ class UserCredentials {
         name: json["name"],
         email: json["email"],
         role: json["role"],
+        pro: json["pro"] == 1,
         createdAt: json["created_at"],
       );
 
@@ -43,6 +46,7 @@ class UserCredentials {
         "name": name,
         "email": email,
         "role": role,
+        "pro": pro,
         "created_at": createdAt,
       };
 }

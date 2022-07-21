@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/screens/single_book.dart';
-import 'package:frontendforever/types/single_blog.dart';
-import 'package:frontendforever/types/single_book.dart';
+import 'package:frontendforever/books/single_book.dart';
+import 'package:frontendforever/models/single_blog.dart';
+import 'package:frontendforever/models/single_book.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -48,16 +48,34 @@ class _BooksListState extends State<BooksList>
         'page': pageNo.toString(),
       },
     );
+    print(response.body);
+    print(apiUrl +
+        "?mode=getbooks&email=" +
+        c.credentials!.email +
+        "&token=" +
+        c.credentials!.token +
+        "&page=" +
+        pageNo.toString());
+    if (pageNo == 1) {
+      codes = [];
+    }
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
+        if (pageNo == 1) {
+          codes = [];
+        }
         for (var i = 0; i < data['data'].length; i++) {
           if (!codes.any((e) => e.id == data['data'][i]['id'])) {
             codes.add(SingleBook.fromJson(data['data'][i]));
+          } else {
+            codes.removeWhere((e) => e.id == data['data'][i]['id']);
+            codes.add(SingleBook.fromJson(data['data'][i]));
           }
         }
+        codes.sort((b, a) => a.createdAt.compareTo(b.createdAt));
         prefs.setString('booksData', json.encode(codes));
-        if (data['data'].length == 0) {
+        if (data['data'].length != 10) {
           loaded = true;
         }
         await searchIdCard(searchText.text);
@@ -82,21 +100,19 @@ class _BooksListState extends State<BooksList>
       if (myList[i].title.toLowerCase().contains(value.toLowerCase())) {
         tempList.add(myList[i]);
       }
-      if (myList[i].category.toLowerCase() == value.toLowerCase()) {
-        if (tempList.where((e) => e.id == myList[i].id).isEmpty) {
-          tempList.add(myList[i]);
-        }
+    }
+    if (sortBy == "createat") {
+      if (isAscending) {
+        tempList.sort((b, a) => a.createdAt.compareTo(b.createdAt));
+      } else {
+        tempList.sort((b, a) => b.createdAt.compareTo(a.createdAt));
       }
-    }
-    if (sortBy == "title") {
-      tempList.sort((a, b) => a.title.compareTo(b.title));
-    } else if (sortBy == "createat") {
-      tempList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     } else if (sortBy == "downloads") {
-      tempList.sort((a, b) => a.downloads.compareTo(b.downloads));
-    }
-    if (!isAscending) {
-      tempList.reversed.toList();
+      if (isAscending) {
+        tempList.sort((b, a) => a.downloads.compareTo(b.downloads));
+      } else {
+        tempList.sort((b, a) => b.downloads.compareTo(a.downloads));
+      }
     }
     codes = tempList;
     setState(() {});
@@ -107,7 +123,7 @@ class _BooksListState extends State<BooksList>
       minLeadingWidth: 0,
       contentPadding: EdgeInsets.zero,
       leading: sortBy == key
-          ? isAscending
+          ? !isAscending
               ? CachedNetworkImage(
                   imageUrl: webUrl + c.prelogindynamic['assets']['sort_asc'],
                   width: 20,
@@ -141,7 +157,10 @@ class _BooksListState extends State<BooksList>
   void initState() {
     super.initState();
     loadDataFromPrefs();
-    getDataFromAPI();
+    Future.delayed(const Duration(seconds: 1), () async {
+      await getLoginData(context, isBack: false);
+      getDataFromAPI();
+    });
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -158,12 +177,13 @@ class _BooksListState extends State<BooksList>
     final prefs = await SharedPreferences.getInstance();
     var booksData = prefs.getString('booksData') ?? '[]';
     var codesList = json.decode(booksData) as List<dynamic>;
-    setState(() {
-      codes = codesList.map((e) => SingleBook.fromJson(e)).toList();
-    });
+    codes = codesList.map((e) => SingleBook.fromJson(e)).toList();
+    codes.sort((b, a) => a.createdAt.compareTo(b.createdAt));
+    setState(() {});
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -241,7 +261,6 @@ class _BooksListState extends State<BooksList>
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                filterListBox("title", "Book Name"),
                                 filterListBox("downloads", "Download Count"),
                                 filterListBox("createat", "Created Date"),
                               ],
@@ -254,29 +273,37 @@ class _BooksListState extends State<BooksList>
                 ),
               ),
               Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  children: [
-                    for (var i = 0; i < codes.length; i++)
-                      SingleBookItem(
-                        code: codes[i],
-                        searchFunction: searchIdCard,
-                      ),
-                    if (!loaded)
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: codes.isEmpty
-                            ? MediaQuery.of(context).size.height * 0.75
-                            : 30,
-                        child: const Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(),
-                            height: 30,
-                            width: 30,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    pageNo = 1;
+                    codes = [];
+                    setState(() {});
+                    await getDataFromAPI();
+                  },
+                  child: ListView(
+                    controller: _scrollController,
+                    children: [
+                      for (var i = 0; i < codes.length; i++)
+                        SingleBookItem(
+                          code: codes[i],
+                          searchFunction: searchIdCard,
+                        ),
+                      if (!loaded)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: codes.isEmpty
+                              ? MediaQuery.of(context).size.height * 0.75
+                              : 30,
+                          child: const Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 30,
+                              width: 30,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -337,9 +364,7 @@ class _SingleBookItemState extends State<SingleBookItem> {
                       child: Hero(
                         tag: widget.code.thumbnail,
                         child: CachedNetworkImage(
-                          imageUrl: webUrl +
-                              'uploads/images/' +
-                              widget.code.thumbnail,
+                          imageUrl: webUrl + widget.code.thumbnail,
                           fit: BoxFit.cover,
                         ),
                       ),
