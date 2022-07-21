@@ -1,0 +1,58 @@
+import 'package:flutter/material.dart';
+import 'package:frontendforever/controllers/data_controller.dart';
+import 'package:frontendforever/profile/edit_card.dart';
+import 'package:get/get.dart';
+
+class AboutProfile extends StatefulWidget {
+  const AboutProfile({Key? key}) : super(key: key);
+
+  @override
+  State<AboutProfile> createState() => _AboutProfileState();
+}
+
+class _AboutProfileState extends State<AboutProfile> {
+  final dc = Get.put(DataController());
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: const [
+            EditCardWidget(
+              title: "About",
+              value: "",
+              noValue:
+                  "No About data is added. Add your about to show yourself to your profile visitors.",
+              icon: Icons.info_outline,
+            ),
+            SizedBox(height: 10),
+            EditCardWidget(
+              title: "Country",
+              value: "",
+              noValue:
+                  "No Country data is added. Add your country list your profile to the leaderboard.",
+              icon: Icons.location_on_outlined,
+            ),
+            SizedBox(height: 10),
+            EditCardWidget(
+              title: "Skills",
+              value: "",
+              icon: Icons.work_outline,
+              noValue:
+                  "No Skills data is added. Add your skills to open up more job opportunities.",
+            ),
+            SizedBox(height: 10),
+            EditCardWidget(
+              title: "Website",
+              value: "",
+              icon: Icons.public_outlined,
+              noValue:
+                  "No Website data is added. Add your website to get more traffic.",
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
