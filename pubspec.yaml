@@ -60,6 +60,7 @@ dependencies:
   share_plus: ^4.0.10
   comment_box: ^0.0.17
   app_popup_menu: ^1.0.0
+  country_pickers: ^2.0.0
 
 dev_dependencies:
   flutter_test:

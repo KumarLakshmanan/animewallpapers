@@ -43,56 +43,92 @@ class _ProfilePageState extends State<ProfilePage>
       backgroundColor: Color(int.parse(d.prelogin!.theme.primary)),
       body: Column(
         children: <Widget>[
-          Center(
-            child: SizedBox(
-              height: 120,
-              width: 120,
-              child: Stack(
-                clipBehavior: Clip.antiAlias,
-                children: [
-                  Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: CachedNetworkImage(
-                        imageUrl: webUrl +
-                            "api/avatar.php?username=" +
-                            d.credentials!.username,
-                        fit: BoxFit.cover,
-                        height: 120,
-                        width: 120,
-                      ),
-                    ),
-                  ),
-                  if (d.credentials!.pro)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.yellow,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.yellow[900]!,
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
+          Stack(
+            children: [
+              Center(
+                child: SizedBox(
+                  height: 120,
+                  width: 120,
+                  child: Stack(
+                    clipBehavior: Clip.antiAlias,
+                    children: [
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(60),
                           child: CachedNetworkImage(
-                            imageUrl:
-                                webUrl + d.prelogindynamic['assets']['royal'],
-                            fit: BoxFit.contain,
-                            height: 20,
-                            width: 20,
-                            color: Colors.yellow[900],
+                            imageUrl: webUrl +
+                                "api/avatar.php?username=" +
+                                d.credentials!.username,
+                            fit: BoxFit.cover,
+                            height: 120,
+                            width: 120,
                           ),
                         ),
                       ),
-                    ),
-                ],
+                      if (d.credentials!.pro)
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.yellow,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.yellow[900]!,
+                                width: 2,
+                              ),
+                            ),
+                            child: Center(
+                              child: CachedNetworkImage(
+                                imageUrl: webUrl +
+                                    d.prelogindynamic['assets']['royal'],
+                                fit: BoxFit.contain,
+                                height: 20,
+                                width: 20,
+                                color: Colors.yellow[900],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: InkWell(
+                  onTap: () {},
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.edit,
+                        size: 16,
+                        color: Color(
+                          int.parse(
+                            d.prelogin!.theme.bottombaractive,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Edit",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: Color(
+                                int.parse(
+                                  d.prelogin!.theme.bottombaractive,
+                                ),
+                              ),
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           Center(
             child: Text(

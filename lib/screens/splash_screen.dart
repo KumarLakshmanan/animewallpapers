@@ -3,9 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/auth/welcome_screen.dart';
-import 'package:frontendforever/profile/profile.dart';
-import 'package:frontendforever/screens/comments.dart';
-import 'package:frontendforever/screens/feeback.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
@@ -48,25 +45,30 @@ class _SplashScreenState extends State<SplashScreen> {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getString('userCredentials') ?? "";
     if (isLoggedIn.isNotEmpty) {
-      var httpsRes = await http
-          .get(Uri.parse(webUrl + 'prelogin.json?r=' + randomString(5)));
-      print("=============================================");
-      print(webUrl + 'prelogin.json');
-      print("=============================================");
-      if (httpsRes.statusCode == 200) {
-        Map<String, dynamic> jsonData = jsonDecode(httpsRes.body);
-        print(jsonData);
-        prefs.setString("prelogin", json.encode(jsonData));
-        d.prelogin = PreLogin.fromJson(jsonData);
-        d.prelogindynamic = jsonData;
-        await loadData();
+      try {
+        var httpsRes = await http
+            .get(Uri.parse(webUrl + 'prelogin.json?r=' + randomString(5)));
+        print("=============================================");
+        print(webUrl + 'prelogin.json');
+        print("=============================================");
+        if (httpsRes.statusCode == 200) {
+          Map<String, dynamic> jsonData = jsonDecode(httpsRes.body);
+          prefs.setString("prelogin", json.encode(jsonData));
+          d.prelogin = PreLogin.fromJson(jsonData);
+          d.prelogindynamic = jsonData;
+          await loadData();
+        } else {
+          Get.offAll(
+            const SplashScreen(
+              logOut: true,
+            ),
+          );
+        }
         Get.offAll(
-          // const ProfilePage(),
           const MainScreen(),
-          // const FeedbackScreen(),
           transition: Transition.rightToLeft,
         );
-      } else {
+      } catch (e) {
         Get.offAll(
           const SplashScreen(
             logOut: true,

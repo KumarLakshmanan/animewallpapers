@@ -13,10 +13,8 @@ class MainScreenController extends GetxController {
   }
 
   void changePage(int index) {
-    pageViewController.animateToPage(
+    pageViewController.jumpToPage(
       index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
     );
   }
 }

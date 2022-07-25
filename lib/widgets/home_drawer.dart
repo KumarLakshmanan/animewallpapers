@@ -80,8 +80,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
             height: 22,
           ),
           title: const Text('Get Pro Version'),
-          onTap: () {
+          onTap: () async {
             Get.back();
+            await launch(
+              'https://play.google.com/store/apps/details?id=com.frontendforever.pro',
+            );
           },
         ),
         ListTile(
@@ -114,13 +117,18 @@ class _HomeDrawerState extends State<HomeDrawer> {
         ),
         // Donate us
         ListTile(
-          leading: const Icon(
-            Icons.attach_money,
+          leading: Image.asset(
+            'assets/icons/buymecoffee.png',
+            width: 25,
+            height: 25,
             color: Colors.black,
           ),
-          title: const Text('Donate us'),
-          onTap: () {
+          title: const Text('Buy Me a Coffe'),
+          onTap: () async {
             Get.back();
+            await launch(
+              'https://www.buymeacoffee.com/CodingFrontend',
+            );
           },
         ),
         // Rate us

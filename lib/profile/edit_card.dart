@@ -4,17 +4,19 @@ import 'package:get/get.dart';
 
 class EditCardWidget extends StatelessWidget {
   final String title;
-  final String? value;
-  final List<String>? list;
+  final String value;
+  final List<String> list;
   final String noValue;
   final IconData icon;
+  final Function onTap;
   const EditCardWidget({
     Key? key,
     required this.title,
-    this.value,
+    this.value = "",
     required this.icon,
     required this.noValue,
-    this.list,
+    required this.onTap,
+    this.list = const [],
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class EditCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -40,7 +43,9 @@ class EditCardWidget extends StatelessWidget {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  onTap();
+                },
                 child: Row(
                   children: [
                     Icon(
@@ -70,29 +75,41 @@ class EditCardWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          value == ""
-              ? Column(
-                  children: [
-                    Text(
-                      noValue,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.add,
-                          size: 16,
-                          color: Color(
-                            int.parse(
-                              dc.prelogin!.theme.bottombaractive,
+          value == "" && list.isEmpty
+              ? GestureDetector(
+                  onTap: () {
+                    onTap();
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        noValue,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        textAlign: TextAlign.start,
+                      ),
+                      const SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: () {
+                          onTap();
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add,
+                              size: 16,
+                              color: Color(
+                                int.parse(
+                                  dc.prelogin!.theme.bottombaractive,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Text(
-                          "Tap to edit",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            Text(
+                              "Tap to edit",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
                                     color: Color(
                                       int.parse(
                                         dc.prelogin!.theme.bottombaractive,
@@ -100,22 +117,24 @@ class EditCardWidget extends StatelessWidget {
                                     ),
                                     fontWeight: FontWeight.bold,
                                   ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 )
-              : list == null
+              : list.isEmpty
                   ? Text(
-                      value!,
+                      value,
                       style: Theme.of(context).textTheme.bodyMedium,
                     )
                   : Wrap(
                       children: [
-                        for (var i = 0; i < list!.length; i++)
+                        for (var i = 0; i < list.length; i++)
                           Chip(
                             label: Text(
-                              list![i],
+                              list[i],
                               style: const TextStyle(
                                 color: Colors.white,
                               ),

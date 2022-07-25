@@ -31,25 +31,31 @@ class UserCredentials {
   bool pro;
   int createdAt;
 
-  factory UserCredentials.fromJson(Map<String, dynamic> json) =>
-      UserCredentials(
-        token: json["token"],
-        id: int.parse(json["id"].toString()),
-        username: json["username"],
-        photo: json["photo"],
-        password: json["password"],
-        name: json["name"],
-        email: json["email"],
-        about: json["about"] ?? "",
-        country: json["country"] ?? "",
-        skills: json["skills"] == null
-            ? []
-            : List<String>.from(json["skills"].map((x) => x)),
-        website: json["website"] ?? "",
-        role: json["role"],
-        pro: json["pro"] == 1,
-        createdAt: json["created_at"],
-      );
+  factory UserCredentials.fromJson(Map<String, dynamic> json) {
+    List<String> skills = [];
+    for (var i = 0; i < json['skills'].length; i++) {
+      if (json['skills'][i] != null && json['skills'][i].trim() != "") {
+        skills.add(json['skills'][i]);
+      }
+    }
+
+    return UserCredentials(
+      token: json["token"],
+      id: int.parse(json["id"].toString()),
+      username: json["username"],
+      photo: json["photo"],
+      password: json["password"],
+      name: json["name"],
+      email: json["email"],
+      about: json["about"] ?? "",
+      country: json["country"] ?? "",
+      skills: skills,
+      website: json["website"] ?? "",
+      role: json["role"],
+      pro: json["pro"] == 1,
+      createdAt: json["created_at"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "token": token,
@@ -61,7 +67,7 @@ class UserCredentials {
         "email": email,
         "about": about,
         "country": country,
-        "skills": List<dynamic>.from(skills.map((x) => x)),
+        "skills": skills.join(","),
         "website": website,
         "role": role,
         "pro": pro,

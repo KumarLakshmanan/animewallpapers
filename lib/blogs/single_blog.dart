@@ -211,7 +211,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                                   height: 10,
                                 ),
                                 if (isLoading != true)
-                                  VotingsWidget(
+                                  AppLause(
                                     id: widget.book.id.toString(),
                                     type: 'postvote',
                                     liked: jsonData['liked'],

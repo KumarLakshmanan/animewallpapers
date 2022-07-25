@@ -19,7 +19,10 @@ class ActivityProfile extends StatefulWidget {
   State<ActivityProfile> createState() => _ActivityProfileState();
 }
 
-class _ActivityProfileState extends State<ActivityProfile> {
+class _ActivityProfileState extends State<ActivityProfile>
+    with AutomaticKeepAliveClientMixin<ActivityProfile> {
+  @override
+  bool get wantKeepAlive => true;
   final dc = Get.put(DataController());
   List<SingleActivity> activities = [];
   bool loaded = false;
@@ -84,50 +87,56 @@ class _ActivityProfileState extends State<ActivityProfile> {
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
-    return ListView(
-      controller: _scrollController,
-      children: [
-        for (var i = 0; i < activities.length; i++)
-          myListTile(
-            leading: activities[i].thumb,
-            title: activities[i].title,
-            subtitle: activities[i].description,
-            time: activities[i].createdAt,
-          ),
-        if (loaded && activities.isEmpty)
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 10),
-              const Icon(
-                Icons.info_outline,
-                size: 100,
+    return GetBuilder(
+      init: DataController(),
+      builder: (c) {
+        return ListView(
+          controller: _scrollController,
+          children: [
+            for (var i = 0; i < activities.length; i++)
+              myListTile(
+                leading: activities[i].thumb,
+                title: activities[i].title,
+                subtitle: activities[i].description,
+                time: activities[i].createdAt,
               ),
-              const SizedBox(height: 10),
-              Text(
-                "You dont have any recent activites",
-                style: Theme.of(context).textTheme.headline5,
+            if (loaded && activities.isEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 10),
+                  const Icon(
+                    Icons.info_outline,
+                    size: 100,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "You dont have any recent activites",
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  const SizedBox(height: 5),
+                ],
               ),
-              const SizedBox(height: 5),
-            ],
-          ),
-        if (!loaded)
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: activities.isEmpty
-                ? MediaQuery.of(context).size.height * 0.75
-                : 30,
-            child: const Center(
-              child: SizedBox(
-                child: CircularProgressIndicator(),
-                height: 30,
-                width: 30,
+            if (!loaded)
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: activities.isEmpty
+                    ? MediaQuery.of(context).size.height * 0.5
+                    : 30,
+                child: const Center(
+                  child: SizedBox(
+                    child: CircularProgressIndicator(),
+                    height: 30,
+                    width: 30,
+                  ),
+                ),
               ),
-            ),
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 
@@ -138,8 +147,8 @@ class _ActivityProfileState extends State<ActivityProfile> {
     required int time,
   }) {
     return Container(
-      padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(4.0),
+      margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(4),
@@ -162,12 +171,14 @@ class _ActivityProfileState extends State<ActivityProfile> {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
+                const SizedBox(height: 4),
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
+                const SizedBox(height: 8),
                 Text(
-                  DateFormat('dd MMMM yyyy')
+                  DateFormat('dd MMMM yyyy hh:mm a')
                       .format(DateTime.fromMillisecondsSinceEpoch(time)),
                   style: Theme.of(context).textTheme.caption,
                 ),

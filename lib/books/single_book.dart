@@ -111,6 +111,7 @@ class _SingleBookScreenState extends State<SingleBookScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 const SizedBox(height: 16),
                                 Center(

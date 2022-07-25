@@ -143,12 +143,12 @@ class _GetRewardsState extends State<GetRewards> {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  child: !isLoading
+                  child: isLoading
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Text(
-                              "Watch Ad",
+                              "Loading",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
@@ -158,19 +158,21 @@ class _GetRewardsState extends State<GetRewards> {
                             SizedBox(
                               width: 10,
                             ),
-                            Icon(
-                              Icons.movie_outlined,
-                              size: 20,
-                              color: Colors.white,
-                            ),
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
                           ],
                         )
-                      : rewardedAd == null
+                      : rewardedAd != null
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Text(
-                                  "Loading",
+                                  "Watch Ad",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.white,
@@ -180,35 +182,32 @@ class _GetRewardsState extends State<GetRewards> {
                                 SizedBox(
                                   width: 10,
                                 ),
-                                SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                                Icon(
+                                  Icons.movie_outlined,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
                               ],
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text(
-                                  "Loading",
+                              children: [
+                                const Text(
+                                  "Load Ads",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
-                                SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
+                                CachedNetworkImage(
+                                  imageUrl: webUrl +
+                                      dc.prelogindynamic['assets']['load'],
+                                  width: 20,
+                                  color: Colors.white,
+                                  height: 20,
                                 ),
                               ],
                             ),
