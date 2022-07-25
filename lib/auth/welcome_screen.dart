@@ -3,8 +3,8 @@ import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
-import 'package:frontendforever/screens/login_page.dart';
-import 'package:frontendforever/screens/register_page.dart';
+import 'package:frontendforever/auth/login.dart';
+import 'package:frontendforever/auth/register.dart';
 import 'package:frontendforever/widgets/all_widget.dart';
 
 class WelcomeScreen extends StatefulWidget {

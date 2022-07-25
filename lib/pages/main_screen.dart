@@ -96,84 +96,89 @@ class _MainScreenState extends State<MainScreen>
         onSecondaryLongPress: () {
           FocusScope.of(context).unfocus();
         },
-        child: Scaffold(
-          key: mainController.mainScaffoldKey,
-          backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
-          onEndDrawerChanged: (bool open) {
-            if (open) {
-              menuAnimation.forward();
-            } else {
-              menuAnimation.reverse();
-            }
-            setState(() {
-              isOpened = open;
-            });
-          },
-          endDrawer: const Drawer(child: HomeDrawer()),
-          appBar: AppBar(
-            actions: [
-              Container(
-                width: 0,
-              ),
-            ],
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            backgroundColor: Color(int.parse(dc.prelogin!.theme.bottombar)),
-            leading: IconButton(
-              icon: AnimatedIcon(
-                icon: AnimatedIcons.menu_close,
-                color: Colors.white,
-                progress: menuAnimation,
-              ),
-              onPressed: () {
-                setState(() {
-                  mainController.mainScaffoldKey.currentState!.openEndDrawer();
-                });
-              },
-            ),
-          ),
-          body: PageView(
-            onPageChanged: (index) {
-              FocusScope.of(context).unfocus();
-              mainController.changeTabIndex(index);
-            },
-            controller: mainController.pageViewController,
-            children: const [
-              CodesList(),
-              BooksList(),
-              ProfilePage(),
-            ],
-          ),
-          bottomNavigationBar: GetBuilder<MainScreenController>(
-            init: MainScreenController(),
-            builder: (controller) {
-              return CustomBottomBar(
-                selectedIndex: controller.tabIndex,
-                onItemSelected: (index) {
-                  controller.changeTabIndex(index);
-                  controller.changePage(index);
+        child: GetBuilder(
+            init: DataController(),
+            builder: (c) {
+              return Scaffold(
+                key: mainController.mainScaffoldKey,
+                backgroundColor:
+                    Color(int.parse(dc.prelogin!.theme.background)),
+                onEndDrawerChanged: (bool open) {
+                  if (open) {
+                    menuAnimation.forward();
+                  } else {
+                    menuAnimation.reverse();
+                  }
+                  setState(() {
+                    isOpened = open;
+                  });
                 },
-                items: <BottomNavyBarItem>[
-                  for (var i = 0;
-                      i < dc.prelogindynamic['bottombar'].length;
-                      i++)
-                    BottomNavyBarItem(
-                      title: dc.prelogindynamic['bottombar'][i]['title'],
-                      icon: CachedNetworkImage(
-                        imageUrl:
-                            webUrl + dc.prelogindynamic['bottombar'][i]['icon'],
-                        width: 25,
-                        height: 25,
-                        color: controller.tabIndex == i
-                            ? Colors.white
-                            : Colors.white38,
-                      ),
+                endDrawer: const Drawer(child: HomeDrawer()),
+                appBar: AppBar(
+                  actions: [
+                    pointsBuilder(context, dc),
+                  ],
+                  elevation: 0,
+                  automaticallyImplyLeading: false,
+                  backgroundColor:
+                      Color(int.parse(dc.prelogin!.theme.bottombar)),
+                  leading: IconButton(
+                    icon: AnimatedIcon(
+                      icon: AnimatedIcons.menu_close,
+                      color: Colors.white,
+                      progress: menuAnimation,
                     ),
-                ],
+                    onPressed: () {
+                      setState(() {
+                        mainController.mainScaffoldKey.currentState!
+                            .openEndDrawer();
+                      });
+                    },
+                  ),
+                ),
+                body: PageView(
+                  onPageChanged: (index) {
+                    FocusScope.of(context).unfocus();
+                    mainController.changeTabIndex(index);
+                  },
+                  controller: mainController.pageViewController,
+                  children: const [
+                    CodesList(),
+                    BooksList(),
+                    ProfilePage(),
+                  ],
+                ),
+                bottomNavigationBar: GetBuilder<MainScreenController>(
+                  init: MainScreenController(),
+                  builder: (controller) {
+                    return CustomBottomBar(
+                      selectedIndex: controller.tabIndex,
+                      onItemSelected: (index) {
+                        controller.changeTabIndex(index);
+                        controller.changePage(index);
+                      },
+                      items: <BottomNavyBarItem>[
+                        for (var i = 0;
+                            i < dc.prelogindynamic['bottombar'].length;
+                            i++)
+                          BottomNavyBarItem(
+                            title: dc.prelogindynamic['bottombar'][i]['title'],
+                            icon: CachedNetworkImage(
+                              imageUrl: webUrl +
+                                  dc.prelogindynamic['bottombar'][i]['icon'],
+                              width: 25,
+                              height: 25,
+                              color: controller.tabIndex == i
+                                  ? Colors.white
+                                  : Colors.white38,
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
               );
-            },
-          ),
-        ),
+            }),
       ),
     );
   }

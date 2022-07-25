@@ -4,6 +4,7 @@ import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/pages/settings.dart';
 import 'package:frontendforever/screens/feeback.dart';
+import 'package:frontendforever/screens/rewards.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/controllers/theme_controller.dart';
@@ -32,11 +33,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(60),
                 child: CachedNetworkImage(
-                  imageUrl: d.credentials!.photo != ""
-                      ? d.credentials!.photo
-                      : webUrl +
-                          "api/avatar.php?username=" +
-                          d.credentials!.username,
+                  imageUrl: webUrl +
+                      "api/avatar.php?username=" +
+                      d.credentials!.username,
                   fit: BoxFit.cover,
                   height: 60,
                   width: 60,
@@ -86,6 +85,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
           },
         ),
         ListTile(
+          leading: Image.asset(
+            'assets/icons/gem_bw.png',
+            width: 22,
+            height: 22,
+          ),
+          title: const Text('Earn Gems'),
+          onTap: () {
+            Get.back();
+            Get.to(
+              const GetRewards(),
+              transition: Transition.rightToLeft,
+            );
+          },
+        ),
+        ListTile(
           leading: const Icon(
             Icons.person_add,
             color: Colors.black,
@@ -94,7 +108,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           onTap: () {
             Get.back();
             Share.share(
-              'Check out this awesome app called Frontend Forever. It\'s a free app that helps you to create and share code. Download it now from https://play.google.com/store/apps/details?id=com.frontendforever',
+              'Check out this awesome app called Frontend Forever. It\'s a free app that helps you to create and share code. \nAlso you can download more than 100+ pdf books available on this app \n\nDownload it now from https://play.google.com/store/apps/details?id=com.frontendforever',
             );
           },
         ),

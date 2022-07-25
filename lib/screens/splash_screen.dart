@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendforever/auth/welcome_screen.dart';
 import 'package:frontendforever/profile/profile.dart';
 import 'package:frontendforever/screens/comments.dart';
 import 'package:frontendforever/screens/feeback.dart';
@@ -9,8 +10,6 @@ import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/pages/main_screen.dart';
-import 'package:frontendforever/screens/search.dart';
-import 'package:frontendforever/screens/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontendforever/models/prelogin.dart';
@@ -62,8 +61,8 @@ class _SplashScreenState extends State<SplashScreen> {
         d.prelogindynamic = jsonData;
         await loadData();
         Get.offAll(
-          const ProfilePage(),
-          // const MainScreen(),
+          // const ProfilePage(),
+          const MainScreen(),
           // const FeedbackScreen(),
           transition: Transition.rightToLeft,
         );

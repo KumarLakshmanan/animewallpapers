@@ -8,6 +8,7 @@ class SingleBlog {
     required this.username,
     required this.createdAt,
     required this.views,
+    required this.gems,
     required this.content,
   });
 
@@ -19,6 +20,7 @@ class SingleBlog {
   String username;
   int createdAt;
   int views;
+  int gems;
   String content;
 
   factory SingleBlog.fromJson(Map<String, dynamic> json) => SingleBlog(
@@ -30,6 +32,7 @@ class SingleBlog {
         username: json["username"],
         createdAt: json["created_at"],
         views: json["views"],
+        gems: json["gems"] ?? 10,
         content: json["content"],
       );
 
@@ -42,6 +45,7 @@ class SingleBlog {
         "username": username,
         "created_at": createdAt,
         "views": views,
+        "gems": gems,
         "content": content,
       };
 }

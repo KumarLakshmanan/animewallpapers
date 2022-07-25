@@ -41,6 +41,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
               itemBuilder: (context, index) {
                 return PageBuilderWidget(
                   title: dc.prelogindynamic['onboarding'][index]['title'],
+                  description: dc.prelogindynamic['onboarding'][index]
+                      ['description'],
                   imgurl: dc.prelogindynamic['onboarding'][index]['image'],
                 );
               },
@@ -129,8 +131,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                         ),
                         const SizedBox(width: 5),
                         CachedNetworkImage(
-                          imageUrl: webUrl +
-                              dc.prelogindynamic['assets']['next'],
+                          imageUrl:
+                              webUrl + dc.prelogindynamic['assets']['next'],
                           width: 25,
                           color: Color(int.parse(dc.prelogin!.theme.secondary)),
                           height: 25,
@@ -169,10 +171,12 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
 class PageBuilderWidget extends StatelessWidget {
   final String title;
+  final String description;
   final String imgurl;
   PageBuilderWidget({
     Key? key,
     required this.title,
+    required this.description,
     required this.imgurl,
   }) : super(key: key);
   @override
@@ -202,6 +206,18 @@ class PageBuilderWidget extends StatelessWidget {
               imageUrl: webUrl + imgurl,
               height: MediaQuery.of(context).size.height * 0.3,
             ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            description,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

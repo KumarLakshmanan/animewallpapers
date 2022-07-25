@@ -4,15 +4,17 @@ import 'package:get/get.dart';
 
 class EditCardWidget extends StatelessWidget {
   final String title;
-  final String value;
+  final String? value;
+  final List<String>? list;
   final String noValue;
   final IconData icon;
   const EditCardWidget({
     Key? key,
     required this.title,
-    required this.value,
+    this.value,
     required this.icon,
     required this.noValue,
+    this.list,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -103,10 +105,27 @@ class EditCardWidget extends StatelessWidget {
                     ),
                   ],
                 )
-              : Text(
-                  value,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+              : list == null
+                  ? Text(
+                      value!,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    )
+                  : Wrap(
+                      children: [
+                        for (var i = 0; i < list!.length; i++)
+                          Chip(
+                            label: Text(
+                              list![i],
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            backgroundColor: Color(
+                              int.parse(dc.prelogin!.theme.secondary),
+                            ),
+                          ),
+                      ],
+                    )
         ],
       ),
     );

@@ -8,6 +8,7 @@ Widget buildTitle(context) {
   return Container(
     width: MediaQuery.of(context).size.width,
     padding: const EdgeInsets.all(20),
+    margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -18,34 +18,34 @@ class _AboutProfileState extends State<AboutProfile> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          children: const [
+          children: [
             EditCardWidget(
               title: "About",
-              value: "",
+              value: dc.credentials!.about,
               noValue:
                   "No About data is added. Add your about to show yourself to your profile visitors.",
               icon: Icons.info_outline,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             EditCardWidget(
               title: "Country",
-              value: "",
+              value: dc.credentials!.country,
               noValue:
                   "No Country data is added. Add your country list your profile to the leaderboard.",
               icon: Icons.location_on_outlined,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             EditCardWidget(
               title: "Skills",
-              value: "",
+              list: dc.credentials!.skills,
               icon: Icons.work_outline,
               noValue:
                   "No Skills data is added. Add your skills to open up more job opportunities.",
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             EditCardWidget(
               title: "Website",
-              value: "",
+              value: dc.credentials!.website,
               icon: Icons.public_outlined,
               noValue:
                   "No Website data is added. Add your website to get more traffic.",

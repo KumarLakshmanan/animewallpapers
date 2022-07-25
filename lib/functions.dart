@@ -10,6 +10,7 @@ import 'package:frontendforever/notification.dart';
 import 'package:frontendforever/screens/pdf.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:frontendforever/models/single_book.dart';
+import 'package:frontendforever/screens/rewards.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -72,6 +73,41 @@ showAlertDialog(context, text, {lottie = true}) {
         text: 'Close',
         iconData: Icons.cancel_outlined,
         textStyle: TextStyle(color: Colors.grey),
+        iconColor: Colors.grey,
+      ),
+    ],
+  );
+}
+
+showConfirmationDialog(context, text, onTap) {
+  Dialogs.bottomMaterialDialog(
+    color: Colors.white,
+    msg: text,
+    title: 'Confirmation Required',
+    lottieBuilder: Lottie.asset(
+      'assets/json/alert.json',
+      repeat: false,
+      fit: BoxFit.contain,
+    ),
+    context: context,
+    actions: [
+      IconsOutlineButton(
+        onPressed: () {
+          Get.back();
+        },
+        text: 'Close',
+        iconData: Icons.cancel_outlined,
+        textStyle: const TextStyle(color: Colors.grey),
+        iconColor: Colors.grey,
+      ),
+      IconsOutlineButton(
+        onPressed: () {
+          Get.back();
+          onTap();
+        },
+        text: 'Ok',
+        iconData: Icons.check_outlined,
+        textStyle: const TextStyle(color: Colors.grey),
         iconColor: Colors.grey,
       ),
     ],
@@ -153,30 +189,6 @@ logOutDialog(context) {
       ),
     ],
   );
-  // return Get.dialog(
-  //   AlertDialog(
-  //     title: const Text("Confirm"),
-  //     content: const Text("Are you sure you want to logout?"),
-  //     actions: [
-  //       TextButton(
-  //         child: const Text("Yes"),
-  //         onPressed: () {
-  //           Get.offAll(
-  //             const SplashScreen(
-  //               logOut: true,
-  //             ),
-  //           );
-  //         },
-  //       ),
-  //       TextButton(
-  //         child: const Text("No"),
-  //         onPressed: () {
-  //           Get.back();
-  //         },
-  //       )
-  //     ],
-  //   ),
-  // );
 }
 
 loadData() async {
@@ -192,6 +204,7 @@ loadData() async {
   d.prelogin = d.prelogindynamic.isNotEmpty
       ? PreLogin.fromJson(d.prelogindynamic)
       : null;
+  d.gemCount = prefs.getInt('gemCount') ?? 0;
   d.update();
 }
 
@@ -384,7 +397,7 @@ Future downloadBook(SingleBook book, BuildContext context) async {
         if (file.existsSync()) {
           Get.to(
             PdfViewer(
-              file: File('${file.path}/${book.title}.pdf'),
+              file: file,
               title: book.title,
             ),
             transition: Transition.rightToLeft,
@@ -402,7 +415,7 @@ Future downloadBook(SingleBook book, BuildContext context) async {
           await file.writeAsBytes(response.bodyBytes);
           Get.to(
             PdfViewer(
-              file: File('${file.path}/${book.title}.pdf'),
+              file: file,
               title: book.title,
             ),
             transition: Transition.rightToLeft,
@@ -521,4 +534,42 @@ convertEpochtoTimeAgo(int epoch) {
     }
   }
   return timeAgo;
+}
+
+pointsBuilder(context, dc) {
+  return GestureDetector(
+    onTap: () {
+      Get.dialog(
+        const GetRewards(),
+      );
+    },
+    child: Container(
+      width: dc.gemCount > 100 ? 80 : 60,
+      height: 40,
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.2),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              dc.gemCount.toString(),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Image.asset(
+            'assets/icons/gem.png',
+            height: 25,
+            width: 25,
+          ),
+        ],
+      ),
+    ),
+  );
 }

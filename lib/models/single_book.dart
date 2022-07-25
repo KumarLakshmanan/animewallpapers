@@ -9,6 +9,7 @@ class SingleBook {
     required this.pdf,
     required this.downloads,
     required this.content,
+    required this.gems,
     required this.createdAt,
   });
 
@@ -21,6 +22,7 @@ class SingleBook {
   String pdf;
   int downloads;
   String content;
+  int gems;
   int createdAt;
 
   factory SingleBook.fromJson(Map<String, dynamic> json) => SingleBook(
@@ -33,6 +35,7 @@ class SingleBook {
         pdf: json["pdf"],
         downloads: json["downloads"],
         content: json["content"],
+        gems: json["gems"] ?? 10,
         createdAt: json["created_at"],
       );
 
@@ -46,6 +49,7 @@ class SingleBook {
         "pdf": pdf,
         "downloads": downloads,
         "content": content,
+        "gems": gems,
         "created_at": createdAt,
       };
 }

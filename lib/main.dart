@@ -50,31 +50,49 @@ class MyApp extends StatelessWidget {
         primarySwatch: createMaterialColor(const Color(0xFF395B64)),
         textTheme: TextTheme(
           displayLarge: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.displayLarge,
+            textStyle: Theme.of(context).textTheme.displayLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           displayMedium: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.displayMedium,
+            textStyle: Theme.of(context).textTheme.displayMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           displaySmall: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.displaySmall,
+            textStyle: Theme.of(context).textTheme.displaySmall!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           headlineLarge: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.headlineLarge,
+            textStyle: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           headlineMedium: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.headlineMedium,
+            textStyle: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           headlineSmall: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.headlineSmall,
+            textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           titleLarge: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.titleLarge,
+            textStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           titleMedium: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.titleMedium,
+            textStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           titleSmall: GoogleFonts.sourceSansPro(
-            textStyle: Theme.of(context).textTheme.titleSmall,
+            textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           bodyLarge: GoogleFonts.lato(
             textStyle: Theme.of(context).textTheme.bodyLarge,

@@ -54,11 +54,9 @@ class _ProfilePageState extends State<ProfilePage>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(60),
                       child: CachedNetworkImage(
-                        imageUrl: d.credentials!.photo != ""
-                            ? d.credentials!.photo
-                            : webUrl +
-                                "api/avatar.php?username=" +
-                                d.credentials!.username,
+                        imageUrl: webUrl +
+                            "api/avatar.php?username=" +
+                            d.credentials!.username,
                         fit: BoxFit.cover,
                         height: 120,
                         width: 120,
