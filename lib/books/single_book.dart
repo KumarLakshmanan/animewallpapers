@@ -363,6 +363,8 @@ class _SingleBookScreenState extends State<SingleBookScreen> {
                                                 ],
                                               )
                                             : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: const [
                                                   Text(
                                                     "Download",

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/services.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,13 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/theme_controller.dart';
-import 'package:frontendforever/screens/onboarding.dart';
-import 'package:frontendforever/screens/splash_screen.dart';
 import 'package:frontendforever/widgets/all_widget.dart';
 import 'package:neopop/neopop.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:frontendforever/widgets/buttons.dart';
 
 import '../functions.dart';
 
@@ -175,7 +168,6 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20.0),

@@ -163,6 +163,7 @@ class _GetRewardsState extends State<GetRewards> {
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
+                                color: Colors.white,
                               ),
                             )
                           ],
@@ -193,7 +194,7 @@ class _GetRewardsState extends State<GetRewards> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text(
-                                  "Load Ads",
+                                  "Load Ad",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:frontendforever/auth/forgot.dart';
@@ -8,11 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/theme_controller.dart';
 import 'package:frontendforever/widgets/all_widget.dart';
 import 'package:neopop/neopop.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:frontendforever/widgets/buttons.dart';
 
 import '../functions.dart';
 
@@ -71,7 +67,6 @@ class _LoginPageState extends State<LoginPage>
               'regid': regId,
             },
           );
-          print(response.body);
           if (response.statusCode == 200) {
             getLogin(
               response.body,
@@ -85,7 +80,7 @@ class _LoginPageState extends State<LoginPage>
         }
       }
     } catch (error) {
-      print(error);
+      showAlertDialog(context, error.toString());
     }
   }
 

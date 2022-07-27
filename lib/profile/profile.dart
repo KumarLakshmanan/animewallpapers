@@ -103,24 +103,16 @@ class _ProfilePageState extends State<ProfilePage>
                   onTap: () {},
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.edit,
                         size: 16,
-                        color: Color(
-                          int.parse(
-                            d.prelogin!.theme.bottombaractive,
-                          ),
-                        ),
+                        color: Colors.white,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "Edit",
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: Color(
-                                int.parse(
-                                  d.prelogin!.theme.bottombaractive,
-                                ),
-                              ),
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                       ),

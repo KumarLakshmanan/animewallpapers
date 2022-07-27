@@ -53,7 +53,7 @@ class _MainScreenState extends State<MainScreen>
           isOpened = false;
           return false;
         } else {
-          Dialogs.materialDialog(
+          Dialogs.bottomMaterialDialog(
             color: Colors.white,
             msg: 'Are you sure you want to exit?',
             title: 'Exit',

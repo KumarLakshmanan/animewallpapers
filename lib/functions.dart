@@ -276,7 +276,7 @@ getLoginData(BuildContext c, {isBack = true}) async {
 }
 
 showLogoutDialog(BuildContext c, String text) {
-  Dialogs.materialDialog(
+  Dialogs.bottomMaterialDialog(
     barrierDismissible: false,
     context: c,
     lottieBuilder: Lottie.asset(
@@ -290,7 +290,7 @@ showLogoutDialog(BuildContext c, String text) {
       IconsOutlineButton(
         onPressed: () {
           Get.offAll(
-            SplashScreen(
+            const SplashScreen(
               logOut: true,
             ),
             transition: Transition.rightToLeft,

@@ -102,19 +102,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
             );
           },
         ),
-        ListTile(
-          leading: const Icon(
-            Icons.person_add,
-            color: Colors.black,
-          ),
-          title: const Text('Invite Friends'),
-          onTap: () {
-            Get.back();
-            Share.share(
-              'Check out this awesome app called Frontend Forever. It\'s a free app that helps you to create and share code. \nAlso you can download more than 100+ pdf books available on this app \n\nDownload it now from https://play.google.com/store/apps/details?id=com.frontendforever',
-            );
-          },
-        ),
         // Donate us
         ListTile(
           leading: Image.asset(
@@ -128,6 +115,19 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Get.back();
             await launch(
               'https://www.buymeacoffee.com/CodingFrontend',
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.person_add,
+            color: Colors.black,
+          ),
+          title: const Text('Invite Friends'),
+          onTap: () {
+            Get.back();
+            Share.share(
+              d.prelogindynamic['share_link'],
             );
           },
         ),

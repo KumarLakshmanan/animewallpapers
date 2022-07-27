@@ -4,11 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/widgets/dropdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:frontendforever/widgets/all_widget.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:neopop/neopop.dart';
@@ -120,7 +118,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   if (sended == -1) {
                     if (feebackCategory == null) {
                       showAlertDialog(context, 'Please select a category');
-                    } else if (feebackController.text.length == 0) {
+                    } else if (feebackController.text.isEmpty) {
                       showAlertDialog(context, 'Please enter a feeback');
                     }
                     setState(() {
@@ -135,7 +133,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             d.credentials!.username,
                         'email': d.credentials!.email,
                         'message':
-                            feebackCategory! + "\n\n" + feebackController.text,
+                            (feebackCategory ?? "-----------") + "\n\n" + feebackController.text,
                       },
                     );
                     if (response.statusCode == 200) {
@@ -171,7 +169,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     } else {
                       showErrorDialog(context, 'Something went wrong');
                     }
-                  } else {}
+                  }
+                  setState(() {
+                    sended = 0;
+                  });
                 },
                 onTapDown: () => HapticFeedback.vibrate(),
                 child: Padding(
