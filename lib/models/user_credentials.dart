@@ -12,6 +12,10 @@ class UserCredentials {
     required this.skills,
     required this.website,
     required this.role,
+    required this.phone,
+    required this.fname,
+    required this.dob,
+    required this.address,
     required this.pro,
     required this.createdAt,
   });
@@ -28,14 +32,22 @@ class UserCredentials {
   List<String> skills;
   String website;
   String role;
+  String phone;
+  String fname;
+  int dob;
   bool pro;
   int createdAt;
-
+  String address;
   factory UserCredentials.fromJson(Map<String, dynamic> json) {
     List<String> skills = [];
-    for (var i = 0; i < json['skills'].length; i++) {
-      if (json['skills'][i] != null && json['skills'][i].trim() != "") {
-        skills.add(json['skills'][i]);
+    if (json['skills'] != null) {
+      skills = json['skills'].cast<String>();
+    } else {
+      for (var i = 0; i < json['skills'].length; i++) {
+        if (json['skills'][i].runtimeType != Null &&
+            json['skills'][i].trim() != "") {
+          skills.add(json['skills'][i]);
+        }
       }
     }
 
@@ -52,8 +64,12 @@ class UserCredentials {
       skills: skills,
       website: json["website"] ?? "",
       role: json["role"],
+      fname: json["fname"] ?? "",
       pro: json["pro"] == 1,
       createdAt: json["created_at"],
+      dob: json["dob"] ?? 0,
+      phone: json["phone"] ?? "",
+      address: json["address"] ?? "",
     );
   }
 
@@ -70,7 +86,11 @@ class UserCredentials {
         "skills": skills.join(","),
         "website": website,
         "role": role,
-        "pro": pro,
+        "pro": pro ? 1 : 0,
         "created_at": createdAt,
+        "dob": dob,
+        "phone": phone,
+        "fname": fname,
+        "address": address,
       };
 }

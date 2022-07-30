@@ -27,124 +27,126 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Color(int.parse(dc.prelogin!.theme.background)),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: PageView.builder(
-              onPageChanged: (value) {
-                setState(() {
-                  currentIndex = value;
-                });
-              },
-              controller: pageController,
-              itemCount: dc.prelogindynamic['onboarding'].length,
-              itemBuilder: (context, index) {
-                return PageBuilderWidget(
-                  title: dc.prelogindynamic['onboarding'][index]['title'],
-                  description: dc.prelogindynamic['onboarding'][index]
-                      ['description'],
-                  imgurl: dc.prelogindynamic['onboarding'][index]['image'],
-                );
-              },
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: PageView.builder(
+                onPageChanged: (value) {
+                  setState(() {
+                    currentIndex = value;
+                  });
+                },
+                controller: pageController,
+                itemCount: dc.prelogindynamic['onboarding'].length,
+                itemBuilder: (context, index) {
+                  return PageBuilderWidget(
+                    title: dc.prelogindynamic['onboarding'][index]['title'],
+                    description: dc.prelogindynamic['onboarding'][index]
+                        ['description'],
+                    imgurl: dc.prelogindynamic['onboarding'][index]['image'],
+                  );
+                },
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 20,
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 50,
-                  width: 100,
-                  child: MaterialButton(
-                    elevation: 0,
-                    focusElevation: 0,
-                    hoverElevation: 0,
-                    highlightElevation: 0,
-                    onPressed: () {
-                      Get.offAll(
-                        const MainScreen(),
-                        transition: Transition.rightToLeft,
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Skip",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Color(int.parse(dc.prelogin!.theme.secondary)),
-                          ),
-                          textAlign: TextAlign.end,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      dc.prelogindynamic['onboarding'].length,
-                      (index) => buildDot(index: index),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                  width: 100,
-                  child: MaterialButton(
-                    elevation: 0,
-                    focusElevation: 0,
-                    hoverElevation: 0,
-                    highlightElevation: 0,
-                    onPressed: () {
-                      if (currentIndex ==
-                          dc.prelogindynamic['onboarding'].length - 1) {
+            Positioned(
+              bottom: 20,
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 50,
+                    width: 100,
+                    child: MaterialButton(
+                      elevation: 0,
+                      focusElevation: 0,
+                      hoverElevation: 0,
+                      highlightElevation: 0,
+                      onPressed: () {
                         Get.offAll(
                           const MainScreen(),
                           transition: Transition.rightToLeft,
                         );
-                      } else {
-                        pageController.nextPage(
-                          duration: kAnimationDuration,
-                          curve: Curves.fastLinearToSlowEaseIn,
-                        );
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Next",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Color(int.parse(dc.prelogin!.theme.secondary)),
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Skip",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Color(int.parse(dc.prelogin!.theme.secondary)),
+                            ),
+                            textAlign: TextAlign.end,
                           ),
-                          textAlign: TextAlign.end,
-                        ),
-                        const SizedBox(width: 5),
-                        CachedNetworkImage(
-                          imageUrl:
-                              webUrl + dc.prelogindynamic['assets']['next'],
-                          width: 25,
-                          color: Color(int.parse(dc.prelogin!.theme.secondary)),
-                          height: 25,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          )
-        ],
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        dc.prelogindynamic['onboarding'].length,
+                        (index) => buildDot(index: index),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 100,
+                    child: MaterialButton(
+                      elevation: 0,
+                      focusElevation: 0,
+                      hoverElevation: 0,
+                      highlightElevation: 0,
+                      onPressed: () {
+                        if (currentIndex ==
+                            dc.prelogindynamic['onboarding'].length - 1) {
+                          Get.offAll(
+                            const MainScreen(),
+                            transition: Transition.rightToLeft,
+                          );
+                        } else {
+                          pageController.nextPage(
+                            duration: kAnimationDuration,
+                            curve: Curves.fastLinearToSlowEaseIn,
+                          );
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Next",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Color(int.parse(dc.prelogin!.theme.secondary)),
+                            ),
+                            textAlign: TextAlign.end,
+                          ),
+                          const SizedBox(width: 5),
+                          CachedNetworkImage(
+                            imageUrl:
+                                webUrl + dc.prelogindynamic['assets']['next'],
+                            width: 25,
+                            color: Color(int.parse(dc.prelogin!.theme.secondary)),
+                            height: 25,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

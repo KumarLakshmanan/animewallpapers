@@ -9,6 +9,7 @@ import 'package:frontendforever/books/books.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
 import 'package:frontendforever/blogs/blogs.dart';
 import 'package:frontendforever/profile/profile.dart';
+import 'package:frontendforever/screens/getpro.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/constants.dart';
@@ -23,7 +24,8 @@ import '../widgets/bottom_bar.dart';
 import 'package:http/http.dart' as http;
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final bool show;
+  const MainScreen({Key? key, this.show = false}) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -41,6 +43,11 @@ class _MainScreenState extends State<MainScreen>
     loadData();
     menuAnimation = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 450));
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!dc.credentials!.pro && widget.show) {
+        Get.dialog(const GetPro());
+      }
+    });
     super.initState();
   }
 
@@ -50,7 +57,11 @@ class _MainScreenState extends State<MainScreen>
       onWillPop: () async {
         if (isOpened) {
           menuAnimation.reverse();
+          mainController.mainScaffoldKey.currentState!.closeEndDrawer();
           isOpened = false;
+          return false;
+        } else if (mainController.tabIndex != 0) {
+          mainController.changePage(0);
           return false;
         } else {
           Dialogs.bottomMaterialDialog(
@@ -99,83 +110,86 @@ class _MainScreenState extends State<MainScreen>
         child: GetBuilder(
             init: DataController(),
             builder: (c) {
-              return Scaffold(
-                key: mainController.mainScaffoldKey,
-                backgroundColor:
-                    Color(int.parse(dc.prelogin!.theme.background)),
-                onEndDrawerChanged: (bool open) {
-                  if (open) {
-                    menuAnimation.forward();
-                  } else {
-                    menuAnimation.reverse();
-                  }
-                  setState(() {
-                    isOpened = open;
-                  });
-                },
-                endDrawer: const Drawer(child: HomeDrawer()),
-                appBar: AppBar(
-                  actions: [
-                    pointsBuilder(context, dc),
-                  ],
-                  elevation: 0,
-                  automaticallyImplyLeading: false,
+              return SafeArea(
+                child: Scaffold(
+                  key: mainController.mainScaffoldKey,
                   backgroundColor:
-                      Color(int.parse(dc.prelogin!.theme.bottombar)),
-                  leading: IconButton(
-                    icon: AnimatedIcon(
-                      icon: AnimatedIcons.menu_close,
-                      color: Colors.white,
-                      progress: menuAnimation,
+                      Color(int.parse(dc.prelogin!.theme.background)),
+                  onEndDrawerChanged: (bool open) {
+                    if (open) {
+                      menuAnimation.forward();
+                    } else {
+                      menuAnimation.reverse();
+                    }
+                    setState(() {
+                      isOpened = open;
+                    });
+                  },
+                  endDrawer: const Drawer(child: HomeDrawer()),
+                  appBar: AppBar(
+                    actions: [
+                      pointsBuilder(context, dc),
+                    ],
+                    elevation: 0,
+                    automaticallyImplyLeading: false,
+                    backgroundColor:
+                        Color(int.parse(dc.prelogin!.theme.bottombar)),
+                    leading: IconButton(
+                      icon: AnimatedIcon(
+                        icon: AnimatedIcons.menu_close,
+                        color: Colors.white,
+                        progress: menuAnimation,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          mainController.mainScaffoldKey.currentState!
+                              .openEndDrawer();
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        mainController.mainScaffoldKey.currentState!
-                            .openEndDrawer();
-                      });
+                  ),
+                  body: PageView(
+                    onPageChanged: (index) {
+                      FocusScope.of(context).unfocus();
+                      mainController.changeTabIndex(index);
+                    },
+                    controller: mainController.pageViewController,
+                    children: const [
+                      CodesList(),
+                      BooksList(),
+                      ProfilePage(),
+                    ],
+                  ),
+                  bottomNavigationBar: GetBuilder<MainScreenController>(
+                    init: MainScreenController(),
+                    builder: (controller) {
+                      return CustomBottomBar(
+                        selectedIndex: controller.tabIndex,
+                        onItemSelected: (index) {
+                          controller.changeTabIndex(index);
+                          controller.changePage(index);
+                        },
+                        items: <BottomNavyBarItem>[
+                          for (var i = 0;
+                              i < dc.prelogindynamic['bottombar'].length;
+                              i++)
+                            BottomNavyBarItem(
+                              title: dc.prelogindynamic['bottombar'][i]
+                                  ['title'],
+                              icon: CachedNetworkImage(
+                                imageUrl: webUrl +
+                                    dc.prelogindynamic['bottombar'][i]['icon'],
+                                width: 25,
+                                height: 25,
+                                color: controller.tabIndex == i
+                                    ? Colors.white
+                                    : Colors.white38,
+                              ),
+                            ),
+                        ],
+                      );
                     },
                   ),
-                ),
-                body: PageView(
-                  onPageChanged: (index) {
-                    FocusScope.of(context).unfocus();
-                    mainController.changeTabIndex(index);
-                  },
-                  controller: mainController.pageViewController,
-                  children: const [
-                    CodesList(),
-                    BooksList(),
-                    ProfilePage(),
-                  ],
-                ),
-                bottomNavigationBar: GetBuilder<MainScreenController>(
-                  init: MainScreenController(),
-                  builder: (controller) {
-                    return CustomBottomBar(
-                      selectedIndex: controller.tabIndex,
-                      onItemSelected: (index) {
-                        controller.changeTabIndex(index);
-                        controller.changePage(index);
-                      },
-                      items: <BottomNavyBarItem>[
-                        for (var i = 0;
-                            i < dc.prelogindynamic['bottombar'].length;
-                            i++)
-                          BottomNavyBarItem(
-                            title: dc.prelogindynamic['bottombar'][i]['title'],
-                            icon: CachedNetworkImage(
-                              imageUrl: webUrl +
-                                  dc.prelogindynamic['bottombar'][i]['icon'],
-                              width: 25,
-                              height: 25,
-                              color: controller.tabIndex == i
-                                  ? Colors.white
-                                  : Colors.white38,
-                            ),
-                          ),
-                      ],
-                    );
-                  },
                 ),
               );
             }),

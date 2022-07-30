@@ -284,7 +284,7 @@ class _CommentsState extends State<Comments> {
                             ],
                             onSelected: (value) {
                               if (value == "report") {
-                                Dialogs.bottomMaterialDialog(
+                                Dialogs.materialDialog(
                                   context: context,
                                   lottieBuilder: LottieBuilder.asset(
                                     "assets/json/report.json",
@@ -315,7 +315,7 @@ class _CommentsState extends State<Comments> {
                                   ],
                                 );
                               } else if (value == "delete") {
-                                Dialogs.bottomMaterialDialog(
+                                Dialogs.materialDialog(
                                   lottieBuilder: LottieBuilder.asset(
                                     "assets/json/delete.json",
                                     height: 100,

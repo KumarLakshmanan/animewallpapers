@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/profile/about_profile.dart';
 import 'package:frontendforever/profile/activity_profile.dart';
+import 'package:frontendforever/profile/edit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
@@ -41,165 +42,177 @@ class _ProfilePageState extends State<ProfilePage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(int.parse(d.prelogin!.theme.primary)),
-      body: Column(
-        children: <Widget>[
-          Stack(
-            children: [
-              Center(
-                child: SizedBox(
-                  height: 120,
-                  width: 120,
-                  child: Stack(
-                    clipBehavior: Clip.antiAlias,
-                    children: [
-                      Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(60),
-                          child: CachedNetworkImage(
-                            imageUrl: webUrl +
-                                "api/avatar.php?username=" +
-                                d.credentials!.username,
-                            fit: BoxFit.cover,
-                            height: 120,
-                            width: 120,
-                          ),
-                        ),
-                      ),
-                      if (d.credentials!.pro)
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: Colors.yellow,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.yellow[900]!,
-                                width: 2,
-                              ),
-                            ),
-                            child: Center(
-                              child: CachedNetworkImage(
-                                imageUrl: webUrl +
-                                    d.prelogindynamic['assets']['royal'],
-                                fit: BoxFit.contain,
-                                height: 20,
-                                width: 20,
-                                color: Colors.yellow[900],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: InkWell(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.edit,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "Edit",
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Center(
-            child: Text(
-              d.credentials!.name,
-              style: TextStyle(
-                fontFamily: GoogleFonts.nunito().fontFamily,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 5),
-          Center(
-            child: Text(
-              "@" + d.credentials!.username,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            color: Colors.white,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Color(int.parse(d.prelogin!.theme.secondary)),
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Color(int.parse(d.prelogin!.theme.secondary)),
-              indicatorWeight: 3,
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: [
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.person),
-                      SizedBox(width: 5),
-                      Text(
-                        "About",
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.list),
-                      SizedBox(width: 5),
-                      Text(
-                        "Activities",
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Stack(
               children: [
-                Container(
-                  color: const Color(0xFFf4f2f7),
-                  child: const AboutProfile(),
+                Center(
+                  child: SizedBox(
+                    height: 120,
+                    width: 120,
+                    child: Stack(
+                      clipBehavior: Clip.antiAlias,
+                      children: [
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(60),
+                            child: CachedNetworkImage(
+                              imageUrl: webUrl +
+                                  "api/avatar.php?username=" +
+                                  d.credentials!.username,
+                              fit: BoxFit.cover,
+                              height: 120,
+                              width: 120,
+                            ),
+                          ),
+                        ),
+                        if (d.credentials!.pro)
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.yellow,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.yellow[900]!,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Center(
+                                child: CachedNetworkImage(
+                                  imageUrl: webUrl +
+                                      d.prelogindynamic['assets']['royal'],
+                                  fit: BoxFit.contain,
+                                  height: 20,
+                                  width: 20,
+                                  color: Colors.yellow[900],
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
-                Container(
-                  color: const Color(0xFFf4f2f7),
-                  child: const ActivityProfile(),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: InkWell(
+                    onTap: () {
+                      Get.to(
+                        const EditDetails(),
+                        transition: Transition.rightToLeft,
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "Edit",
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+            GetBuilder(
+              init: DataController(),
+              builder: (c) {
+                return Center(
+                  child: Text(
+                    d.credentials!.name,
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.nunito().fontFamily,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                );
+              }
+            ),
+            const SizedBox(height: 5),
+            Center(
+              child: Text(
+                "@" + d.credentials!.username,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              color: Colors.white,
+              child: TabBar(
+                controller: _tabController,
+                labelColor: Color(int.parse(d.prelogin!.theme.secondary)),
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: Color(int.parse(d.prelogin!.theme.secondary)),
+                indicatorWeight: 3,
+                indicatorSize: TabBarIndicatorSize.tab,
+                tabs: [
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.person),
+                        SizedBox(width: 5),
+                        Text(
+                          "About",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.list),
+                        SizedBox(width: 5),
+                        Text(
+                          "Activities",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  Container(
+                    color: const Color(0xFFf4f2f7),
+                    child: const AboutProfile(),
+                  ),
+                  Container(
+                    color: const Color(0xFFf4f2f7),
+                    child: const ActivityProfile(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

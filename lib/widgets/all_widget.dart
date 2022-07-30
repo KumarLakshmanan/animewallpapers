@@ -63,6 +63,7 @@ class EntryField extends StatefulWidget {
   final TextEditingController controller;
   final bool isPassword;
   final bool isEmail;
+  final bool isPhone;
   final Color color;
   final Function? isSubmit;
   const EntryField({
@@ -72,6 +73,7 @@ class EntryField extends StatefulWidget {
     this.isPassword = false,
     this.color = Colors.black,
     this.isEmail = false,
+    this.isPhone = false,
     this.isSubmit,
   }) : super(key: key);
 
@@ -92,11 +94,13 @@ class _EntryFieldState extends State<EntryField> {
     return TextField(
       controller: widget.controller,
       obscureText: isObsure,
-      keyboardType: widget.isEmail
-          ? TextInputType.emailAddress
-          : widget.isPassword
-              ? TextInputType.visiblePassword
-              : TextInputType.text,
+      keyboardType: widget.isPhone
+          ? TextInputType.phone
+          : widget.isEmail
+              ? TextInputType.emailAddress
+              : widget.isPassword
+                  ? TextInputType.visiblePassword
+                  : TextInputType.text,
       onSubmitted: (value) {
         widget.isSubmit!();
       },

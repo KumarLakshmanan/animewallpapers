@@ -373,6 +373,19 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                           imageUrl:
                               webUrl + 'uploads/images/' + widget.code.thumb[0],
                           fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 30,
+                              width: 30,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Center(
+                            child: Icon(
+                              Icons.error,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ),
                       height: 200,
@@ -465,9 +478,16 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.person,
-                          size: 14,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            imageUrl: webUrl +
+                                "api/avatar.php?username=" +
+                                widget.code.username,
+                            fit: BoxFit.cover,
+                            height: 20,
+                            width: 20,
+                          ),
                         ),
                         const SizedBox(
                           width: 5,

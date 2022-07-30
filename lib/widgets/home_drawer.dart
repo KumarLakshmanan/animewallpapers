@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/pages/settings.dart';
-import 'package:frontendforever/screens/feeback.dart';
+import 'package:frontendforever/screens/feedback.dart';
+import 'package:frontendforever/screens/getpro.dart';
 import 'package:frontendforever/screens/rewards.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
@@ -73,20 +74,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
           accountEmail: Text(d.credentials!.email),
         ),
         // Get Pro version
-        ListTile(
-          leading: CachedNetworkImage(
-            imageUrl: webUrl + d.prelogindynamic['assets']['royal'],
-            width: 22,
-            height: 22,
+        if (!d.credentials!.pro)
+          ListTile(
+            leading: CachedNetworkImage(
+              imageUrl: webUrl + d.prelogindynamic['assets']['royal'],
+              width: 22,
+              height: 22,
+            ),
+            title: const Text('Upgrade to VIP'),
+            onTap: () async {
+              Get.off(
+                const GetPro(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
-          title: const Text('Get Pro Version'),
-          onTap: () async {
-            Get.back();
-            await launch(
-              'https://play.google.com/store/apps/details?id=com.frontendforever.pro',
-            );
-          },
-        ),
         ListTile(
           leading: Image.asset(
             'assets/icons/gem_bw.png',

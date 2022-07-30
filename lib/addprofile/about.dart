@@ -126,7 +126,7 @@ class _AddAboutState extends State<AddAbout> {
                         Dialogs.materialDialog(
                           context: context,
                           titleAlign: TextAlign.center,
-                          title: 'About Added',
+                          title: 'About Added Successfully',
                           lottieBuilder: Lottie.asset(
                             'assets/json/success.json',
                             repeat: false,

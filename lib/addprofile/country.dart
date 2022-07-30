@@ -162,7 +162,7 @@ class _AddCountryState extends State<AddCountry> {
                         Dialogs.materialDialog(
                           context: context,
                           titleAlign: TextAlign.center,
-                          title: 'Website added',
+                          title: 'Country Added Successfully',
                           lottieBuilder: Lottie.asset(
                             'assets/json/success.json',
                             repeat: false,

@@ -360,12 +360,25 @@ class _SingleBookItemState extends State<SingleBookItem> {
                       bottomLeft: Radius.circular(10),
                     ),
                     child: SizedBox(
-                      width: 100,
+                      width: 110,
                       child: Hero(
                         tag: widget.code.thumbnail,
                         child: CachedNetworkImage(
                           imageUrl: webUrl + widget.code.thumbnail,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                              height: 30,
+                              width: 30,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Center(
+                            child: Icon(
+                              Icons.error,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ),
                       height: 150,
@@ -385,8 +398,10 @@ class _SingleBookItemState extends State<SingleBookItem> {
                               fontFamily: GoogleFonts.nunito().fontFamily,
                             ),
                             textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           ),
                           Row(

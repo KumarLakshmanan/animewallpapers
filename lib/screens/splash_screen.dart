@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/auth/welcome_screen.dart';
+import 'package:frontendforever/screens/getpro.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/data_controller.dart';
@@ -65,7 +66,9 @@ class _SplashScreenState extends State<SplashScreen> {
           );
         }
         Get.offAll(
-          const MainScreen(),
+          const MainScreen(
+            show: true
+          ),
           transition: Transition.rightToLeft,
         );
       } catch (e) {

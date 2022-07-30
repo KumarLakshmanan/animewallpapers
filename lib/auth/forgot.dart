@@ -49,7 +49,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         if (response.statusCode == 200) {
           var jsonResponse = json.decode(response.body);
           if (jsonResponse['error']['code'] == '#200') {
-            Dialogs.bottomMaterialDialog(
+            Dialogs.materialDialog(
               context: context,
               title: 'Email Sent',
               msg:

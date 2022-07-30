@@ -158,7 +158,7 @@ class _AddSkillsState extends State<AddSkills> {
                         Dialogs.materialDialog(
                           context: context,
                           titleAlign: TextAlign.center,
-                          title: 'Website added',
+                          title: 'Skills Added Successfully',
                           lottieBuilder: Lottie.asset(
                             'assets/json/success.json',
                             repeat: false,
