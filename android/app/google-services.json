@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "508745024176",
-    "project_id": "frontend-forever",
-    "storage_bucket": "frontend-forever.appspot.com"
+    "project_number": "65195937386",
+    "project_id": "termux-commands-ee127",
+    "storage_bucket": "termux-commands-ee127.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:508745024176:android:1010232d389da8946f7175",
+        "mobilesdk_app_id": "1:65195937386:android:bb07f8341618f31e1d0413",
         "android_client_info": {
-          "package_name": "com.frontendforever"
+          "package_name": "com.frontendforever.termux"
         }
       },
       "oauth_client": [
         {
-          "client_id": "508745024176-ogs5b2s6mhsd72aso96gnocmn56jhqh4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.frontendforever",
-            "certificate_hash": "9d16f4df480c460ac1e084be96cda642ebc9647e"
-          }
-        },
-        {
-          "client_id": "508745024176-gnjuvqubcediqvgfk61hstru7u26265o.apps.googleusercontent.com",
+          "client_id": "65195937386-1j96ujo20f3tujcos517a3bc8k91vq67.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBqL7rvoDoPCw0QWoZ_ZGXwpbJPM-NnCMU"
+          "current_key": "AIzaSyAZUA7KqSdWqd1AK6mvVM-z8dMRjETR_qk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "508745024176-gnjuvqubcediqvgfk61hstru7u26265o.apps.googleusercontent.com",
+              "client_id": "65195937386-1j96ujo20f3tujcos517a3bc8k91vq67.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

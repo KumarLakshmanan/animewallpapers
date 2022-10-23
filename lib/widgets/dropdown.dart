@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontendforever/controllers/data_controller.dart';
-import 'package:get/get.dart';
+import '../constants.dart';
 
 class InlineDropDown extends StatefulWidget {
   final List<String> items;
@@ -20,14 +19,13 @@ class InlineDropDown extends StatefulWidget {
 }
 
 class _InlineDropDownState extends State<InlineDropDown> {
-  final dc = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          color: Color(int.parse(dc.prelogin!.theme.primary)).withOpacity(0.1),
+          color: primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(4.0),
           boxShadow: widget.isDark
               ? null

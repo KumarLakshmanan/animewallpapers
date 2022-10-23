@@ -1,51 +1,40 @@
+// {
+//     "id": 14,
+//     "title": "Install FreePhishing",
+//     "images": [
+//         "8_635531e936ad69.67756900.png"
+//     ],
+//     "views": 1,
+//     "created_at": 1666527732000
+// }
 class SingleBlog {
   SingleBlog({
     required this.id,
     required this.title,
-    required this.thumb,
-    required this.keywords,
-    required this.ytlink,
-    required this.username,
+    required this.images,
     required this.createdAt,
     required this.views,
-    required this.gems,
-    required this.content,
   });
 
   int id;
   String title;
-  List<String> thumb;
-  List<String> keywords;
-  List<String> ytlink;
-  String username;
+  List<String> images;
   int createdAt;
   int views;
-  int gems;
-  String content;
 
   factory SingleBlog.fromJson(Map<String, dynamic> json) => SingleBlog(
         id: int.parse(json["id"].toString()),
         title: json["title"],
-        thumb: List<String>.from(json["thumb"].map((x) => x)),
-        keywords: List<String>.from(json["keywords"].map((x) => x)),
-        ytlink: List<String>.from(json["ytlink"].map((x) => x)),
-        username: json["username"],
+        images: List<String>.from(json["images"].map((x) => x)),
         createdAt: json["created_at"],
         views: json["views"],
-        gems: json["gems"] ?? 10,
-        content: json["content"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
-        "thumb": List<dynamic>.from(thumb.map((x) => x)),
-        "keywords": List<dynamic>.from(keywords.map((x) => x)),
-        "ytlink": List<dynamic>.from(ytlink.map((x) => x)),
-        "username": username,
+        "images": List<dynamic>.from(images.map((x) => x)),
         "created_at": createdAt,
         "views": views,
-        "gems": gems,
-        "content": content,
       };
 }

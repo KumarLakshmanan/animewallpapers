@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/data_controller.dart';
+
 import 'package:frontendforever/functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -22,7 +22,9 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final TextEditingController feedbackController = TextEditingController();
-  final d = Get.put(DataController());
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   int sended = -1;
   String? feedbackCategory;
   @override
@@ -43,7 +45,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Submit Feedback'),
-          backgroundColor: Color(int.parse(d.prelogin!.theme.bottombar)),
+          backgroundColor: primaryColor,
         ),
         body: SafeArea(
           child: Stack(
@@ -55,33 +57,63 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
-                      Container(
-                        alignment: Alignment.center,
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4.0),
-                          border: Border.all(
-                            color: Color(int.parse(d.prelogin!.theme.primary)),
-                            width: 1,
+                      TextField(
+                        controller: nameController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: primaryColor,
+                              width: 1,
+                            ),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                          labelText: 'Name',
                         ),
-                        child: DropdownButton(
-                          hint: const Text('Select Category'),
-                          underline: const SizedBox(),
-                          isExpanded: true,
-                          items: d.prelogin!.feedback.map((String category) {
-                            return DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              feedbackCategory = newValue;
-                            });
-                          },
-                          value: feedbackCategory,
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: primaryColor,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                          labelText: 'Email',
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: primaryColor,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                          labelText: 'Phone',
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -92,13 +124,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(int.parse(d.prelogin!.theme.primary)),
+                              color: primaryColor,
                               width: 1,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Color(int.parse(d.prelogin!.theme.primary)),
+                              color: primaryColor,
                               width: 2,
                             ),
                           ),
@@ -114,7 +146,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 bottom: 10,
                 right: 10,
                 child: NeoPopButton(
-                  color: Color(int.parse(d.prelogin!.theme.primary)),
+                  color: primaryColor,
                   onTapUp: () async {
                     if (sended == -1) {
                       if (feedbackCategory == null) {
@@ -129,12 +161,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         Uri.parse(apiUrl),
                         body: {
                           'mode': 'contactMessage',
-                          'name': d.credentials!.name +
-                              ' @' +
-                              d.credentials!.username,
-                          'email': d.credentials!.email,
-                          'message':
-                              (feedbackCategory ?? "-----------") + "\n\n" + feedbackController.text,
+                          'name': nameController.text,
+                          'email': emailController.text,
+                          'phone': phoneController.text,
+                          'message': (feedbackCategory ?? "-----------") +
+                              "\n\n" +
+                              feedbackController.text,
                         },
                       );
                       if (response.statusCode == 200) {
@@ -165,7 +197,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             ],
                           );
                         } else {
-                          showErrorDialog(context, data['error']['description']);
+                          showErrorDialog(
+                              context, data['error']['description']);
                         }
                       } else {
                         showErrorDialog(context, 'Something went wrong');
@@ -177,8 +210,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   },
                   onTapDown: () => HapticFeedback.vibrate(),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                     child: (sended == -1)
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,18 +1,12 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/auth/welcome_screen.dart';
-import 'package:frontendforever/screens/getpro.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/data_controller.dart';
+
 import 'package:frontendforever/pages/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:frontendforever/models/prelogin.dart';
-
-import '../functions.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool logOut;
@@ -23,7 +17,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final d = Get.put(DataController());
+  bool activeConnection = false;
   @override
   void initState() {
     super.initState();
@@ -31,95 +25,124 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future _myFunction() async {
+    setState(() {
+      activeConnection = true;
+    });
     if (widget.logOut) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.clear();
     }
-    if (widget.logOut) {
-      await logout();
+    if (!kIsWeb) {
+      checkUserConnection().then((value) {
+        if (value) {
+          _checkLogin();
+        }
+      });
+    } else {
+      _checkLogin();
     }
-    _checkLogin();
+  }
+
+  Future checkUserConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        setState(() {
+          activeConnection = true;
+        });
+        return true;
+      }
+    } on SocketException catch (_) {
+      setState(() {
+        activeConnection = false;
+      });
+      return false;
+    }
   }
 
   Future _checkLogin() async {
-    if (!kIsWeb) {}
-    final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getString('userCredentials') ?? "";
-    if (isLoggedIn.isNotEmpty) {
-      try {
-        var httpsRes = await http
-            .get(Uri.parse(webUrl + 'prelogin.json?r=' + randomString(5)));
-        print("=============================================");
-        print(webUrl + 'prelogin.json');
-        print("=============================================");
-        if (httpsRes.statusCode == 200) {
-          Map<String, dynamic> jsonData = jsonDecode(httpsRes.body);
-          prefs.setString("prelogin", json.encode(jsonData));
-          d.prelogin = PreLogin.fromJson(jsonData);
-          d.prelogindynamic = jsonData;
-          await loadData();
-        } else {
-          Get.offAll(
-            const SplashScreen(
-              logOut: true,
-            ),
-          );
-        }
-        Get.offAll(
-          const MainScreen(
-            show: true
-          ),
-          transition: Transition.rightToLeft,
-        );
-      } catch (e) {
-        Get.offAll(
-          const SplashScreen(
-            logOut: true,
-          ),
-        );
-      }
-    } else {
-      var httpsRes = await http
-          .get(Uri.parse(webUrl + 'prelogin.json?r=' + randomString(5)));
-      print("=============================================");
-      print(webUrl + 'prelogin.json');
-      print("=============================================");
-      if (httpsRes.statusCode == 200) {
-        Map<String, dynamic> jsonData = jsonDecode(httpsRes.body);
-        prefs.setString("prelogin", json.encode(jsonData));
-        d.prelogin = PreLogin.fromJson(jsonData);
-        d.prelogindynamic = jsonData;
-        Get.offAll(
-          const WelcomeScreen(),
-          transition: Transition.rightToLeft,
-        );
-      } else {
-        Get.offAll(
-          const SplashScreen(
-            logOut: true,
-          ),
-        );
-      }
-    }
+    Future.delayed(const Duration(seconds: 2), () async {
+      Get.offAll(
+        const MainScreen(show: true),
+        transition: Transition.rightToLeft,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(height: 90),
             Image.asset(
               'assets/icons/logo.png',
               width: MediaQuery.of(context).size.width * 0.6,
             ),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(
-              color: Color(0xFF222831),
+            const SizedBox(height: 10),
+            if (!activeConnection)
+              const Text(
+                "No Internet Connection",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Color(0xFF222831),
+                ),
+              ),
+            if (!activeConnection) const SizedBox(height: 20),
+            if (!activeConnection)
+              const Text(
+                "Please check your internet connection and try again",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF28374C),
+                ),
+              ),
+            if (!activeConnection) const SizedBox(height: 20),
+            if (!activeConnection)
+              MaterialButton(
+                onPressed: () {
+                  _myFunction();
+                },
+                child: const Text(
+                  "Retry",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF222831),
+                  ),
+                ),
+              ),
+            const Spacer(),
+            const Text(
+              "Powered by",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF28374C),
+              ),
             ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/icons/icon.png',
+                  height: 30,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  "Frontend Forever",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: const Color(0xFF222831),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

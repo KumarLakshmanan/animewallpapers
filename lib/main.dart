@@ -43,78 +43,78 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Frontend Forever',
+      title: 'Termux Tools & Commands',
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
         primarySwatch: createMaterialColor(const Color(0xFF395B64)),
         textTheme: TextTheme(
-          displayLarge: GoogleFonts.sourceSansPro(
+          displayLarge: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.displayLarge!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          displayMedium: GoogleFonts.sourceSansPro(
+          displayMedium: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.displayMedium!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          displaySmall: GoogleFonts.sourceSansPro(
+          displaySmall: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.displaySmall!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          headlineLarge: GoogleFonts.sourceSansPro(
+          headlineLarge: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.headlineLarge!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          headlineMedium: GoogleFonts.sourceSansPro(
+          headlineMedium: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          headlineSmall: GoogleFonts.sourceSansPro(
+          headlineSmall: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          titleLarge: GoogleFonts.sourceSansPro(
+          titleLarge: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          titleMedium: GoogleFonts.sourceSansPro(
+          titleMedium: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          titleSmall: GoogleFonts.sourceSansPro(
+          titleSmall: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          bodyLarge: GoogleFonts.lato(
+          bodyLarge: GoogleFonts.ubuntuCondensed(
             textStyle: Theme.of(context).textTheme.bodyLarge,
           ),
-          bodyMedium: GoogleFonts.lato(
+          bodyMedium: GoogleFonts.ubuntuCondensed(
             textStyle: Theme.of(context).textTheme.bodyMedium,
           ),
-          bodySmall: GoogleFonts.lato(
+          bodySmall: GoogleFonts.ubuntuCondensed(
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          labelLarge: GoogleFonts.lato(
+          labelLarge: GoogleFonts.ubuntuCondensed(
             textStyle: Theme.of(context).textTheme.labelLarge,
           ),
-          labelMedium: GoogleFonts.lato(
+          labelMedium: GoogleFonts.ubuntuCondensed(
             textStyle: Theme.of(context).textTheme.labelMedium,
           ),
-          labelSmall: GoogleFonts.lato(
+          labelSmall: GoogleFonts.ubuntuCondensed(
             textStyle: Theme.of(context).textTheme.labelSmall,
           ),
         ),
         primaryColor: const Color(0xFF395B64),
-        fontFamily: GoogleFonts.lato().fontFamily,
+        fontFamily: GoogleFonts.ubuntuCondensed().fontFamily,
       ),
     );
   }

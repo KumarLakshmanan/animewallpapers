@@ -6,21 +6,13 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
-import 'package:frontendforever/controllers/data_controller.dart';
+
 import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/screens/comments.dart';
-import 'package:frontendforever/screens/rewards.dart';
-import 'package:frontendforever/screens/tryit.dart';
 import 'package:frontendforever/models/single_blog.dart';
-import 'package:frontendforever/widgets/votings.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'package:material_dialogs/material_dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
-import 'package:neopop/neopop.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class SingleBlogScreen extends StatefulWidget {
   final SingleBlog book;
@@ -31,7 +23,6 @@ class SingleBlogScreen extends StatefulWidget {
 }
 
 class _SingleBlogScreenState extends State<SingleBlogScreen> {
-  final d = Get.put(DataController());
   final commentController = TextEditingController();
   int isDownload = -1;
   bool isLoading = true;
@@ -56,22 +47,17 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
     final response = await http.post(
       Uri.parse(apiUrl),
       body: {
-        "mode": "getsinglepost",
-        "id": widget.book.id.toString(),
-        "token": d.credentials!.token,
-        "email": d.credentials!.email,
-        "username": d.credentials!.username,
+        "mode": "getsinglecourse",
+        "courseid": widget.book.id.toString(),
       },
     );
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
-        jsonData = data['data'];
+        jsonData = data['data'][0];
         setState(() {
           isLoading = false;
         });
-      } else if (data['error']["code"] == '#600') {
-        showLogoutDialog(context, data['error']["message"]);
       } else {
         showErrorDialog(context, data['error']['description']);
       }
@@ -86,600 +72,185 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-        init: AdController(),
-        builder: (adController) {
-          return WillPopScope(
-            onWillPop: () async {
-              if (d.credentials!.pro) {
-                return true;
-              }
-              if (ac.interstitialAd != null) {
-                ac.interstitialAd?.show();
-              }
-              return true;
-            },
-            child: GestureDetector(
-              onTap: () {
-                FocusScope.of(context).requestFocus(FocusNode());
+    return WillPopScope(
+      onWillPop: () async {
+        if (ac.interstitialAd != null) {
+          ac.interstitialAd?.show();
+        }
+        return true;
+      },
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: primaryColor,
+            title: Text(widget.book.title),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                if (ac.interstitialAd != null) {
+                  ac.interstitialAd?.show();
+                } else {
+                  Get.back();
+                }
               },
-              child: GetBuilder(
-                  init: DataController(),
-                  builder: (c) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        actions: [
-                          pointsBuilder(context, d),
-                        ],
-                        backgroundColor:
-                            Color(int.parse(d.prelogin!.theme.primary)),
-                        title: Text(widget.book.title),
-                        leading: IconButton(
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: () {
-                            if (d.credentials!.pro) {
-                              Get.back();
-                            } else {
-                              if (ac.interstitialAd != null) {
-                                ac.interstitialAd?.show();
-                              } else {
-                                Get.back();
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                      body: SafeArea(
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 10,
-                                right: 10,
-                              ),
-                              child: ListView(
-                                physics: const BouncingScrollPhysics(),
-                                children: <Widget>[
-                                  const SizedBox(height: 16),
-                                  for (final item in widget.book.thumb)
-                                    Hero(
-                                      tag: widget.book.thumb,
-                                      child: CachedNetworkImage(
-                                        imageUrl:
-                                            webUrl + 'uploads/images/' + item,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    widget.book.title,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(
-                                          int.parse(d.prelogin!.theme.primary)),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Icon(
-                                        Icons.person,
-                                        size: 14,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        widget.book.username,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        size: 14,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        DateFormat('dd MMMM yyyy').format(
-                                          DateTime.fromMillisecondsSinceEpoch(
-                                            widget.book.createdAt,
-                                          ),
-                                        ),
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  if (isLoading != true)
-                                    AppLause(
-                                      id: widget.book.id.toString(),
-                                      type: 'postvote',
-                                      liked: jsonData['liked'],
-                                      votes: jsonData['votes'],
-                                      username: widget.book.username,
-                                    ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Tags",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(int.parse(
-                                              d.prelogin!.theme.primary)),
-                                        ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Wrap(
-                                    spacing: 2,
-                                    runSpacing: 2,
-                                    children: widget.book.keywords
-                                        .map((keyword) => GestureDetector(
-                                              onTap: () async {},
-                                              child: Chip(
-                                                backgroundColor: Color(
-                                                  int.parse(d
-                                                      .prelogin!.theme.secondary),
-                                                ),
-                                                label: Text(
-                                                  keyword,
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ))
-                                        .toList(),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  if (widget.book.ytlink.isNotEmpty)
-                                    Text(
-                                      "Youtube Video",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline6!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(int.parse(
-                                                d.prelogin!.theme.primary)),
-                                          ),
-                                    ),
-                                  if (widget.book.ytlink.isNotEmpty)
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                  for (final item in widget.book.ytlink)
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.dialog(
-                                          BuildYoutubePlayer(
-                                            controller: d,
-                                            link: item.trim(),
-                                            title: widget.book.title,
-                                          ),
-                                        );
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(8),
-                                          topRight: Radius.circular(8),
-                                        ),
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            bottom: 8.0,
-                                          ),
-                                          height: 200,
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          child: Stack(
-                                            fit: StackFit.expand,
-                                            children: [
-                                              CachedNetworkImage(
-                                                imageUrl:
-                                                    "https://i.ytimg.com/vi/" +
-                                                        item.trim() +
-                                                        "/hqdefault.jpg",
-                                                fit: BoxFit.cover,
-                                              ),
-                                              Positioned.fill(
-                                                child: Center(
-                                                  child: Container(
-                                                    width: 50,
-                                                    height: 50,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.black
-                                                          .withOpacity(0.5),
-                                                      borderRadius:
-                                                          const BorderRadius.all(
-                                                        Radius.circular(30),
-                                                      ),
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons.play_arrow_rounded,
-                                                      size: 28,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  //   BuildYoutubePlayer(link: item.trim()),
-                                  if (!isLoading)
-                                    if (jsonData['content'] != null)
-                                      Text(
-                                        "Description",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6!
-                                            .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: Color(int.parse(
-                                                  d.prelogin!.theme.primary)),
-                                            ),
-                                      ),
-                                  if (!isLoading)
-                                    if (jsonData['content'] != null)
-                                      Html(
-                                        data: jsonData['content'],
-                                      ),
-                                  if (!isLoading)
-                                    if (jsonData['content'] != null)
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                  const SizedBox(
-                                    height: 60,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              left: 0,
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                color: Colors.white,
-                                padding: const EdgeInsets.all(8),
-                                height: 60,
-                                child: isCodeRegistered || d.credentials!.pro
-                                    ? Row(
-                                        children: [
-                                          Expanded(
-                                            child: NeoPopButton(
-                                              color: Color(int.parse(
-                                                  d.prelogin!.theme.primary)),
-                                              onTapUp: () async {
-                                                setState(() {
-                                                  isDownload = 0;
-                                                });
-                                                await downloadCode(
-                                                    widget.book, context);
-                                                setState(() {
-                                                  isDownload = 1;
-                                                });
-                                              },
-                                              onTapDown: () =>
-                                                  HapticFeedback.vibrate(),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 10),
-                                                child: (isDownload == -1)
-                                                    ? Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: const [
-                                                          Text(
-                                                            "Download",
-                                                            style: TextStyle(
-                                                              color: Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight.w600,
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          Icon(
-                                                            Icons.file_download,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ],
-                                                      )
-                                                    : (isDownload == 0)
-                                                        ? Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: const [
-                                                              Text(
-                                                                "Downloading...",
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                                height: 10,
-                                                                child:
-                                                                    CircularProgressIndicator(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  strokeWidth: 2,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          )
-                                                        : Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: const [
-                                                              Text(
-                                                                "Downloaded",
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              Icon(
-                                                                Icons
-                                                                    .download_done,
-                                                                color:
-                                                                    Colors.white,
-                                                              ),
-                                                            ],
-                                                          ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: NeoPopButton(
-                                              color: Color(int.parse(
-                                                  d.prelogin!.theme.primary)),
-                                              onTapUp: () {
-                                                Get.to(
-                                                  TryIt(
-                                                    css: jsonData['css'],
-                                                    html: jsonData['html'],
-                                                    js: jsonData['js'],
-                                                  ),
-                                                  transition:
-                                                      Transition.rightToLeft,
-                                                );
-                                              },
-                                              onTapDown: () =>
-                                                  HapticFeedback.vibrate(),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 10),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: const [
-                                                    Text(
-                                                      "Run",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Icon(
-                                                      Icons.play_arrow,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : NeoPopButton(
-                                        color: Color(
-                                            int.parse(d.prelogin!.theme.primary)),
-                                        onTapUp: () async {
-                                          if (d.gemCount >= widget.book.gems) {
-                                            showConfirmationDialog(
-                                                context,
-                                                "Are you sure you want to get this code for " +
-                                                    widget.book.gems.toString() +
-                                                    " Gems ?", () async {
-                                              d.decreaseGems(widget.book.gems);
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
-                                              final registeredCode =
-                                                  prefs.getString(
-                                                          'registeredCode') ??
-                                                      '[]';
-                                              final registeredCodeList =
-                                                  json.decode(registeredCode)
-                                                      as List<dynamic>;
-                                              registeredCodeList
-                                                  .add(widget.book.id);
-                                              prefs.setString(
-                                                  'registeredCode',
-                                                  json.encode(
-                                                      registeredCodeList));
-                                              setState(() {
-                                                isCodeRegistered = true;
-                                              });
-                                            });
-                                          } else {
-                                            Dialogs.materialDialog(
-                                              color: Colors.white,
-                                              msg: "Not enough gems",
-                                              title: 'Warning',
-                                              lottieBuilder: Lottie.asset(
-                                                'assets/json/alert.json',
-                                                repeat: false,
-                                                fit: BoxFit.contain,
-                                              ),
-                                              context: context,
-                                              titleAlign: TextAlign.center,
-                                              msgAlign: TextAlign.center,
-                                              actions: [
-                                                IconsOutlineButton(
-                                                  onPressed: () {
-                                                    Get.back();
-                                                  },
-                                                  text: 'Close',
-                                                  iconData: Icons.cancel_outlined,
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.grey),
-                                                  iconColor: Colors.grey,
-                                                ),
-                                                IconsOutlineButton(
-                                                  onPressed: () {
-                                                    Get.back();
-                                                    Get.dialog(
-                                                      const GetRewards(),
-                                                    );
-                                                  },
-                                                  text: 'Get Gems',
-                                                  iconData:
-                                                      Icons.attach_money_outlined,
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.grey),
-                                                  iconColor: Colors.grey,
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            CachedNetworkImage(
-                                              imageUrl: webUrl +
-                                                  d.prelogindynamic['assets']
-                                                      ['royal'],
-                                              width: 16,
-                                              height: 16,
-                                              color: Colors.white,
-                                            ),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              "Purchase (" +
-                                                  widget.book.gems.toString() +
-                                                  "gems)",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      floatingActionButton: Padding(
-                        padding: const EdgeInsets.only(bottom: 50.0),
-                        child: FloatingActionButton(
-                          onPressed: () {
-                            Get.dialog(
-                              Comments(
-                                id: widget.book.id.toString(),
-                                type: 'postcomment',
-                              ),
-                            );
-                          },
-                          child: const Icon(Icons.comment),
-                        ),
-                      ),
-                    );
-                  }),
             ),
-          );
-        });
-  }
-}
-
-class BuildYoutubePlayer extends StatelessWidget {
-  final String link;
-  final String title;
-  final DataController controller;
-  const BuildYoutubePlayer(
-      {Key? key,
-      required this.link,
-      required this.title,
-      required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    YoutubePlayerController _controller = YoutubePlayerController(
-      initialVideoId: link,
-      params: const YoutubePlayerParams(
-        showControls: true,
-      ),
-    );
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(int.parse(controller.prelogin!.theme.primary)),
-        title: Text(title.toUpperCase()),
-      ),
-      body: Center(
-        child: YoutubePlayerIFrame(
-          controller: _controller,
+          ),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                  ),
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: <Widget>[
+                      const SizedBox(height: 16),
+                      for (final item in widget.book.images)
+                        Hero(
+                          tag: widget.book.images[0],
+                          child: CachedNetworkImage(
+                            imageUrl: webUrl + 'uploads/images/' + item,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      Text(
+                        widget.book.title,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 14,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            DateFormat('dd MMMM yyyy').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                widget.book.createdAt,
+                              ),
+                            ),
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      if (!isLoading)
+                        Text(
+                          "Description",
+                          style:
+                              Theme.of(context).textTheme.headline6!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryColor,
+                                  ),
+                        ),
+                      if (!isLoading)
+                        Html(
+                          data: jsonData['content'],
+                        ),
+                      if (!isLoading)
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      if (!isLoading)
+                        Text(
+                          "Steps to Follow",
+                          style:
+                              Theme.of(context).textTheme.headline6!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryColor,
+                                  ),
+                        ),
+                      if (!isLoading)
+                        for (final item in jsonData['commands'])
+                          Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.only(
+                                  bottom: 5,
+                                  top: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  boxShadow: boxShadow,
+                                  borderRadius: BorderRadius.circular(2),
+                                  color: primaryColor,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Text(
+                                          "\$. " + item,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: IconButton(
+                                        color: Colors.white,
+                                        icon: const Icon(Icons.copy),
+                                        onPressed: () {
+                                          Clipboard.setData(
+                                            ClipboardData(text: item),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "Copied to Clipboard",
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                      if (!isLoading)
+                        const SizedBox(
+                          height: 10,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

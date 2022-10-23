@@ -1,10 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.frontendforever">
+    package="com.frontendforever.termux">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <application
-        android:label="Frontend Forever"
+        android:label="Termux Tools & Commands"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
