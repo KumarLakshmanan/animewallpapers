@@ -44,6 +44,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            onPressed: () {
+              Get.back();
+            },
+          ),
           title: const Text('Submit Feedback'),
           backgroundColor: primaryColor,
         ),

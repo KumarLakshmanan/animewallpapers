@@ -88,7 +88,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
             backgroundColor: primaryColor,
             title: Text(widget.book.title),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back_ios_new),
               onPressed: () {
                 if (ac.interstitialAd != null) {
                   ac.interstitialAd?.show();
@@ -151,18 +151,6 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      if (!isLoading)
-                        Text(
-                          "Description",
-                          style:
-                              Theme.of(context).textTheme.headline6!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: primaryColor,
-                                  ),
-                        ),
                       if (!isLoading)
                         Html(
                           data: jsonData['content'],
@@ -225,6 +213,10 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                                           Clipboard.setData(
                                             ClipboardData(text: item),
                                           );
+                                          if (ac.interstitialAd != null) {
+                                            ac.interstitialAd?.show();
+                                          }
+                                          ac.loadInterstitialAd();
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(

@@ -8,59 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AdHelper {
   static String get appOpenAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/8828708402';
+      return 'ca-app-pub-1100799750663761/9669008513';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
-    } else {
-      throw UnsupportedError('Unsupported platform');
-    }
-  }
-
-  static String get blogListAds {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/6394116755';
-    } else if (Platform.isIOS) {
-      return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
-    } else {
-      throw UnsupportedError('Unsupported platform');
-    }
-  }
-
-  static String get bookListAds {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/3767953414';
-    } else if (Platform.isIOS) {
-      return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
-    } else {
-      throw UnsupportedError('Unsupported platform');
-    }
-  }
-
-  static String get openBookAds {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/3183545776';
-    } else if (Platform.isIOS) {
-      return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
-    } else {
-      throw UnsupportedError('Unsupported platform');
-    }
-  }
-
-  static String get openCodeAds {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/4151096791';
-    } else if (Platform.isIOS) {
-      return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
-    } else {
-      throw UnsupportedError('Unsupported platform');
-    }
-  }
-
-  static String get runDownloadAds {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/3959525102';
-    } else if (Platform.isIOS) {
-      return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -68,7 +18,7 @@ class AdHelper {
 
   static String get interstitialAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/5372663214';
+      return 'ca-app-pub-1100799750663761/5402460445';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
     } else {
@@ -78,7 +28,7 @@ class AdHelper {
 
   static String get bannerAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/5986906734';
+      return 'ca-app-pub-1100799750663761/2776297105';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
     } else {
@@ -94,9 +44,6 @@ class AdController extends GetxController {
     if (!kIsWeb) {
       final prefs = await SharedPreferences.getInstance();
       int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
-      print("==================================");
-      print("adUnitId: $adUnitId");
-      print("==================================");
       if (adUnitId == 0) {
         InterstitialAd.load(
           adUnitId: AdHelper.interstitialAds,

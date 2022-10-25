@@ -184,7 +184,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                           ),
                         ),
                       ),
-                      height: 200,
+                      height: 150,
                     ),
                     Positioned(
                       top: 0,

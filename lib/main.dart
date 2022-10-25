@@ -31,8 +31,6 @@ void main() async {
     );
     await NotificationService().init();
     await MobileAds.instance.initialize();
-    // MobileAds.instance.updateRequestConfiguration(RequestConfiguration(
-    //     testDeviceIds: ['35885036-e6bf-437c-b4c0-c33001a3ef4c']));
   }
   runApp(const MyApp());
 }
