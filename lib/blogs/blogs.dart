@@ -7,6 +7,7 @@ import 'package:frontendforever/constants.dart';
 
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -111,6 +112,15 @@ class _CodesListState extends State<CodesList>
                     ),
                   ),
                 ),
+              if (!loaded)
+                const Text(
+                  'Loading...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ),
+                ),
             ],
           ),
         ),
@@ -162,29 +172,31 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: Hero(
-                        tag: widget.code.images[0],
-                        child: CachedNetworkImage(
-                          imageUrl: webUrl +
-                              'uploads/images/' +
-                              widget.code.images[0],
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child: SizedBox(
-                              child: CircularProgressIndicator(),
-                              height: 30,
-                              width: 30,
+                      height: 150,
+                      child: PinchZoom(
+                        child: Hero(
+                          tag: widget.code.images[0],
+                          child: CachedNetworkImage(
+                            imageUrl: webUrl +
+                                'uploads/images/' +
+                                widget.code.images[0],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                              child: SizedBox(
+                                child: CircularProgressIndicator(),
+                                height: 30,
+                                width: 30,
+                              ),
                             ),
-                          ),
-                          errorWidget: (context, url, error) => const Center(
-                            child: Icon(
-                              Icons.error,
-                              color: Colors.red,
+                            errorWidget: (context, url, error) => const Center(
+                              child: Icon(
+                                Icons.error,
+                                color: Colors.red,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                      height: 150,
                     ),
                     Positioned(
                       top: 0,

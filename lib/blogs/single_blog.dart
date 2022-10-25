@@ -12,6 +12,7 @@ import 'package:frontendforever/models/single_blog.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SingleBlogScreen extends StatefulWidget {
@@ -206,17 +207,23 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                                     Positioned(
                                       right: 0,
                                       top: 0,
-                                      child: IconButton(
-                                        color: Colors.white,
-                                        icon: const Icon(Icons.copy),
-                                        onPressed: () {
+                                      child: GestureDetector(
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Icon(
+                                            Icons.copy,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        onTap: () {
                                           Clipboard.setData(
                                             ClipboardData(text: item),
                                           );
                                           if (ac.interstitialAd != null) {
                                             ac.interstitialAd?.show();
+                                          } else {
+                                            ac.loadInterstitialAd();
                                           }
-                                          ac.loadInterstitialAd();
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(

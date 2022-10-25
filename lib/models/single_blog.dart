@@ -1,12 +1,3 @@
-// {
-//     "id": 14,
-//     "title": "Install FreePhishing",
-//     "images": [
-//         "8_635531e936ad69.67756900.png"
-//     ],
-//     "views": 1,
-//     "created_at": 1666527732000
-// }
 class SingleBlog {
   SingleBlog({
     required this.id,

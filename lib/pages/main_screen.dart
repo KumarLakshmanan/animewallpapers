@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontendforever/blogs/blogs.dart';
+import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/widgets/home_drawer.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import '../controllers/main_screen_controller.dart';
@@ -23,11 +25,29 @@ class _MainScreenState extends State<MainScreen>
   late AnimationController menuAnimation;
   bool isOpened = false;
   List people = [];
+
+  BannerAd? bannerAd;
   @override
   void initState() {
     menuAnimation = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 450));
     super.initState();
+    BannerAd(
+      adUnitId: AdHelper.bannerAds,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            bannerAd = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
   }
 
   @override
@@ -122,7 +142,20 @@ class _MainScreenState extends State<MainScreen>
                 },
               ),
             ),
-            body: const CodesList(),
+            body: Column(
+              children: [
+                if (bannerAd != null)
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: bannerAd!.size.width.toDouble(),
+                      height: bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: bannerAd!),
+                    ),
+                  ),
+                const Expanded(child: CodesList()),
+              ],
+            ),
           ),
         ),
       ),
