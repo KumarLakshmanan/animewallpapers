@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendforever/functions.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 
@@ -61,12 +62,24 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future _checkLogin() async {
-    Future.delayed(const Duration(seconds: 2), () async {
-      Get.offAll(
-        const MainScreen(show: true),
-        transition: Transition.rightToLeft,
-      );
-    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool("loggedin") ?? false) {
+      Future.delayed(const Duration(seconds: 2), () async {
+        Get.offAll(
+          const MainScreen(show: true),
+          transition: Transition.rightToLeft,
+        );
+      });
+    } else {
+      await getAndroidRegId();
+      prefs.setBool('loggedin', true);
+      Future.delayed(const Duration(seconds: 1), () async {
+        Get.offAll(
+          const MainScreen(show: true),
+          transition: Transition.rightToLeft,
+        );
+      });
+    }
   }
 
   @override

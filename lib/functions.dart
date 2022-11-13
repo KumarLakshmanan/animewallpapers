@@ -220,6 +220,10 @@ Future<String> getAndroidRegId() async {
   if (!kIsWeb) {
     final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
     String? androidRegId = await _firebaseMessaging.getToken();
+    await http.get(
+      Uri.parse(apiUrl + '?mode=saveregid&regid=$androidRegId&version=2'),
+    );
+    print('Android Reg Id: $androidRegId');
     return androidRegId!;
   } else {
     return "";

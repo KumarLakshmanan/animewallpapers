@@ -24,7 +24,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             height: 25,
             color: Colors.black,
           ),
-          title: const Text('Buy Me a Coffe'),
+          title: const Text('Donate Us'),
           onTap: () async {
             Get.back();
             await launch(

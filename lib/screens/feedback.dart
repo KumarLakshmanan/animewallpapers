@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:frontendforever/constants.dart';
@@ -155,10 +156,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   color: primaryColor,
                   onTapUp: () async {
                     if (sended == -1) {
-                      if (feedbackCategory == null) {
-                        showAlertDialog(context, 'Please select a category');
-                      } else if (feedbackController.text.isEmpty) {
+                      if (feedbackController.text.isEmpty) {
                         showAlertDialog(context, 'Please enter a feedback');
+                        return;
                       }
                       setState(() {
                         sended = 0;
@@ -202,6 +202,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               ),
                             ],
                           );
+                          setState(() {
+                            sended = -1;
+                          });
                         } else {
                           showErrorDialog(
                               context, data['error']['description']);

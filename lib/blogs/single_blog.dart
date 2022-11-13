@@ -53,6 +53,9 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
       },
     );
     if (response.statusCode == 200) {
+      print(
+          "http://frontendforever.com/api.php?mode=getsinglecourse&courseid=" +
+              widget.book.id.toString());
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
         jsonData = data['data'][0];
@@ -247,6 +250,15 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                     ],
                   ),
                 ),
+                if (isLoading)
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
               ],
             ),
           ),

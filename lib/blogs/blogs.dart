@@ -42,7 +42,7 @@ class _CodesListState extends State<CodesList>
         'page': pageNo.toString(),
       },
     );
-    print(apiUrl + "?mode=getposts" + "&page=" + pageNo.toString());
+    print(apiUrl + "?mode=getcourses" + "&page=" + pageNo.toString());
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
