@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontendforever/screens/feedback.dart';
+import 'package:frontendforever/screens/payment.dart';
 import 'package:get/get.dart';
 
 import 'package:share_plus/share_plus.dart';
@@ -18,17 +19,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
     return ListView(
       children: <Widget>[
         ListTile(
-          leading: Image.asset(
-            'assets/icons/buymecoffee.png',
-            width: 25,
-            height: 25,
+          // donate
+          leading: const Icon(
+            Icons.favorite,
             color: Colors.black,
           ),
           title: const Text('Donate Us'),
           onTap: () async {
-            Get.back();
-            await launch(
-              'https://www.buymeacoffee.com/CodingFrontend',
+            Get.to(
+              const PaymentScreen(),
+              transition: Transition.rightToLeft,
             );
           },
         ),
