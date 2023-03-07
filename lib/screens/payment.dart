@@ -21,7 +21,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String planDuration = 'month';
   String orderId = "";
   late Razorpay _razorpay;
-  String amount = "1000";
+  String amount = "10";
   @override
   void initState() {
     super.initState();
@@ -34,13 +34,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     required double price,
   }) async {
     var options = {
-      'key': 'rzp_live_OSCH2ay63he2CF',
-      'amount': price * 100,
+      'key': 'rzp_live_TSzq90TowgzetJ',
+      'amount': price * 100 * 80,
       'name': 'Termux Tools & Commands.',
       'description': 'Contribution to Frontend Forever',
       'retry': {'enabled': true, 'max_count': 1},
       'send_sms_hash': true,
-      'timeout': 600,
+      'timeout': 3000,
     };
 
     try {
@@ -138,40 +138,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 45,
-                        child: TextFormField(
-                          initialValue: amount,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(left: 10),
-                            label: const Text(
-                              'Enter Amount to donate',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: primaryColor),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: primaryColor),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: primaryColor),
+                      TextFormField(
+                        initialValue: amount,
+                        decoration: InputDecoration(
+                          label: const Text(
+                            'Enter Dollars to donate',
+                            style: TextStyle(
+                              color: Colors.grey,
                             ),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              amount = value;
-                            });
-                          },
-                          keyboardType: TextInputType.number,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: primaryColor),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: primaryColor),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: primaryColor),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.attach_money,
+                            color: primaryColor,
+                          ),
                         ),
+                        onChanged: (value) {
+                          setState(() {
+                            amount = value;
+                          });
+                        },
+                        keyboardType: TextInputType.number,
                       ),
                       const SizedBox(height: 10),
                       NeoPopButton(
