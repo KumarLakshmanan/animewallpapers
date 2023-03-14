@@ -130,19 +130,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "Your contribution will help us to keep this app alive and add more features in the future.",
+                        "Dear User,\n\nThank you for using our app, 'Termux Tools & Commands'. We are committed to providing you with the best possible user experience and continuously improving our services to meet your needs.\n\nAs you know, maintaining an app requires a significant amount of time and resources. To ensure that we can continue to provide you with the best possible user experience, we are seeking your support through donations.\n\nWe have partnered with Razorpay, a trusted payment gateway, to make it easy for you to make a donation. Your donation, no matter how small, will go a long way in helping us improve the app and add new features that will benefit all users.\n\nTo make a donation, simply enter the amount and click on the \"Donate Now\" button on the payment page. You will be redirected to Razorpay's secure payment portal, and complete the transaction.\n\nWe appreciate your support and would like to thank you in advance for your generous contribution. Every donation, no matter how small, helps us continue to provide the best possible user experience for you and our other users.\n\nThank you for being a valued user of our app.\n\nSincerely,\nTermux Tools & Commands Team",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 50),
                       TextFormField(
                         initialValue: amount,
                         decoration: InputDecoration(
                           label: const Text(
-                            'Enter Dollars to donate',
+                            'Enter Amount (in \$)',
                             style: TextStyle(
                               color: Colors.grey,
                             ),

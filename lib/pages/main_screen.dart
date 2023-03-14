@@ -4,9 +4,9 @@ import 'package:frontendforever/blogs/blogs.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/widgets/home_drawer.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import '../controllers/main_screen_controller.dart';
@@ -31,6 +31,11 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     menuAnimation = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 450));
+    InAppUpdate.checkForUpdate().then((value) {
+      if (value.updateAvailability == UpdateAvailability.updateAvailable) {
+        InAppUpdate.startFlexibleUpdate();
+      }
+    });
     super.initState();
     BannerAd(
       adUnitId: AdHelper.bannerAds,
@@ -54,9 +59,8 @@ class _MainScreenState extends State<MainScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (isOpened) {
-          menuAnimation.reverse();
-          mainController.mainScaffoldKey.currentState!.closeEndDrawer();
+        if (Scaffold.of(context).isDrawerOpen) {
+          Scaffold.of(context).closeDrawer();
           isOpened = false;
           return false;
         } else if (mainController.tabIndex != 0) {
@@ -110,37 +114,10 @@ class _MainScreenState extends State<MainScreen>
           child: Scaffold(
             key: mainController.mainScaffoldKey,
             backgroundColor: backgroundColor,
-            onEndDrawerChanged: (bool open) {
-              if (open) {
-                menuAnimation.forward();
-              } else {
-                menuAnimation.reverse();
-              }
-              setState(() {
-                isOpened = open;
-              });
-            },
-            endDrawer: const Drawer(child: HomeDrawer()),
+            drawer: const Drawer(child: HomeDrawer()),
             appBar: AppBar(
               elevation: 0,
-              actions: const [
-                SizedBox(),
-              ],
-              automaticallyImplyLeading: false,
               backgroundColor: primaryColor,
-              leading: IconButton(
-                icon: AnimatedIcon(
-                  icon: AnimatedIcons.menu_close,
-                  color: Colors.white,
-                  progress: menuAnimation,
-                ),
-                onPressed: () {
-                  setState(() {
-                    mainController.mainScaffoldKey.currentState!
-                        .openEndDrawer();
-                  });
-                },
-              ),
             ),
             body: Column(
               children: [

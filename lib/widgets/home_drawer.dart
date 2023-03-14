@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontendforever/screens/feedback.dart';
+import 'package:frontendforever/screens/pagementpage.dart';
 import 'package:frontendforever/screens/payment.dart';
 import 'package:get/get.dart';
 
@@ -26,6 +27,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Donate Us'),
           onTap: () async {
+            Get.back();
             Get.to(
               const PaymentScreen(),
               transition: Transition.rightToLeft,
