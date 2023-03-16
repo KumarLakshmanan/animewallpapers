@@ -92,9 +92,12 @@ class _SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 90),
-            Image.asset(
-              'assets/icons/logo.png',
-              width: MediaQuery.of(context).size.width * 0.6,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3000),
+              child: Image.asset(
+                'assets/icons/logo.png',
+                width: MediaQuery.of(context).size.width * 0.6,
+              ),
             ),
             const SizedBox(height: 10),
             if (!activeConnection)

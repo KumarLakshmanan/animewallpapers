@@ -21,9 +21,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
       children: <Widget>[
         ListTile(
           // donate
-          leading: const Icon(
-            Icons.favorite,
-            color: Colors.black,
+          leading: Container(
+            height: 20,
+            width: 20,
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/icons/heart.png',
+              height: 20,
+              width: 20,
+              color: Colors.black,
+            ),
           ),
           title: const Text('Donate Us'),
           onTap: () async {
@@ -31,6 +38,28 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Get.to(
               const PaymentScreen(),
               transition: Transition.rightToLeft,
+            );
+          },
+        ),
+        // paypal
+        ListTile(
+          // donate
+          leading: Container(
+            height: 20,
+            width: 20,
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/icons/paypal.png',
+              height: 20,
+              width: 20,
+              color: Colors.black,
+            ),
+          ),
+          title: const Text('Paypal'),
+          onTap: () async {
+            launchUrl(
+              Uri.parse('https://www.paypal.me/lakshmanan02'),
+              mode: LaunchMode.externalApplication,
             );
           },
         ),
