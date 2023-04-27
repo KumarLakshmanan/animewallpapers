@@ -62,11 +62,13 @@ class AdController extends GetxController {
               update();
             },
             onAdFailedToLoad: (err) {
-              print('Failed to load an interstitial ad: ${err.message}');
+              if (kDebugMode) {
+                print('Failed to load an interstitial ad: ${err.message}');
+              }
             },
           ),
         );
-        prefs.setInt("showedInterstitialAds", 1);
+        prefs.setInt("showedInterstitialAds", 2);
       } else {
         prefs.setInt("showedInterstitialAds", adUnitId - 1);
       }

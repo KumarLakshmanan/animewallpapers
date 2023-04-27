@@ -6,6 +6,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
+import 'package:frontendforever/controllers/app_open_ads.dart';
 
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
@@ -29,12 +30,16 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
   bool isCodeRegistered = false;
   Map<String, dynamic> jsonData = {};
   final ac = Get.put(AdController());
+  // late AppLifecycleReactor _appLifecycleReactor;
 
   @override
   void initState() {
     super.initState();
     loadDataFromServer();
     ac.loadInterstitialAd();
+    // AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
+    // _appLifecycleReactor =
+    //     AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
   }
 
   loadDataFromServer() async {

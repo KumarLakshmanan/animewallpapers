@@ -115,7 +115,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                         padding: const EdgeInsets.all(10),
                         child: Image.asset(
-                          "assets/icons/logo.png",
+                          "assets/icons/applogo.png",
                           fit: BoxFit.contain,
                         ),
                       ),

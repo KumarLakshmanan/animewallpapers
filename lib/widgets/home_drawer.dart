@@ -3,6 +3,7 @@ import 'package:frontendforever/screens/feedback.dart';
 import 'package:frontendforever/screens/pagementpage.dart';
 import 'package:frontendforever/screens/payment.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,12 +16,55 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
+  PackageInfo? packageInfo;
+  @override
+  void initState() {
+    super.initState();
+    initPackageInfo();
+  }
+
+  initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
+        UserAccountsDrawerHeader(
+          currentAccountPicture: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image.asset(
+                  "assets/icons/applogo.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          accountName: const Text(
+            "Termux Tools & Commands",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          accountEmail: const Text(
+            "com.frontendforever.termux",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+          ),
+        ),
         ListTile(
-          // donate
           leading: Container(
             height: 20,
             width: 20,
@@ -83,8 +127,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           title: const Text('Rate us'),
           onTap: () async {
-            await launch(
-              'https://play.google.com/store/apps/details?id=com.frontendforever.termux',
+            await launchUrl(
+              Uri.parse(
+                'https://play.google.com/store/apps/details?id=com.frontendforever.termux',
+              ),
+              mode: LaunchMode.externalApplication,
             );
             Get.back();
           },
@@ -104,6 +151,18 @@ class _HomeDrawerState extends State<HomeDrawer> {
             );
           },
         ),
+        const SizedBox(
+          height: 20,
+        ),
+        if (packageInfo != null)
+          Center(
+            child: Text(
+              "v${packageInfo!.version} (${packageInfo!.buildNumber})",
+              style: const TextStyle(
+                fontSize: 12.0,
+              ),
+            ),
+          )
       ],
     );
   }

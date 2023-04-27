@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontendforever/blogs/blogs.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/widgets/home_drawer.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
@@ -25,10 +27,17 @@ class _MainScreenState extends State<MainScreen>
   late AnimationController menuAnimation;
   bool isOpened = false;
   List people = [];
+  final InAppReview inAppReview = InAppReview.instance;
 
   BannerAd? bannerAd;
   @override
   void initState() {
+    init();
+
+    super.initState();
+  }
+
+  init() async {
     menuAnimation = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 450));
     InAppUpdate.checkForUpdate().then((value) {
@@ -36,7 +45,6 @@ class _MainScreenState extends State<MainScreen>
         InAppUpdate.startFlexibleUpdate();
       }
     });
-    super.initState();
     BannerAd(
       adUnitId: AdHelper.bannerAds,
       request: const AdRequest(),
@@ -48,11 +56,16 @@ class _MainScreenState extends State<MainScreen>
           });
         },
         onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
+          if (kDebugMode) {
+            print('Failed to load a banner ad: ${err.message}');
+          }
           ad.dispose();
         },
       ),
     ).load();
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    }
   }
 
   @override
