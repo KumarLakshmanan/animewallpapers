@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:frontendforever/constants.dart';
@@ -8,6 +7,7 @@ import 'package:frontendforever/functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:neopop/neopop.dart';
@@ -222,9 +222,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),
                     child: (sended == -1)
-                        ? Row(
+                        ? const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Text(
                                 "Send feedback",
                                 style: TextStyle(
@@ -242,9 +242,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             ],
                           )
                         : (sended == 0)
-                            ? Row(
+                            ? const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Text(
                                     "Sending...",
                                     style: TextStyle(
@@ -265,9 +265,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   ),
                                 ],
                               )
-                            : Row(
+                            : const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Text(
                                     "Sended",
                                     style: TextStyle(

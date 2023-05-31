@@ -46,7 +46,7 @@ class _InlineDropDownState extends State<InlineDropDown> {
           ),
         ),
         iconSize: 24,
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyMedium,
         onChanged: (String? newValue) {
           widget.onChanged(newValue);
         },
@@ -66,7 +66,7 @@ class _InlineDropDownState extends State<InlineDropDown> {
         items: widget.items.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
-            child: Text(value, style: Theme.of(context).textTheme.bodyText2),
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           );
         }).toList(),
       ),

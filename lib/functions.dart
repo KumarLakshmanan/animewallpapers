@@ -1,25 +1,15 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/notification.dart';
-import 'package:frontendforever/models/single_blog.dart';
-import 'package:frontendforever/models/single_book.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:frontendforever/screens/splash_screen.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:frontendforever/models/prelogin.dart';
-import 'package:frontendforever/models/user_credentials.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 showCallbackDialog(String message, Function onTap,
     {bool barrierDismissible = true, bool showCancel = true}) {
@@ -68,7 +58,7 @@ showAlertDialog(context, text, {lottie = true}) {
         },
         text: 'Close',
         iconData: Icons.cancel_outlined,
-        textStyle: TextStyle(color: Colors.grey),
+        textStyle: const TextStyle(color: Colors.grey),
         iconColor: Colors.grey,
       ),
     ],
@@ -132,7 +122,7 @@ showErrorDialog(context, text, {lottie = true}) {
         },
         text: 'Close',
         iconData: Icons.cancel_outlined,
-        textStyle: TextStyle(color: Colors.grey),
+        textStyle: const TextStyle(color: Colors.grey),
         iconColor: Colors.grey,
       ),
     ],
@@ -141,9 +131,9 @@ showErrorDialog(context, text, {lottie = true}) {
 
 showLoadingDialog() {
   return Get.dialog(
-    AlertDialog(
+    const AlertDialog(
       content: Row(
-        children: const [
+        children: [
           CircularProgressIndicator(),
           SizedBox(width: 20),
           Text("Loading..."),
@@ -188,8 +178,10 @@ logOutDialog(context) {
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message from firebase");
-  print(message.data);
+  if (kDebugMode) {
+    print("Handling a background message from firebase");
+    print(message.data);
+  }
   _messageHandler(message);
 }
 
@@ -223,7 +215,9 @@ Future<String> getAndroidRegId() async {
     await http.get(
       Uri.parse(apiUrl + '?mode=saveregid&regid=$androidRegId&version=2'),
     );
-    print('Android Reg Id: $androidRegId');
+    if (kDebugMode) {
+      print('Android Reg Id: $androidRegId');
+    }
     return androidRegId!;
   } else {
     return "";

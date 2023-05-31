@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontendforever/controllers/theme_controller.dart';
-
-import '../constants.dart';
 
 class EntryField extends StatefulWidget {
   final String title;
@@ -115,8 +112,8 @@ Widget submitButton(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             colors: [
-              Color(0xFF30475E),
-              Color(0xFF30475E).withOpacity(0.8),
+              const Color(0xFF30475E),
+              const Color(0xFF30475E).withOpacity(0.8),
             ]),
       ),
       child: child ??

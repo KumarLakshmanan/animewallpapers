@@ -149,11 +149,11 @@ class _SplashScreenState extends State<SplashScreen> {
                   height: 30,
                 ),
                 const SizedBox(width: 10),
-                Text(
+                const Text(
                   "Frontend Forever",
                   style: TextStyle(
                     fontSize: 16,
-                    color: const Color(0xFF222831),
+                    color: Color(0xFF222831),
                   ),
                 ),
               ],

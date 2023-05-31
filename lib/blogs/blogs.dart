@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/blogs/single_blog.dart';
 import 'package:frontendforever/constants.dart';
+import 'package:frontendforever/controllers/ad_controller.dart';
 
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -34,7 +35,6 @@ class _CodesListState extends State<CodesList>
   final ScrollController _scrollController = ScrollController();
 
   getDataFromAPI() async {
-    final prefs = await SharedPreferences.getInstance();
     var response = await http.post(
       Uri.parse(apiUrl),
       body: {
@@ -42,7 +42,9 @@ class _CodesListState extends State<CodesList>
         'page': pageNo.toString(),
       },
     );
-    print(apiUrl + "?mode=getcourses" + "&page=" + pageNo.toString());
+    if (kDebugMode) {
+      print(apiUrl + "?mode=getcourses" + "&page=" + pageNo.toString());
+    }
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
@@ -138,16 +140,31 @@ class SingleBlogItem extends StatefulWidget {
 }
 
 class _SingleBlogItemState extends State<SingleBlogItem> {
+  final ac = Get.put(AdController());
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
+    return Card(
+      elevation: 3,
+      shadowColor: Colors.black,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: GestureDetector(
-        onTap: () {
-          Get.to(
+        onTap: () async {
+          await Get.to(
             SingleBlogScreen(book: widget.code),
             transition: Transition.rightToLeft,
           );
+          if (ac.interstitialAd != null) {
+            ac.interstitialAd?.show();
+          } else {
+            ac.loadInterstitialAd();
+          }
         },
         child: Container(
           decoration: BoxDecoration(
@@ -259,7 +276,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                   children: [
                     Text(
                       widget.code.title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

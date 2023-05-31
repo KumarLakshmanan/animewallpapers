@@ -42,35 +42,43 @@ class AdController extends GetxController {
 
   loadInterstitialAd() async {
     if (!kIsWeb) {
-      final prefs = await SharedPreferences.getInstance();
-      int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
-      if (adUnitId == 0) {
-        InterstitialAd.load(
-          adUnitId: AdHelper.interstitialAds,
-          request: const AdRequest(),
-          adLoadCallback: InterstitialAdLoadCallback(
-            onAdLoaded: (ad) {
-              ad.fullScreenContentCallback = FullScreenContentCallback(
-                onAdDismissedFullScreenContent: (ad) {
-                  interstitialAd = null;
-                  ad.dispose();
-                  Get.back();
+      if (interstitialAd.runtimeType == Null) {
+        final prefs = await SharedPreferences.getInstance();
+        int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
+        bool isPro = prefs.getBool("isVip") ?? false;
+        print("You are Pro: $isPro");
+        if (adUnitId == 0) {
+          if (!isPro) {
+            InterstitialAd.load(
+              adUnitId: AdHelper.interstitialAds,
+              request: const AdRequest(),
+              adLoadCallback: InterstitialAdLoadCallback(
+                onAdLoaded: (ad) {
+                  ad.fullScreenContentCallback = FullScreenContentCallback(
+                    onAdDismissedFullScreenContent: (ad) {
+                      interstitialAd = null;
+                      ad.dispose();
+                      Get.back();
+                      update();
+                    },
+                  );
+                  interstitialAd = ad;
+                  if (adUnitId == 0) {
+                    prefs.setInt("showedInterstitialAds", 2);
+                  } else {
+                    prefs.setInt("showedInterstitialAds", adUnitId - 1);
+                  }
                   update();
                 },
-              );
-              interstitialAd = ad;
-              update();
-            },
-            onAdFailedToLoad: (err) {
-              if (kDebugMode) {
-                print('Failed to load an interstitial ad: ${err.message}');
-              }
-            },
-          ),
-        );
-        prefs.setInt("showedInterstitialAds", 2);
-      } else {
-        prefs.setInt("showedInterstitialAds", adUnitId - 1);
+                onAdFailedToLoad: (err) {
+                  if (kDebugMode) {
+                    print('Failed to load an interstitial ad: ${err.message}');
+                  }
+                },
+              ),
+            );
+          }
+        }
       }
     } else {
       interstitialAd = null;

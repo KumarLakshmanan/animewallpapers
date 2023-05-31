@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontendforever/screens/feedback.dart';
 import 'package:frontendforever/screens/pagementpage.dart';
-import 'package:frontendforever/screens/payment.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -76,34 +75,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
               color: Colors.black,
             ),
           ),
-          title: const Text('Donate Us'),
+          title: const Text(
+            'Donate Us',
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
           onTap: () async {
             Get.back();
             Get.to(
-              const PaymentScreen(),
+              const PurchasePage(),
               transition: Transition.rightToLeft,
-            );
-          },
-        ),
-        // paypal
-        ListTile(
-          // donate
-          leading: Container(
-            height: 20,
-            width: 20,
-            alignment: Alignment.center,
-            child: Image.asset(
-              'assets/icons/paypal.png',
-              height: 20,
-              width: 20,
-              color: Colors.black,
-            ),
-          ),
-          title: const Text('Paypal'),
-          onTap: () async {
-            launchUrl(
-              Uri.parse('https://www.paypal.me/lakshmanan02'),
-              mode: LaunchMode.externalApplication,
             );
           },
         ),
@@ -112,7 +94,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Icons.person_add,
             color: Colors.black,
           ),
-          title: const Text('Invite Friends'),
+          title: const Text(
+            'Invite Friends',
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
           onTap: () {
             Get.back();
             Share.share(
@@ -125,7 +112,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Icons.star,
             color: Colors.black,
           ),
-          title: const Text('Rate us'),
+          title: const Text(
+            'Rate us',
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
           onTap: () async {
             await launchUrl(
               Uri.parse(
@@ -142,7 +134,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Icons.help,
             color: Colors.black,
           ),
-          title: const Text('Help & Feedback'),
+          title: const Text(
+            'Help & Feedback',
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
           onTap: () {
             Get.back();
             Get.to(

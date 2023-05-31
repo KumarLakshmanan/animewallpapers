@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
-import 'package:frontendforever/controllers/app_open_ads.dart';
-
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:intl/intl.dart';
@@ -37,9 +36,6 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
     super.initState();
     loadDataFromServer();
     ac.loadInterstitialAd();
-    // AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
-    // _appLifecycleReactor =
-    //     AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
   }
 
   loadDataFromServer() async {
@@ -57,9 +53,11 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
       },
     );
     if (response.statusCode == 200) {
-      print(
-          "http://frontendforever.com/api.php?mode=getsinglecourse&courseid=" +
-              widget.book.id.toString());
+      if (kDebugMode) {
+        print(
+            "http://frontendforever.com/api.php?mode=getsinglecourse&courseid=" +
+                widget.book.id.toString());
+      }
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
         jsonData = data['data'][0];
@@ -80,191 +78,172 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (ac.interstitialAd != null) {
-          ac.interstitialAd?.show();
-        }
-        return true;
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: primaryColor,
-            title: Text(widget.book.title),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: () {
-                if (ac.interstitialAd != null) {
-                  ac.interstitialAd?.show();
-                } else {
-                  Get.back();
-                }
-              },
-            ),
-          ),
-          body: SafeArea(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    right: 10,
-                  ),
-                  child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                    children: <Widget>[
-                      const SizedBox(height: 16),
-                      for (final item in widget.book.images)
-                        Hero(
-                          tag: widget.book.images[0],
-                          child: CachedNetworkImage(
-                            imageUrl: webUrl + 'uploads/images/' + item,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.book.title,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: primaryColor,
+          title: Text(widget.book.title),
+        ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 10,
+                  right: 10,
+                ),
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    for (final item in widget.book.images)
+                      Hero(
+                        tag: widget.book.images[0],
+                        child: CachedNetworkImage(
+                          imageUrl: webUrl + 'uploads/images/' + item,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      const SizedBox(
-                        height: 5,
+                    const SizedBox(height: 16),
+                    Text(
+                      widget.book.title,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
                       ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_today,
-                            size: 14,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            DateFormat('dd MMMM yyyy').format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                widget.book.createdAt,
-                              ),
-                            ),
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (!isLoading)
-                        Html(
-                          data: jsonData['content'],
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 14,
                         ),
-                      if (!isLoading)
                         const SizedBox(
-                          height: 10,
+                          width: 5,
                         ),
-                      if (!isLoading)
                         Text(
-                          "Steps to Follow",
-                          style:
-                              Theme.of(context).textTheme.headline6!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: primaryColor,
-                                  ),
-                        ),
-                      if (!isLoading)
-                        for (final item in jsonData['commands'])
-                          Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.only(
-                                  bottom: 5,
-                                  top: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  boxShadow: boxShadow,
-                                  borderRadius: BorderRadius.circular(2),
-                                  color: primaryColor,
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Text(
-                                          "\$. " + item,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: GestureDetector(
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.copy,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(text: item),
-                                          );
-                                          if (ac.interstitialAd != null) {
-                                            ac.interstitialAd?.show();
-                                          } else {
-                                            ac.loadInterstitialAd();
-                                          }
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                "Copied to Clipboard",
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          DateFormat('dd MMMM yyyy').format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                              widget.book.createdAt,
+                            ),
                           ),
-                      if (!isLoading)
-                        const SizedBox(
-                          height: 10,
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
                         ),
-                    ],
+                      ],
+                    ),
+                    if (!isLoading)
+                      Html(
+                        data: jsonData['content'],
+                      ),
+                    if (!isLoading)
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    if (!isLoading)
+                      Text(
+                        "Steps to Follow",
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                      ),
+                    if (!isLoading)
+                      for (final item in jsonData['commands'])
+                        Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.only(
+                                bottom: 5,
+                                top: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                boxShadow: boxShadow,
+                                borderRadius: BorderRadius.circular(2),
+                                color: primaryColor,
+                              ),
+                              child: Stack(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Text(
+                                        "\$. " + item,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: GestureDetector(
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          Icons.copy,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        Clipboard.setData(
+                                          ClipboardData(text: item),
+                                        );
+                                        if (ac.interstitialAd != null) {
+                                          ac.interstitialAd?.show();
+                                        } else {
+                                          ac.loadInterstitialAd();
+                                        }
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Copied to Clipboard",
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                    if (!isLoading)
+                      const SizedBox(
+                        height: 10,
+                      ),
+                  ],
+                ),
+              ),
+              if (isLoading)
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
                   ),
                 ),
-                if (isLoading)
-                  Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: Colors.black.withOpacity(0.5),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
