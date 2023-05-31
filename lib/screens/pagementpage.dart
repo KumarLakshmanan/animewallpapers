@@ -1,7 +1,3 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 import 'dart:io';
 
@@ -47,6 +43,7 @@ class _PurchasePageState extends State<PurchasePage> {
   bool _loading = true;
   String? _queryProductError;
   String planDuration = 'gold_membership';
+  bool alreadyPaid = false;
   @override
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
@@ -65,6 +62,8 @@ class _PurchasePageState extends State<PurchasePage> {
   }
 
   Future<void> initStoreInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    alreadyPaid = prefs.getBool('isVip') ?? false;
     final bool isAvailable = await _inAppPurchase.isAvailable();
     if (!isAvailable) {
       setState(() {
@@ -143,13 +142,11 @@ class _PurchasePageState extends State<PurchasePage> {
         decoration: BoxDecoration(
           border: planType == planDuration
               ? Border.all(
-                  color: primaryColor,
+                  color: Colors.white,
                   width: 2,
                 )
               : null,
-          color: planType == planDuration
-              ? primaryColor.withOpacity(0.1)
-              : primaryColor.withOpacity(0.05),
+          color: const Color(0xFF444857),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -158,9 +155,9 @@ class _PurchasePageState extends State<PurchasePage> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: const BorderRadius.only(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10),
                   ),
@@ -168,8 +165,8 @@ class _PurchasePageState extends State<PurchasePage> {
                 child: Center(
                   child: Text(
                     plan,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: primaryColor,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -185,6 +182,7 @@ class _PurchasePageState extends State<PurchasePage> {
                   Text(
                     title,
                     style: const TextStyle(
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -265,7 +263,7 @@ class _PurchasePageState extends State<PurchasePage> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -273,7 +271,7 @@ class _PurchasePageState extends State<PurchasePage> {
                       "Get access to all of the features of the app without ads. And unlock some more private tools.",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.blueGrey,
+                        color: Colors.grey,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -282,7 +280,7 @@ class _PurchasePageState extends State<PurchasePage> {
                       children: <Widget>[
                         buildDivider(),
                         Container(
-                          color: secondaryColor,
+                          color: const Color(0xFF444857),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
                             vertical: 5,
@@ -333,8 +331,6 @@ class _PurchasePageState extends State<PurchasePage> {
                           }));
                           final GooglePlayPurchaseDetails? oldSubscription =
                               _getOldSubscription(productDetails, purchases);
-                          print(oldSubscription);
-                          print(purchases);
                           purchaseParam = GooglePlayPurchaseParam(
                             productDetails: productDetails,
                             changeSubscriptionParam: (oldSubscription != null)
@@ -355,7 +351,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
                           child: const Text(
-                            "Donate Us",
+                            "Buy Now",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -396,9 +392,21 @@ class _PurchasePageState extends State<PurchasePage> {
       appBar: AppBar(
         title: const Text('Donate Us'),
       ),
-      body: Stack(
-        children: stack,
-      ),
+      backgroundColor: secondaryColor,
+      body: !alreadyPaid
+          ? const Center(
+              child: Text(
+                "You are already a VIP member of the app.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            )
+          : Stack(
+              children: stack,
+            ),
     );
   }
 

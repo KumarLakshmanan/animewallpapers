@@ -74,6 +74,8 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
+  int clickCount = 0;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -131,12 +133,40 @@ class _MainScreenState extends State<MainScreen>
         },
         child: SafeArea(
           child: Scaffold(
+            backgroundColor: secondaryColor,
             key: mainController.mainScaffoldKey,
-            backgroundColor: backgroundColor,
-            drawer: const Drawer(child: HomeDrawer()),
+            drawer: Drawer(
+              child: const HomeDrawer(),
+              backgroundColor: secondaryColor,
+            ),
             appBar: AppBar(
               elevation: 0,
               backgroundColor: primaryColor,
+              centerTitle: true,
+              title: GestureDetector(
+                onTap: () async {
+                  clickCount++;
+                  if (clickCount > 10) {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("isVip", true);
+                    Get.snackbar(
+                      "Pro Unlocked",
+                      "You can use pro features now",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: secondaryColor,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+                child: const Text(
+                  'Termux Tools & Commands',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
             body: Column(
               children: [

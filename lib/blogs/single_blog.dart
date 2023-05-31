@@ -35,7 +35,6 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
   void initState() {
     super.initState();
     loadDataFromServer();
-    ac.loadInterstitialAd();
   }
 
   loadDataFromServer() async {
@@ -83,6 +82,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Scaffold(
+        backgroundColor: secondaryColor,
         appBar: AppBar(
           backgroundColor: primaryColor,
           title: Text(widget.book.title),
@@ -110,10 +110,10 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                     const SizedBox(height: 16),
                     Text(
                       widget.book.title,
-                      style: TextStyle(
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: primaryColor,
                       ),
                     ),
                     const SizedBox(
@@ -123,6 +123,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                       children: [
                         const Icon(
                           Icons.calendar_today,
+                          color: Colors.white,
                           size: 14,
                         ),
                         const SizedBox(
@@ -136,13 +137,20 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           ),
                           style: const TextStyle(
                             fontSize: 14,
+                            color: Colors.white,
                           ),
                         ),
                       ],
                     ),
                     if (!isLoading)
                       Html(
-                        data: jsonData['content'],
+                        data: retunHtml(jsonData['content']),
+                        style: {
+                          "body": Style(
+                            fontSize: FontSize(16),
+                            color: Colors.grey[300],
+                          ),
+                        },
                       ),
                     if (!isLoading)
                       const SizedBox(
@@ -153,79 +161,80 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                         "Steps to Follow",
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: primaryColor,
+                              color: Colors.white,
                             ),
                       ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     if (!isLoading)
                       for (final item in jsonData['commands'])
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(
-                                bottom: 5,
-                                top: 5,
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: item),
+                            );
+                            Get.snackbar(
+                              "Copied",
+                              "Command copied to clipboard",
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: secondaryColor,
+                              colorText: Colors.white,
+                            );
+                            if (ac.interstitialAd != null) {
+                              ac.interstitialAd?.show();
+                            } else {
+                              ac.loadInterstitialAd();
+                            }
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 5,
                               ),
-                              decoration: BoxDecoration(
-                                boxShadow: boxShadow,
-                                borderRadius: BorderRadius.circular(2),
-                                color: primaryColor,
-                              ),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Text(
-                                        "\$. " + item,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.only(
+                                  bottom: 5,
+                                  top: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  color: primaryColor,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Text(
+                                          "\$. " + item,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: GestureDetector(
-                                      child: const Padding(
+                                    const Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Icon(
                                           Icons.copy,
                                           color: Colors.white,
                                         ),
                                       ),
-                                      onTap: () {
-                                        Clipboard.setData(
-                                          ClipboardData(text: item),
-                                        );
-                                        if (ac.interstitialAd != null) {
-                                          ac.interstitialAd?.show();
-                                        } else {
-                                          ac.loadInterstitialAd();
-                                        }
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Copied to Clipboard",
-                                            ),
-                                          ),
-                                        );
-                                      },
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                     if (!isLoading)
                       const SizedBox(

@@ -1,165 +1,84 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/functions.dart';
-import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
-
 import 'package:frontendforever/pages/main_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
-  final bool logOut;
-  const SplashScreen({Key? key, this.logOut = false}) : super(key: key);
-
+  const SplashScreen({
+    Key? key,
+  }) : super(key: key);
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  bool activeConnection = false;
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _myFunction();
-  }
-
-  Future _myFunction() async {
-    setState(() {
-      activeConnection = true;
-    });
-    if (widget.logOut) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.clear();
-    }
-    if (!kIsWeb) {
-      checkUserConnection().then((value) {
-        if (value) {
-          _checkLogin();
-        }
-      });
-    } else {
-      _checkLogin();
-    }
-  }
-
-  Future checkUserConnection() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          activeConnection = true;
-        });
-        return true;
-      }
-    } on SocketException catch (_) {
-      setState(() {
-        activeConnection = false;
-      });
-      return false;
-    }
+    _checkLogin();
   }
 
   Future _checkLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool("loggedin") ?? false) {
-      Future.delayed(const Duration(seconds: 2), () async {
-        Get.offAll(
-          const MainScreen(show: true),
-          transition: Transition.rightToLeft,
-        );
-      });
-    } else {
-      await getAndroidRegId();
-      prefs.setBool('loggedin', true);
-      Future.delayed(const Duration(seconds: 1), () async {
-        Get.offAll(
-          const MainScreen(show: true),
-          transition: Transition.rightToLeft,
-        );
-      });
-    }
+    await Future.delayed(const Duration(milliseconds: 2000));
+    Get.offAll(
+      () => const MainScreen(),
+      transition: Transition.rightToLeft,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: primaryColor,
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        elevation: 0,
+      ),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 90),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(3000),
-              child: Image.asset(
-                'assets/icons/applogo.png',
-                width: MediaQuery.of(context).size.width * 0.6,
+        child: Padding(
+          padding: const EdgeInsets.all(50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3000),
+                child: Image.asset(
+                  'assets/icons/logo_nobg.png',
+                  color: Colors.white,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            if (!activeConnection)
+              const SizedBox(
+                height: 50,
+              ),
               const Text(
-                "No Internet Connection",
+                "Termux Tools & Commands",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Color(0xFF222831),
+                  color: Colors.white,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
-            if (!activeConnection) const SizedBox(height: 20),
-            if (!activeConnection)
+              const SizedBox(
+                height: 10,
+              ),
               const Text(
-                "Please check your internet connection and try again",
+                "Termux is a free and open-source terminal emulator for Android which allows for running a Linux environment on an Android device.",
                 style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF28374C),
+                  fontSize: 12,
+                  color: Colors.white,
                 ),
+                textAlign: TextAlign.center,
               ),
-            if (!activeConnection) const SizedBox(height: 20),
-            if (!activeConnection)
-              MaterialButton(
-                onPressed: () {
-                  _myFunction();
-                },
-                child: const Text(
-                  "Retry",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF222831),
-                  ),
-                ),
-              ),
-            const Spacer(),
-            const Text(
-              "Powered by",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF28374C),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/icons/icon.png',
-                  height: 30,
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  "Frontend Forever",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF222831),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -9,7 +9,7 @@ import 'package:frontendforever/controllers/ad_controller.dart';
 
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
-import 'package:pinch_zoom/pinch_zoom.dart';
+import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -54,7 +54,9 @@ class _CodesListState extends State<CodesList>
         for (var i = 0; i < data['data'].length; i++) {
           codes.add(SingleBlog.fromJson(data['data'][i]));
         }
-        loaded = true;
+        if (data['data'].length < 10) {
+          loaded = true;
+        }
         setState(() {});
       } else {
         showErrorDialog(context, data['error']['description']);
@@ -84,47 +86,22 @@ class _CodesListState extends State<CodesList>
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-        body: RefreshIndicator(
-          onRefresh: () async {
-            pageNo = 1;
-            codes = [];
-            setState(() {});
-            await getDataFromAPI();
-          },
-          child: ListView(
-            controller: _scrollController,
-            children: [
-              for (var i = 0; i < codes.length; i++)
-                SingleBlogItem(
-                  code: codes[i],
-                ),
-              if (!loaded)
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: codes.isEmpty
-                      ? MediaQuery.of(context).size.height * 0.75
-                      : 30,
-                  child: const Center(
-                    child: SizedBox(
-                      child: CircularProgressIndicator(),
-                      height: 30,
-                      width: 30,
-                    ),
-                  ),
-                ),
-              if (!loaded)
-                const Text(
-                  'Loading...',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                  ),
-                ),
-            ],
-          ),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          pageNo = 1;
+          codes = [];
+          setState(() {});
+          await getDataFromAPI();
+        },
+        child: ListView(
+          controller: _scrollController,
+          children: [
+            for (var i = 0; i < codes.length; i++)
+              SingleBlogItem(
+                code: codes[i],
+              ),
+            if (!loaded) const RestaurantShimmer(),
+          ],
         ),
       ),
     );
@@ -144,17 +121,9 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shadowColor: Colors.black,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: GestureDetector(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
         onTap: () async {
           await Get.to(
             SingleBlogScreen(book: widget.code),
@@ -166,127 +135,133 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
             ac.loadInterstitialAd();
           }
         },
-        child: Container(
+        child: Ink(
+          height: 300,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 8,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
+            borderRadius: BorderRadius.circular(6),
+            color: appBarColor,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
-                offset: const Offset(0, 3),
-                blurRadius: 12,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
           child: Column(
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
+              Expanded(
                 child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: 150,
-                      child: PinchZoom(
-                        child: Hero(
-                          tag: widget.code.images[0],
-                          child: CachedNetworkImage(
-                            imageUrl: webUrl +
-                                'uploads/images/' +
-                                widget.code.images[0],
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: SizedBox(
-                                child: CircularProgressIndicator(),
-                                height: 30,
-                                width: 30,
-                              ),
+                    Positioned.fill(
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            '${webUrl}uploads/images/${widget.code.images[0]}',
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Center(
+                          child: SizedBox(
+                            height: 150,
+                            width: 150,
+                            child: Image.asset(
+                              "assets/icons/logo_nobg.png",
+                              fit: BoxFit.contain,
                             ),
-                            errorWidget: (context, url, error) => const Center(
-                              child: Icon(
-                                Icons.error,
-                                color: Colors.red,
-                              ),
-                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Icon(
+                            Icons.error,
+                            color: Colors.red,
                           ),
                         ),
                       ),
                     ),
                     Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                        ),
-                        child: Text(
-                          DateFormat('dd MMMM yyyy').format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  widget.code.createdAt)),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 5,
+                      top: 5,
                       right: 5,
                       child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: secondaryColor,
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF444857),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(6),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Text(
-                              NumberFormat.compact().format(widget.code.views),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 5),
-                              child: Image.asset(
-                                "assets/icons/fire.png",
-                                height: 15,
-                                width: 15,
-                                fit: BoxFit.contain,
-                                color: Colors.white,
-                              ),
+                            Image.asset(
+                              "assets/icons/explore.png",
+                              height: 14,
+                              color: Colors.white,
                             ),
                           ],
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.code.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF444857),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6),
                       ),
-                      textAlign: TextAlign.left,
                     ),
-                    const SizedBox(
-                      height: 5,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/icons/eye.png",
+                          height: 10,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.code.views.toString(),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF444857),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormat('dd MMMM yyyy').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  widget.code.createdAt)),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

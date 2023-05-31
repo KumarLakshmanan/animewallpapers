@@ -8,7 +8,6 @@ import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_dialogs/material_dialogs.dart';
-import 'package:frontendforever/screens/splash_screen.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
 showCallbackDialog(String message, Function onTap,
@@ -143,40 +142,6 @@ showLoadingDialog() {
   );
 }
 
-logOutDialog(context) {
-  Dialogs.bottomMaterialDialog(
-    context: context,
-    title: 'Logout',
-    msg: 'Are you sure you want to logout?',
-    lottieBuilder: Lottie.asset(
-      'assets/json/exit.json',
-      repeat: false,
-      fit: BoxFit.contain,
-    ),
-    actions: [
-      IconsOutlineButton(
-        iconData: Icons.cancel_outlined,
-        onPressed: () {
-          Get.back();
-        },
-        text: 'Cancel',
-      ),
-      IconsOutlineButton(
-        iconData: Icons.exit_to_app_outlined,
-        onPressed: () {
-          Get.offAll(
-            const SplashScreen(
-              logOut: true,
-            ),
-            transition: Transition.rightToLeft,
-          );
-        },
-        text: 'Logout',
-      ),
-    ],
-  );
-}
-
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
     print("Handling a background message from firebase");
@@ -278,4 +243,50 @@ convertEpochtoTimeAgo(int epoch) {
     }
   }
   return timeAgo;
+}
+
+retunHtml(String html) {
+  // remove all the styles and attributes from the html string
+  html = html.replaceAll(
+      RegExp(r'(<p style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<p>');
+  html = html.replaceAll(
+      RegExp(r'(<span style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<span>');
+  html = html.replaceAll(
+      RegExp(r'(<strong style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<strong>');
+  html = html.replaceAll(
+      RegExp(r'(<b style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<b>');
+  html = html.replaceAll(
+      RegExp(r'(<i style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<i>');
+  html = html.replaceAll(
+      RegExp(r'(<em style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<em>');
+  html = html.replaceAll(
+      RegExp(r'(<u style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<u>');
+  html = html.replaceAll(
+      RegExp(r'(<strike style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<strike>');
+  html = html.replaceAll(
+      RegExp(r'(<a style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<a>');
+  html = html.replaceAll(
+      RegExp(r'(<h1 style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<h1>');
+  html = html.replaceAll(
+      RegExp(r'(<h2 style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<h2>');
+  html = html.replaceAll(
+      RegExp(r'(<h3 style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<h3>');
+  html = html.replaceAll(
+      RegExp(r'(<h4 style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<h4>');
+  html = html.replaceAll(
+      RegExp(r'(<h5 style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<h5>');
+  html = html.replaceAll(
+      RegExp(r'(<h6 style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<h6>');
+  // html = html.replaceAll(
+  //     RegExp(r'(<table ([a-z][a-z0-9]*)[^>]*?(/?)>)'), '<table>');
+  // html = html.replaceAll(
+  //     RegExp(r'(<td style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<td ');
+  // html = html.replaceAll(
+  //     RegExp(r'(<tr style=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '<tr ');
+  // html = html.replaceAll(
+  //     RegExp(r'(width=")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(")'), '');
+  // html = html.replaceAll(
+  //     RegExp(r"(width=')([a-zA-Z0-9:;\.\s\(\)\-\,]*)(')"), '');
+  html = html.replaceAll(")(", ") (");
+  return html;
 }

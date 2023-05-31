@@ -72,13 +72,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
               'assets/icons/heart.png',
               height: 20,
               width: 20,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
           title: const Text(
             'Donate Us',
             style: TextStyle(
               fontSize: 14,
+              color: Colors.white,
             ),
           ),
           onTap: () async {
@@ -92,12 +93,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
         ListTile(
           leading: const Icon(
             Icons.person_add,
-            color: Colors.black,
+            color: Colors.white,
           ),
           title: const Text(
             'Invite Friends',
             style: TextStyle(
               fontSize: 14,
+              color: Colors.white,
             ),
           ),
           onTap: () {
@@ -110,12 +112,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
         ListTile(
           leading: const Icon(
             Icons.star,
-            color: Colors.black,
+            color: Colors.white,
           ),
           title: const Text(
             'Rate us',
             style: TextStyle(
               fontSize: 14,
+              color: Colors.white,
             ),
           ),
           onTap: () async {
@@ -132,12 +135,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
         ListTile(
           leading: const Icon(
             Icons.help,
-            color: Colors.black,
+            color: Colors.white,
           ),
           title: const Text(
             'Help & Feedback',
             style: TextStyle(
               fontSize: 14,
+              color: Colors.white,
             ),
           ),
           onTap: () {
@@ -157,6 +161,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               "v${packageInfo!.version} (${packageInfo!.buildNumber})",
               style: const TextStyle(
                 fontSize: 12.0,
+                color: Colors.white,
               ),
             ),
           )

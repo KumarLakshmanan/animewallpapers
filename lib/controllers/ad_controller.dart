@@ -47,7 +47,7 @@ class AdController extends GetxController {
         int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
         bool isPro = prefs.getBool("isVip") ?? false;
         print("You are Pro: $isPro");
-        if (adUnitId == 0) {
+        if (interstitialAd == null && adUnitId == 0) {
           if (!isPro) {
             InterstitialAd.load(
               adUnitId: AdHelper.interstitialAds,
@@ -77,6 +77,11 @@ class AdController extends GetxController {
                 },
               ),
             );
+          }
+        } else {
+          if (adUnitId == 0) {
+          } else {
+            prefs.setInt("showedInterstitialAds", adUnitId - 1);
           }
         }
       }
