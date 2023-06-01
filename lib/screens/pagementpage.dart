@@ -43,7 +43,7 @@ class _PurchasePageState extends State<PurchasePage> {
   bool _loading = true;
   String? _queryProductError;
   String planDuration = 'gold_membership';
-  bool alreadyPaid = false;
+  bool? alreadyPaid;
   @override
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
@@ -393,20 +393,24 @@ class _PurchasePageState extends State<PurchasePage> {
         title: const Text('Donate Us'),
       ),
       backgroundColor: secondaryColor,
-      body: !alreadyPaid
+      body: alreadyPaid == null
           ? const Center(
-              child: Text(
-                "You are already a VIP member of the app.",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              child: CircularProgressIndicator(),
             )
-          : Stack(
-              children: stack,
-            ),
+          : alreadyPaid == true
+              ? const Center(
+                  child: Text(
+                    "You are already a VIP member of the app.",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Stack(
+                  children: stack,
+                ),
     );
   }
 

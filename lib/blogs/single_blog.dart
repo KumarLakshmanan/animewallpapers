@@ -24,12 +24,10 @@ class SingleBlogScreen extends StatefulWidget {
 
 class _SingleBlogScreenState extends State<SingleBlogScreen> {
   final commentController = TextEditingController();
-  int isDownload = -1;
   bool isLoading = true;
-  bool isCodeRegistered = false;
   Map<String, dynamic> jsonData = {};
   final ac = Get.put(AdController());
-  // late AppLifecycleReactor _appLifecycleReactor;
+  bool isFavorite = false;
 
   @override
   void initState() {
@@ -39,10 +37,14 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
 
   loadDataFromServer() async {
     final prefs = await SharedPreferences.getInstance();
-    final registeredCodes = prefs.getString('registeredCode') ?? '[]';
-    final registeredCodesList = json.decode(registeredCodes) as List<dynamic>;
-    isCodeRegistered =
-        registeredCodesList.contains(widget.book.id) ? true : false;
+
+    List<String> prefsKeys = prefs.getKeys().toList();
+    if (prefsKeys.contains("favorites_${widget.book.id}")) {
+      setState(() {
+        isFavorite = true;
+      });
+    }
+
     setState(() {});
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -85,7 +87,68 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
         backgroundColor: secondaryColor,
         appBar: AppBar(
           backgroundColor: primaryColor,
-          title: Text(widget.book.title),
+          title: Row(
+            children: [
+              Expanded(child: Text(widget.book.title)),
+              InkWell(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(6),
+                ),
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  if (isFavorite) {
+                    prefs.remove("favorites_${widget.book.id}");
+                  } else {
+                    prefs.setString(
+                      "favorites_${widget.book.id}",
+                      jsonEncode(widget.book.toJson()),
+                    );
+                    bool voted =
+                        prefs.getBool("voted_${widget.book.id}") ?? false;
+                    if (!voted) {
+                      http.post(
+                        Uri.parse(apiUrl),
+                        body: {
+                          "mode": "vote",
+                          "id": widget.book.id.toString(),
+                        },
+                      );
+                      prefs.setBool(
+                        "voted_${widget.book.id}",
+                        true,
+                      );
+                    }
+
+                    if (kDebugMode) {
+                      print(
+                        "$apiUrl?mode=vote&id=${widget.book.id.toString()}",
+                      );
+                    }
+                  }
+                  setState(() {
+                    isFavorite = !isFavorite;
+                  });
+                },
+                child: Ink(
+                  height: 40,
+                  width: 40,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF444857),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(6),
+                    ),
+                  ),
+                  child: Center(
+                    child: Image.asset(
+                      "assets/icons/like.png",
+                      height: isFavorite ? 20 : 12,
+                      color: isFavorite ? Colors.red : Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
         body: SafeArea(
           child: Stack(

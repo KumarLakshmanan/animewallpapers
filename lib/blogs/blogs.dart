@@ -10,6 +10,8 @@ import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
+import 'package:frontendforever/widgets/filter_by.dart';
+import 'package:frontendforever/widgets/search.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -33,6 +35,10 @@ class _CodesListState extends State<CodesList>
   TextEditingController searchText = TextEditingController(text: '');
   int pageNo = 1;
   final ScrollController _scrollController = ScrollController();
+  String search = "";
+  String categories = "";
+  final controller = TextEditingController();
+  final searchFocusNode = FocusNode();
 
   getDataFromAPI() async {
     var response = await http.post(
@@ -40,10 +46,19 @@ class _CodesListState extends State<CodesList>
       body: {
         'mode': 'getcourses',
         'page': pageNo.toString(),
+        'search': search,
+        'keyword': categories,
       },
     );
     if (kDebugMode) {
-      print(apiUrl + "?mode=getcourses" + "&page=" + pageNo.toString());
+      print(apiUrl +
+          "?mode=getcourses" +
+          "&page=" +
+          pageNo.toString() +
+          "&search=" +
+          search +
+          "&keyword=" +
+          categories);
     }
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
@@ -86,23 +101,66 @@ class _CodesListState extends State<CodesList>
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: RefreshIndicator(
-        onRefresh: () async {
-          pageNo = 1;
-          codes = [];
-          setState(() {});
-          await getDataFromAPI();
-        },
-        child: ListView(
-          controller: _scrollController,
-          children: [
-            for (var i = 0; i < codes.length; i++)
-              SingleBlogItem(
-                code: codes[i],
+      child: Column(
+        children: [
+          Container(
+            color: primaryColor,
+            child: SearchBox(
+              controller: controller,
+              searchFocusNode: searchFocusNode,
+              onChanged: (_) {
+                search = _;
+                pageNo = 1;
+                codes = [];
+                loaded = false;
+                getDataFromAPI();
+                setState(() {});
+              },
+            ),
+          ),
+          Container(
+            color: primaryColor,
+            child: Column(
+              children: [
+                FilterBy(
+                  onChanged: (_) {
+                    categories = _;
+                    pageNo = 1;
+                    codes = [];
+                    loaded = false;
+                    getDataFromAPI();
+                    setState(() {});
+                  },
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                pageNo = 1;
+                codes = [];
+                loaded = false;
+                getDataFromAPI();
+                setState(() {});
+              },
+              child: ListView(
+                controller: _scrollController,
+                children: [
+                  for (var i = 0; i < codes.length; i++)
+                    SingleBlogItem(
+                      code: codes[i],
+                    ),
+                  if (!loaded) ...[
+                    const RestaurantShimmer(),
+                    const RestaurantShimmer(),
+                  ]
+                ],
               ),
-            if (!loaded) const RestaurantShimmer(),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -136,7 +194,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
           }
         },
         child: Ink(
-          height: 300,
+          height: 225,
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
             vertical: 8,
@@ -207,10 +265,23 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                 ),
               ),
               const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.code.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(6),
                     decoration: const BoxDecoration(
                       color: Color(0xFF444857),
                       borderRadius: BorderRadius.all(
@@ -226,7 +297,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          widget.code.views.toString(),
+                          NumberFormat.compact().format(widget.code.views),
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.white,
@@ -238,7 +309,35 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                   ),
                   const SizedBox(width: 10),
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF444857),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/icons/like.png",
+                          height: 12,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          NumberFormat.compact().format(widget.code.likes),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(6),
                     decoration: const BoxDecoration(
                       color: Color(0xFF444857),
                       borderRadius: BorderRadius.all(

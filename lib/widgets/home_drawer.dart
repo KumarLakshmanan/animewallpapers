@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontendforever/pages/favorite.dart';
 import 'package:frontendforever/screens/feedback.dart';
 import 'package:frontendforever/screens/pagementpage.dart';
 import 'package:get/get.dart';
@@ -86,6 +87,32 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Get.back();
             Get.to(
               const PurchasePage(),
+              transition: Transition.rightToLeft,
+            );
+          },
+        ),
+        ListTile(
+          leading: Container(
+            height: 20,
+            width: 20,
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.favorite,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          title: const Text(
+            'Favorites',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
+          onTap: () async {
+            Get.back();
+            Get.to(
+              const FavoriteList(),
               transition: Transition.rightToLeft,
             );
           },

@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen>
   final MainScreenController mainController = Get.put(MainScreenController());
   late AnimationController menuAnimation;
   bool isOpened = false;
-  List people = [];
+
   final InAppReview inAppReview = InAppReview.instance;
 
   BannerAd? bannerAd;
@@ -168,20 +168,7 @@ class _MainScreenState extends State<MainScreen>
                 ),
               ),
             ),
-            body: Column(
-              children: [
-                if (bannerAd != null)
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      width: bannerAd!.size.width.toDouble(),
-                      height: bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: bannerAd!),
-                    ),
-                  ),
-                const Expanded(child: CodesList()),
-              ],
-            ),
+            body: const CodesList(),
           ),
         ),
       ),
