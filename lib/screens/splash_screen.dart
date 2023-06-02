@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               const Text(
                 "Termux Tools & Commands",
@@ -63,17 +63,6 @@ class _SplashScreenState extends State<SplashScreen>
                   color: Colors.white,
                   letterSpacing: 2,
                   fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Termux is a free and open-source terminal emulator for Android which allows for running a Linux environment on an Android device.",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),

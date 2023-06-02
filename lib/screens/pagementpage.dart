@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/pages/main_screen.dart';
@@ -398,14 +399,26 @@ class _PurchasePageState extends State<PurchasePage> {
               child: CircularProgressIndicator(),
             )
           : alreadyPaid == true
-              ? const Center(
-                  child: Text(
-                    "You are already a VIP member of the app.",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
+              ? GestureDetector(
+                  onTap: () async {
+                    if (kDebugMode) {
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setBool('isVip', false);
+                      Get.offAll(
+                        () => const MainScreen(),
+                        transition: Transition.rightToLeft,
+                      );
+                    }
+                  },
+                  child: const Center(
+                    child: Text(
+                      "You are already a VIP member of the app.",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 )
               : Stack(

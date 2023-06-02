@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendforever/blogs/blogs.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:frontendforever/functions.dart';
@@ -149,6 +150,10 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
               )
             ],
           ),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(50),
+            child: BannerAdWidget(),
+          ),
         ),
         body: SafeArea(
           child: Stack(
@@ -215,10 +220,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           ),
                         },
                       ),
-                    if (!isLoading)
-                      const SizedBox(
-                        height: 10,
-                      ),
+                    const NativeAdWidget(),
                     if (!isLoading)
                       Text(
                         "Steps to Follow",

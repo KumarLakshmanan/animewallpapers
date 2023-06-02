@@ -13,8 +13,10 @@ import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
 import 'package:frontendforever/widgets/filter_by.dart';
 import 'package:frontendforever/widgets/search.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CodesList extends StatefulWidget {
   const CodesList({
@@ -148,10 +150,14 @@ class _CodesListState extends State<CodesList>
               child: ListView(
                 controller: _scrollController,
                 children: [
-                  for (var i = 0; i < codes.length; i++)
+                  for (var i = 0; i < codes.length; i++) ...[
                     SingleBlogItem(
                       code: codes[i],
                     ),
+                    if (i % 2 == 0) ...[
+                      const NativeAdWidget(),
+                    ]
+                  ],
                   if (!loaded) ...[
                     const RestaurantShimmer(),
                     const RestaurantShimmer(),
@@ -160,6 +166,15 @@ class _CodesListState extends State<CodesList>
               ),
             ),
           ),
+          const BannerAdWidget(),
+          // if (bannerAd != null)
+          //   Container(
+          //     color: primaryColor,
+          //     child: SizedBox(
+          //       height: 50,
+          //       child: AdWidget(ad: bannerAd!),
+          //     ),
+          //   ),
         ],
       ),
     );
@@ -367,5 +382,129 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
         ),
       ),
     );
+  }
+}
+
+class NativeAdWidget extends StatefulWidget {
+  const NativeAdWidget({super.key});
+
+  @override
+  State<NativeAdWidget> createState() => _NativeAdWidgetState();
+}
+
+class _NativeAdWidgetState extends State<NativeAdWidget> {
+  NativeAd? _ad;
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  init() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isPro = prefs.getBool("isVip") ?? false;
+    if (isPro) {
+      return;
+    }
+    NativeAd(
+      adUnitId: AdHelper.nativeAdUnitId,
+      factoryId: 'listTile',
+      request: const AdRequest(),
+      listener: NativeAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _ad = ad as NativeAd;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint(
+            'Ad load failed (code=${error.code} message=${error.message})',
+          );
+        },
+      ),
+    ).load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _ad == null
+        ? const SizedBox()
+        : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 62,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: appBarColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: AdWidget(ad: _ad!),
+            ),
+          );
+  }
+}
+
+class BannerAdWidget extends StatefulWidget {
+  const BannerAdWidget({super.key});
+
+  @override
+  State<BannerAdWidget> createState() => _BannerAdWidgetState();
+}
+
+class _BannerAdWidgetState extends State<BannerAdWidget> {
+  BannerAd? bannerAd;
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  init() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isPro = prefs.getBool("isVip") ?? false;
+    if (!isPro) {
+      BannerAd(
+        adUnitId: AdHelper.bannerAds,
+        request: const AdRequest(),
+        size: AdSize.banner,
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            setState(() {
+              bannerAd = ad as BannerAd;
+            });
+          },
+          onAdFailedToLoad: (ad, err) {
+            if (kDebugMode) {
+              print('Failed to load a banner ad: ${err.message}');
+            }
+            ad.dispose();
+          },
+        ),
+      ).load();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return bannerAd == null
+        ? const SizedBox()
+        : Container(
+            color: primaryColor,
+            child: SizedBox(
+              height: 50,
+              child: AdWidget(ad: bannerAd!),
+            ),
+          );
   }
 }

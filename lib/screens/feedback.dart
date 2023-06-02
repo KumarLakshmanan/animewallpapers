@@ -202,9 +202,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               ),
                             ],
                           );
-                          setState(() {
-                            sended = -1;
-                          });
                         } else {
                           showErrorDialog(
                               context, data['error']['description']);
@@ -213,9 +210,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         showErrorDialog(context, 'Something went wrong');
                       }
                     }
-                    setState(() {
-                      sended = 0;
-                    });
                   },
                   onTapDown: () => HapticFeedback.vibrate(),
                   child: Padding(

@@ -2,12 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontendforever/blogs/blogs.dart';
-import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/widgets/home_drawer.dart';
 import 'package:lottie/lottie.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:material_dialogs/material_dialogs.dart';
@@ -31,7 +29,6 @@ class _MainScreenState extends State<MainScreen>
 
   final InAppReview inAppReview = InAppReview.instance;
 
-  BannerAd? bannerAd;
   @override
   void initState() {
     init();
@@ -47,28 +44,6 @@ class _MainScreenState extends State<MainScreen>
         InAppUpdate.startFlexibleUpdate();
       }
     });
-    final prefs = await SharedPreferences.getInstance();
-    bool isPro = prefs.getBool("isVip") ?? false;
-    if (!isPro) {
-      BannerAd(
-        adUnitId: AdHelper.bannerAds,
-        request: const AdRequest(),
-        size: AdSize.banner,
-        listener: BannerAdListener(
-          onAdLoaded: (ad) {
-            setState(() {
-              bannerAd = ad as BannerAd;
-            });
-          },
-          onAdFailedToLoad: (ad, err) {
-            if (kDebugMode) {
-              print('Failed to load a banner ad: ${err.message}');
-            }
-            ad.dispose();
-          },
-        ),
-      ).load();
-    }
     if (await inAppReview.isAvailable()) {
       inAppReview.requestReview();
     }

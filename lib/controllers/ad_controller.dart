@@ -35,6 +35,16 @@ class AdHelper {
       throw UnsupportedError('Unsupported platform');
     }
   }
+
+  static String get nativeAdUnitId {
+    if (Platform.isAndroid) {
+      return 'ca-app-pub-1100799750663761/9242939661';
+    } else if (Platform.isIOS) {
+      return '<YOUR_IOS_NATIVE_AD_UNIT_ID>';
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+  }
 }
 
 class AdController extends GetxController {
@@ -46,7 +56,9 @@ class AdController extends GetxController {
         final prefs = await SharedPreferences.getInstance();
         int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
         bool isPro = prefs.getBool("isVip") ?? false;
-        print("You are Pro: $isPro");
+        if (kDebugMode) {
+          print("You are Pro: $isPro");
+        }
         if (interstitialAd == null && adUnitId == 0) {
           if (!isPro) {
             InterstitialAd.load(
@@ -64,7 +76,7 @@ class AdController extends GetxController {
                   );
                   interstitialAd = ad;
                   if (adUnitId == 0) {
-                    prefs.setInt("showedInterstitialAds", 2);
+                    prefs.setInt("showedInterstitialAds", 1);
                   } else {
                     prefs.setInt("showedInterstitialAds", adUnitId - 1);
                   }
