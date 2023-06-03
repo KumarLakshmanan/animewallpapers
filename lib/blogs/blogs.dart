@@ -154,12 +154,12 @@ class _CodesListState extends State<CodesList>
                     SingleBlogItem(
                       code: codes[i],
                     ),
-                    if (i % 2 == 0) ...[
+                    if (i % 5 == 0) ...[
                       const NativeAdWidget(),
                     ]
                   ],
                   if (!loaded) ...[
-                    const RestaurantShimmer(),
+                    if (codes.isEmpty) const RestaurantShimmer(),
                     const RestaurantShimmer(),
                   ]
                 ],

@@ -12,6 +12,7 @@ List<BoxShadow> boxShadow = [
     blurRadius: 24,
   ),
 ];
+
 // Color primaryColor = const Color(0xFF000000);
 // Color secondaryColor = const Color(0xFFDD0046);
 Color primaryColor = const Color(0xFF131417);
