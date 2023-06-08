@@ -9,6 +9,7 @@ import 'package:frontendforever/controllers/ad_controller.dart';
 
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
+import 'package:frontendforever/screens/pagementpage.dart';
 import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
 import 'package:frontendforever/widgets/filter_by.dart';
 import 'package:frontendforever/widgets/search.dart';
@@ -209,7 +210,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
           }
         },
         child: Ink(
-          height: 225,
+          height: 250,
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
             vertical: 8,
@@ -226,6 +227,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
             ],
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Stack(
@@ -293,6 +295,34 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                 ),
               ),
               const SizedBox(height: 10),
+              Wrap(
+                runAlignment: WrapAlignment.start,
+                alignment: WrapAlignment.start,
+                direction: Axis.horizontal,
+                spacing: 5,
+                children: [
+                  for (var i = 0; i < widget.code.keywords.length; i++)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDD0046).withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        widget.code.keywords[i],
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 5),
               Row(
                 children: [
                   Container(
@@ -392,7 +422,11 @@ class NativeAdWidget extends StatefulWidget {
   State<NativeAdWidget> createState() => _NativeAdWidgetState();
 }
 
-class _NativeAdWidgetState extends State<NativeAdWidget> {
+class _NativeAdWidgetState extends State<NativeAdWidget>
+    with AutomaticKeepAliveClientMixin<NativeAdWidget> {
+  @override
+  bool get wantKeepAlive => true;
+
   NativeAd? _ad;
   @override
   void initState() {
@@ -428,28 +462,60 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return _ad == null
         ? const SizedBox()
         : Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 62,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: appBarColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+            child: Column(
+              children: [
+                Container(
+                  height: 62,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
                   ),
-                ],
-              ),
-              child: AdWidget(ad: _ad!),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    color: appBarColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: AdWidget(ad: _ad!),
+                ),
+                const SizedBox(height: 5),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(
+                      () => const PurchasePage(),
+                      transition: Transition.rightToLeft,
+                    );
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Premium Ad Free Version",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.double_arrow_rounded,
+                        color: Colors.white,
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
           );
   }

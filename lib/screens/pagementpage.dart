@@ -242,9 +242,9 @@ class _PurchasePageState extends State<PurchasePage> {
                           child: Container(
                             width: 50,
                             height: 50,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              color: secondaryColor,
+                              color: Colors.white,
                             ),
                             child: Center(
                               child: Image.asset(
@@ -391,7 +391,7 @@ class _PurchasePageState extends State<PurchasePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Donate Us'),
+        title: const Text('Premium Membership'),
       ),
       backgroundColor: secondaryColor,
       body: alreadyPaid == null

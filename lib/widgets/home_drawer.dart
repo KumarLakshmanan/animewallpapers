@@ -70,14 +70,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
             width: 20,
             alignment: Alignment.center,
             child: Image.asset(
-              'assets/icons/heart.png',
+              'assets/icons/vip.png',
               height: 20,
               width: 20,
               color: Colors.white,
             ),
           ),
           title: const Text(
-            'Donate Us',
+            'Premium Membership',
             style: TextStyle(
               fontSize: 14,
               color: Colors.white,
@@ -123,7 +123,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             color: Colors.white,
           ),
           title: const Text(
-            'Invite Friends',
+            'Share App',
             style: TextStyle(
               fontSize: 14,
               color: Colors.white,
@@ -132,9 +132,31 @@ class _HomeDrawerState extends State<HomeDrawer> {
           onTap: () {
             Get.back();
             Share.share(
-              "Termux Tools & Commandsn. \nMore than 100+ tools with installation and usage steps are available in this app. \n\nhttps://play.google.com/store/apps/details?id=com.frontendforever.termux",
+              "Termux Tools & Commands. \nMore than 100+ tools with installation and usage steps are available in this app. \n\nhttps://play.google.com/store/apps/details?id=com.frontendforever.termux",
             );
           },
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.add_to_photos_sharp,
+            color: Colors.white,
+          ),
+          onTap: () async {
+            await launchUrl(
+              Uri.parse(
+                "https://play.google.com/store/apps/developer?id=Lakshmanan+R",
+              ),
+              mode: LaunchMode.externalApplication,
+            );
+          },
+          title: const Text(
+            "More Apps",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
         ),
         ListTile(
           leading: const Icon(
