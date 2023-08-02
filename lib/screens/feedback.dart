@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
-import 'package:neopop/neopop.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({
@@ -152,9 +151,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 left: 10,
                 bottom: 10,
                 right: 10,
-                child: NeoPopButton(
+                child: MaterialButton(
                   color: primaryColor,
-                  onTapUp: () async {
+                  onPressed: () async {
                     if (sended == -1) {
                       if (feedbackController.text.isEmpty) {
                         showAlertDialog(context, 'Please enter a feedback');
@@ -211,7 +210,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       }
                     }
                   },
-                  onTapDown: () => HapticFeedback.vibrate(),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),

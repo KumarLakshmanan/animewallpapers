@@ -15,7 +15,6 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
-import 'package:neopop/widgets/buttons/neopop_button/neopop_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'consumable_store.dart';
@@ -130,6 +129,8 @@ class _PurchasePageState extends State<PurchasePage> {
     required String planType,
     required String title,
     required double price,
+    required String code,
+    required String symbol,
   }) {
     return GestureDetector(
       onTap: () {
@@ -190,8 +191,7 @@ class _PurchasePageState extends State<PurchasePage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    // in dollars / in inr
-                    '₹${price * 80} INR (\$${price.toStringAsFixed(2)} USD approx.)',
+                    '$symbol$price $code for lifetime access',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF7f7b7b),
@@ -298,25 +298,24 @@ class _PurchasePageState extends State<PurchasePage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    showChosenPlan(
-                      plan: 'AFFORDABLE PLAN',
-                      planType: 'silver_membership',
-                      title: 'Silver Membership',
-                      price: 5,
-                    ),
-                    showChosenPlan(
-                      plan: 'MOST POPULAR',
-                      planType: 'gold_membership',
-                      title: 'Gold Membership',
-                      price: 10,
-                    ),
+                    for (int i = 0; i < _products.length; i++) ...[
+                      showChosenPlan(
+                        plan: _products[i].id == 'silver_membership'
+                            ? 'AFFORDABLE PLAN'
+                            : 'MOST POPULAR',
+                        planType: _products[i].id,
+                        title: _products[i].title.split('(')[0],
+                        price: _products[i].rawPrice,
+                        code: _products[i].currencyCode,
+                        symbol: _products[i].currencySymbol,
+                      ),
+                    ],
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: NeoPopButton(
+                      child: MaterialButton(
                         color: primaryColor,
-                        onTapUp: () async {
-                          print(planDuration);
+                        onPressed: () async {
                           ProductDetails productDetails = _products.firstWhere(
                             (element) => element.id == planDuration,
                           );

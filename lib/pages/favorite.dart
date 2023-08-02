@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/blogs/blogs.dart';
 import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteList extends StatefulWidget {
@@ -26,7 +23,6 @@ class _FavoriteListState extends State<FavoriteList> {
   bool isAscending = true;
   int pageNo = 1;
   final ScrollController _scrollController = ScrollController();
-  BannerAd? bannerAd;
 
   getDataFromAPI() async {
     final prefs = await SharedPreferences.getInstance();
@@ -46,24 +42,6 @@ class _FavoriteListState extends State<FavoriteList> {
   void initState() {
     super.initState();
     getDataFromAPI();
-    BannerAd(
-      adUnitId: AdHelper.bannerAds,
-      request: const AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            bannerAd = ad as BannerAd;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          if (kDebugMode) {
-            print('Failed to load a banner ad: ${err.message}');
-          }
-          ad.dispose();
-        },
-      ),
-    ).load();
   }
 
   @override
@@ -84,15 +62,7 @@ class _FavoriteListState extends State<FavoriteList> {
         ),
         body: Column(
           children: [
-            if (bannerAd != null)
-              Align(
-                alignment: Alignment.topCenter,
-                child: SizedBox(
-                  width: bannerAd!.size.width.toDouble(),
-                  height: bannerAd!.size.height.toDouble(),
-                  child: AdWidget(ad: bannerAd!),
-                ),
-              ),
+            const BannerAdWidget(),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(8.0),
@@ -114,9 +84,6 @@ class _FavoriteListState extends State<FavoriteList> {
                   for (var i = 0; i < codes.length; i++) ...[
                     SingleBlogItem(
                       code: codes[i],
-                      // reloader: () async {
-                      //   await getDataFromAPI();
-                      // },
                     ),
                     const SizedBox(height: 10),
                   ]
