@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/constants.dart';
 
@@ -34,43 +35,27 @@ class _SearchBoxState extends State<SearchBox> {
           color: secondaryColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Row(
-          children: [
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: () {
-                widget.onChanged(widget.controller.text);
-              },
-              child: Icon(
-                Icons.search,
-                color: Colors.white.withOpacity(0.6),
-              ),
+        child: CupertinoSearchTextField(
+          focusNode: widget.searchFocusNode,
+          controller: widget.controller,
+          onSubmitted: (value) {
+            widget.onChanged(value);
+          },
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(top: 2.0),
+            child: Icon(
+              Icons.search,
+              color: Colors.white.withOpacity(0.6),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-                focusNode: widget.searchFocusNode,
-                controller: widget.controller,
-                onSubmitted: (value) {
-                  widget.onChanged(value);
-                },
-                textInputAction: TextInputAction.done,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.6),
-                  ),
-                  hintText: 'Search...',
-                ),
-                cursorColor: Colors.white,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withOpacity(0.6),
-                ),
-              ),
-            ),
-          ],
+          ),
+          suffixIcon: const Icon(
+            Icons.clear,
+            color: Colors.white,
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white.withOpacity(0.6),
+          ),
         ),
       ),
     );

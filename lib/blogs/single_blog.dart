@@ -10,6 +10,8 @@ import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
+import 'package:frontendforever/widgets/all_widget.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
@@ -26,8 +28,11 @@ class SingleBlogScreen extends StatefulWidget {
 class _SingleBlogScreenState extends State<SingleBlogScreen> {
   final commentController = TextEditingController();
   bool isLoading = true;
+  bool isAdWatched = false;
+  bool isAdLoading = false;
   Map<String, dynamic> jsonData = {};
   final ac = Get.put(AdController());
+
   bool isFavorite = false;
 
   @override
@@ -150,175 +155,343 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
               )
             ],
           ),
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(50),
-            child: BannerAdWidget(),
-          ),
         ),
         body: SafeArea(
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                ),
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: <Widget>[
-                    const SizedBox(height: 16),
-                    for (final item in widget.book.images)
-                      Hero(
-                        tag: widget.book.images[0],
-                        child: CachedNetworkImage(
-                          imageUrl: webUrl + 'uploads/images/' + item,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    const SizedBox(height: 16),
-                    Text(
-                      widget.book.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
+          child: GetBuilder(
+              init: AdController(),
+              builder: (ac) {
+                if (widget.book.status != "public" &&
+                    !ac.isPro &&
+                    !isAdWatched) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(
-                          Icons.calendar_today,
+                          Icons.lock_outline,
                           color: Colors.white,
-                          size: 14,
+                          size: 150,
                         ),
                         const SizedBox(
-                          width: 5,
+                          height: 20,
                         ),
-                        Text(
-                          DateFormat('dd MMMM yyyy').format(
-                            DateTime.fromMillisecondsSinceEpoch(
-                              widget.book.createdAt,
-                            ),
+                        const Text(
+                          "Content Locked",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
-                          style: const TextStyle(
-                            fontSize: 14,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text(
+                          "If you want to use this tool, please upgrade to Pro. Pro users can use all tools without any restrictions. and also they can free to navigate without any ads.",
+                          style: TextStyle(
+                            fontSize: 12,
                             color: Colors.white,
                           ),
+                          textAlign: TextAlign.center,
                         ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        MaterialButton(
+                          color: primaryColor,
+                          onPressed: () async {
+                            setState(() {
+                              isAdLoading = true;
+                            });
+                            RewardedAd.load(
+                              adUnitId: AdHelper.interstitialAds,
+                              request: const AdRequest(),
+                              rewardedAdLoadCallback: RewardedAdLoadCallback(
+                                onAdLoaded: (ad) {
+                                  setState(() {
+                                    isAdLoading = false;
+                                  });
+                                  ad.fullScreenContentCallback =
+                                      FullScreenContentCallback(
+                                    onAdDismissedFullScreenContent: (ad) {
+                                      isAdWatched = true;
+                                      isAdLoading = false;
+                                      setState(() {});
+                                      ad.dispose();
+                                    },
+                                  );
+                                  ad.show(
+                                    onUserEarnedReward: (ad, reward) {
+                                      setState(() {
+                                        isAdWatched = true;
+                                        isAdLoading = false;
+                                      });
+                                      ad.dispose();
+                                    },
+                                  );
+                                },
+                                onAdFailedToLoad: (err) {
+                                  if (kDebugMode) {
+                                    print(
+                                        'Failed to load an interstitial ad: ${err.message}');
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 10,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (isAdLoading) ...[
+                                  const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                ] else ...[
+                                  const Icon(
+                                    Icons.lock_open,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ],
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text(
+                                  "Watch Video & Unlock",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            buildDivider(),
+                            Container(
+                              color: const Color(0xFF444857),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              child: const Text(
+                                "OR",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            buildDivider(),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const InlineAdWidget()
                       ],
                     ),
-                    if (!isLoading)
-                      Html(
-                        data: retunHtml(jsonData['content']),
-                        style: {
-                          "body": Style(
-                            fontSize: FontSize(16),
-                            color: Colors.grey[300],
-                          ),
-                        },
-                      ),
-                    const NativeAdWidget(),
-                    if (!isLoading)
-                      Text(
-                        "Steps to Follow",
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                  );
+                }
+                return Column(
+                  children: [
+                    const BannerAdWidget(),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 10,
+                              right: 10,
                             ),
-                      ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    if (!isLoading)
-                      for (final item in jsonData['commands'])
-                        GestureDetector(
-                          onTap: () {
-                            Clipboard.setData(
-                              ClipboardData(text: item),
-                            );
-                            Get.snackbar(
-                              "Copied",
-                              "Command copied to clipboard",
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: secondaryColor,
-                              colorText: Colors.white,
-                            );
-                            if (ac.interstitialAd != null) {
-                              ac.interstitialAd?.show();
-                            } else {
-                              ac.loadInterstitialAd();
-                            }
-                          },
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.only(
-                                  bottom: 5,
-                                  top: 5,
+                            child: ListView(
+                              physics: const BouncingScrollPhysics(),
+                              children: <Widget>[
+                                const SizedBox(height: 16),
+                                for (final item in widget.book.images)
+                                  Hero(
+                                    tag: widget.book.images[0],
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          webUrl + 'uploads/images/' + item,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  widget.book.title,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(2),
-                                  color: primaryColor,
+                                const SizedBox(
+                                  height: 5,
                                 ),
-                                child: Stack(
+                                Row(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Text(
-                                          "\$. " + item,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.white,
+                                      size: 14,
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      DateFormat('dd MMMM yyyy').format(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                          widget.book.createdAt,
                                         ),
                                       ),
-                                    ),
-                                    const Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.copy,
-                                          color: Colors.white,
-                                        ),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
+                                if (!isLoading)
+                                  Html(
+                                    data: retunHtml(jsonData['content']),
+                                    style: {
+                                      "body": Style(
+                                        fontSize: FontSize(16),
+                                        color: Colors.grey[300],
+                                      ),
+                                    },
+                                  ),
+                                const NativeAdWidget(),
+                                if (!isLoading)
+                                  Text(
+                                    "Steps to Follow",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                  ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                if (!isLoading)
+                                  for (final item in jsonData['commands'])
+                                    GestureDetector(
+                                      onTap: () {
+                                        Clipboard.setData(
+                                          ClipboardData(text: item),
+                                        );
+                                        Get.snackbar(
+                                          "Copied",
+                                          "Command copied to clipboard",
+                                          snackPosition: SnackPosition.BOTTOM,
+                                          backgroundColor: secondaryColor,
+                                          colorText: Colors.white,
+                                        );
+                                        if (ac.interstitialAd != null) {
+                                          ac.interstitialAd?.show();
+                                        } else {
+                                          ac.loadInterstitialAd();
+                                        }
+                                      },
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.only(
+                                              bottom: 5,
+                                              top: 5,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                              color: primaryColor,
+                                            ),
+                                            child: Stack(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: Text(
+                                                      "\$. " + item,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const Positioned(
+                                                  right: 0,
+                                                  top: 0,
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
+                                                    child: Icon(
+                                                      Icons.copy,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                if (!isLoading)
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                    if (!isLoading)
-                      const SizedBox(
-                        height: 10,
+                          if (isLoading)
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              color: Colors.black.withOpacity(0.5),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                        ],
                       ),
+                    ),
                   ],
-                ),
-              ),
-              if (isLoading)
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.black.withOpacity(0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-            ],
-          ),
+                );
+              }),
         ),
       ),
     );

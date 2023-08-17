@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/widgets/home_drawer.dart';
 import 'package:lottie/lottie.dart';
-import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
@@ -26,8 +25,6 @@ class _MainScreenState extends State<MainScreen>
   late AnimationController menuAnimation;
   bool isOpened = false;
 
-  final InAppReview inAppReview = InAppReview.instance;
-
   @override
   void initState() {
     init();
@@ -43,9 +40,6 @@ class _MainScreenState extends State<MainScreen>
         InAppUpdate.startFlexibleUpdate();
       }
     });
-    if (await inAppReview.isAvailable()) {
-      inAppReview.requestReview();
-    }
   }
 
   int clickCount = 0;
@@ -84,7 +78,6 @@ class _MainScreenState extends State<MainScreen>
               ),
               IconsOutlineButton(
                 onPressed: () {
-                  // exit the app
                   Get.back();
                   SystemNavigator.pop();
                 },

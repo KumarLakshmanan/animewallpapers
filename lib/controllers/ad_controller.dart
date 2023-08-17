@@ -26,6 +26,16 @@ class AdHelper {
     }
   }
 
+  static String get rewaredAds {
+    if (Platform.isAndroid) {
+      return 'ca-app-pub-1100799750663761/7781211774';
+    } else if (Platform.isIOS) {
+      return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+  }
+
   static String get bannerAds {
     if (Platform.isAndroid) {
       return 'ca-app-pub-1100799750663761/2776297105';
@@ -49,13 +59,24 @@ class AdHelper {
 
 class AdController extends GetxController {
   InterstitialAd? interstitialAd;
+  bool isPro = false;
+  @override
+  void onInit() {
+    super.onInit();
+    loadPro();
+  }
+
+  loadPro() async {
+    final prefs = await SharedPreferences.getInstance();
+    isPro = prefs.getBool("isVip") ?? false;
+    update();
+  }
 
   loadInterstitialAd() async {
     if (!kIsWeb) {
       if (interstitialAd.runtimeType == Null) {
         final prefs = await SharedPreferences.getInstance();
         int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
-        bool isPro = prefs.getBool("isVip") ?? false;
         if (kDebugMode) {
           print("You are Pro: $isPro");
         }
@@ -76,7 +97,7 @@ class AdController extends GetxController {
                   );
                   interstitialAd = ad;
                   if (adUnitId == 0) {
-                    prefs.setInt("showedInterstitialAds", 1);
+                    prefs.setInt("showedInterstitialAds", 2);
                   } else {
                     prefs.setInt("showedInterstitialAds", adUnitId - 1);
                   }
@@ -91,8 +112,7 @@ class AdController extends GetxController {
             );
           }
         } else {
-          if (adUnitId == 0) {
-          } else {
+          if (adUnitId != 0) {
             prefs.setInt("showedInterstitialAds", adUnitId - 1);
           }
         }

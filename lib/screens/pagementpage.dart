@@ -79,6 +79,7 @@ class _PurchasePageState extends State<PurchasePage> {
         await _inAppPurchase.queryProductDetails(
       _kProductIds.toSet(),
     );
+    await InAppPurchase.instance.restorePurchases();
     if (productDetailResponse.error != null) {
       setState(() {
         _queryProductError = productDetailResponse.error!.message;
@@ -503,6 +504,10 @@ class _PurchasePageState extends State<PurchasePage> {
 
   Future<void> _listenToPurchaseUpdated(
       List<PurchaseDetails> purchaseDetailsList) async {
+    print('--------------------------------');
+    print('listen');
+    print(purchaseDetailsList);
+    print('--------------------------------');
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.error) {
         handleError();

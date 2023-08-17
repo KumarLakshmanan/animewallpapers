@@ -1,11 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendforever/blogs/premium.dart';
+import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/pages/favorite.dart';
 import 'package:frontendforever/screens/feedback.dart';
 import 'package:frontendforever/screens/pagementpage.dart';
+import 'package:frontendforever/screens/splash_screen.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -23,7 +28,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
     initPackageInfo();
   }
 
+  bool? alreadyPaid;
+
   initPackageInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    alreadyPaid = prefs.getBool('isVip') ?? false;
     final PackageInfo info = await PackageInfo.fromPlatform();
     setState(() {
       packageInfo = info;
@@ -64,31 +73,78 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
         ),
-        ListTile(
-          leading: Container(
-            height: 20,
-            width: 20,
-            alignment: Alignment.center,
-            child: Image.asset(
-              'assets/icons/vip.png',
+        if (alreadyPaid == null || alreadyPaid == false) ...[
+          ListTile(
+            leading: Container(
               height: 20,
               width: 20,
-              color: Colors.white,
+              alignment: Alignment.center,
+              child: Image.asset(
+                'assets/icons/vip.png',
+                height: 20,
+                width: 20,
+                color: Colors.white,
+              ),
             ),
+            title: const Text(
+              'Premium Membership',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
+            onTap: () async {
+              Get.back();
+              Get.to(
+                const PurchasePage(),
+                transition: Transition.rightToLeft,
+              );
+            },
           ),
-          title: const Text(
-            'Premium Membership',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-            ),
+        ],
+        ListTile(
+          leading: const Icon(
+            Icons.book_sharp,
+            color: Colors.white,
+            size: 20,
+          ),
+          title: Row(
+            children: [
+              const Text(
+                'Premium Tools',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+              if (alreadyPaid == null || alreadyPaid == false) ...[
+                const SizedBox(
+                  width: 5,
+                ),
+                const Icon(
+                  Icons.lock_outline,
+                  color: Colors.white,
+                  size: 12,
+                ),
+              ]
+            ],
           ),
           onTap: () async {
-            Get.back();
-            Get.to(
-              const PurchasePage(),
-              transition: Transition.rightToLeft,
-            );
+            if (alreadyPaid == null || alreadyPaid == false) {
+              Get.snackbar(
+                "Upgrade to Premium",
+                "You can only able to access this content after upgrading to premium.",
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: secondaryColor,
+                colorText: Colors.white,
+              );
+            } else {
+              Get.back();
+              Get.to(
+                const PremiumList(),
+                transition: Transition.rightToLeft,
+              );
+            }
           },
         ),
         ListTile(
@@ -201,6 +257,27 @@ class _HomeDrawerState extends State<HomeDrawer> {
             );
           },
         ),
+        if (kDebugMode)
+          ListTile(
+            leading: const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            title: const Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+              ),
+            ),
+            onTap: () async {
+              var prefs = await SharedPreferences.getInstance();
+              prefs.clear();
+              Get.offAll(
+                const SplashScreen(),
+              );
+            },
+          ),
         const SizedBox(
           height: 20,
         ),
@@ -213,7 +290,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 color: Colors.white,
               ),
             ),
-          )
+          ),
       ],
     );
   }

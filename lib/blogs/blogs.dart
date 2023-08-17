@@ -27,13 +27,11 @@ class CodesList extends StatefulWidget {
   State<CodesList> createState() => _CodesListState();
 }
 
-class _CodesListState extends State<CodesList>
-    with AutomaticKeepAliveClientMixin<CodesList> {
-  @override
-  bool get wantKeepAlive => true;
-
+class _CodesListState extends State<CodesList> with WidgetsBindingObserver {
   bool isOpen = true;
   bool loaded = false;
+  bool inAppAds = false;
+  bool paused = false;
   List<SingleBlog> codes = [];
   TextEditingController searchText = TextEditingController(text: '');
   int pageNo = 1;
@@ -95,6 +93,42 @@ class _CodesListState extends State<CodesList>
         getDataFromAPI();
       }
     });
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    searchFocusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (kDebugMode) {
+      print("---------------------------------------------");
+      print(state);
+      print("---------------------------------------------");
+    }
+    if (state == AppLifecycleState.paused) {
+      paused = true;
+    }
+
+    if (state == AppLifecycleState.resumed && !inAppAds && paused) {
+      AppOpenAd.load(
+        adUnitId: AdHelper.appOpenAds,
+        request: const AdRequest(),
+        adLoadCallback: AppOpenAdLoadCallback(
+          onAdLoaded: (ad) {
+            ad.show();
+            inAppAds = true;
+          },
+          onAdFailedToLoad: (error) {},
+        ),
+        orientation: AppOpenAd.orientationPortrait,
+      );
+    }
   }
 
   @override
@@ -218,41 +252,123 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Positioned.fill(
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            '${webUrl}uploads/images/${widget.code.images[0]}',
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Center(
-                          child: SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: Image.asset(
-                              "assets/icons/logo_nobg.png",
-                              fit: BoxFit.contain,
+          child: GetBuilder(
+            init: AdController(),
+            builder: (ac) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Positioned.fill(
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                '${webUrl}uploads/images/${widget.code.images[0]}',
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Center(
+                              child: SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                  "assets/icons/logo_nobg.png",
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => const Center(
+                              child: Icon(
+                                Icons.error,
+                                color: Colors.red,
+                              ),
                             ),
                           ),
                         ),
-                        errorWidget: (context, url, error) => const Center(
-                          child: Icon(
-                            Icons.error,
-                            color: Colors.red,
+                        Positioned(
+                          top: 5,
+                          right: 5,
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF444857),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(6),
+                              ),
+                            ),
+                            child: (widget.code.status != "public" && !ac.isPro)
+                                ? const Icon(
+                                    Icons.lock_outline,
+                                    color: Colors.white,
+                                    size: 20,
+                                  )
+                                : Image.asset(
+                                    "assets/icons/explore.png",
+                                    height: 14,
+                                    color: Colors.white,
+                                  ),
                           ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      if (widget.code.status != "public" && !ac.isPro) ...[
+                        const Icon(
+                          Icons.lock_outline,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 5),
+                      ],
+                      Expanded(
+                        child: Text(
+                          widget.code.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.left,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      top: 5,
-                      right: 5,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    runAlignment: WrapAlignment.start,
+                    alignment: WrapAlignment.start,
+                    direction: Axis.horizontal,
+                    spacing: 5,
+                    children: [
+                      for (var i = 0; i < widget.code.keywords.length; i++)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDD0046).withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            widget.code.keywords[i],
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
                         decoration: const BoxDecoration(
                           color: Color(0xFF444857),
                           borderRadius: BorderRadius.all(
@@ -262,144 +378,80 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
                         child: Row(
                           children: [
                             Image.asset(
-                              "assets/icons/explore.png",
-                              height: 14,
+                              "assets/icons/eye.png",
+                              height: 10,
                               color: Colors.white,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              NumberFormat.compact().format(widget.code.views),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.code.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                runAlignment: WrapAlignment.start,
-                alignment: WrapAlignment.start,
-                direction: Axis.horizontal,
-                spacing: 5,
-                children: [
-                  for (var i = 0; i < widget.code.keywords.length; i++)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDD0046).withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        widget.code.keywords[i],
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF444857),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(6),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "assets/icons/eye.png",
-                          height: 10,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          NumberFormat.compact().format(widget.code.views),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                      const SizedBox(width: 10),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF444857),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(6),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF444857),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(6),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "assets/icons/like.png",
-                          height: 12,
-                          color: Colors.white,
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/icons/like.png",
+                              height: 12,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              NumberFormat.compact().format(widget.code.likes),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          NumberFormat.compact().format(widget.code.likes),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF444857),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(6),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF444857),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(6),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 4),
-                        Text(
-                          DateFormat('dd MMMM yyyy').format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  widget.code.createdAt)),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 4),
+                            Text(
+                              DateFormat('dd MMMM yyyy').format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      widget.code.createdAt)),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
