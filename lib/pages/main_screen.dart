@@ -103,8 +103,8 @@ class _MainScreenState extends State<MainScreen>
             backgroundColor: secondaryColor,
             key: mainController.mainScaffoldKey,
             drawer: Drawer(
-              child: const HomeDrawer(),
               backgroundColor: secondaryColor,
+              child: const HomeDrawer(),
             ),
             appBar: AppBar(
               elevation: 0,

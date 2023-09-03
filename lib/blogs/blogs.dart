@@ -52,14 +52,8 @@ class _CodesListState extends State<CodesList> with WidgetsBindingObserver {
       },
     );
     if (kDebugMode) {
-      print(apiUrl +
-          "?mode=getcourses" +
-          "&page=" +
-          pageNo.toString() +
-          "&search=" +
-          search +
-          "&keyword=" +
-          categories);
+      print(
+          "$apiUrl?mode=getcourses&page=$pageNo&search=$search&keyword=$categories");
     }
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
@@ -75,6 +69,7 @@ class _CodesListState extends State<CodesList> with WidgetsBindingObserver {
         }
         setState(() {});
       } else {
+        // ignore: use_build_context_synchronously
         showErrorDialog(context, data['error']['description']);
       }
     }

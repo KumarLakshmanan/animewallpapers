@@ -38,9 +38,7 @@ class _PurchasePageState extends State<PurchasePage> {
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<ProductDetails> _products = <ProductDetails>[];
   List<PurchaseDetails> _purchases = <PurchaseDetails>[];
-  List<String> _consumables = <String>[];
   bool _purchasePending = false;
-  bool _loading = true;
   String? _queryProductError;
   String planDuration = 'gold_membership';
   bool? alreadyPaid;
@@ -69,9 +67,7 @@ class _PurchasePageState extends State<PurchasePage> {
       setState(() {
         _products = <ProductDetails>[];
         _purchases = <PurchaseDetails>[];
-        _consumables = <String>[];
         _purchasePending = false;
-        _loading = false;
       });
       return;
     }
@@ -85,9 +81,7 @@ class _PurchasePageState extends State<PurchasePage> {
         _queryProductError = productDetailResponse.error!.message;
         _products = productDetailResponse.productDetails;
         _purchases = <PurchaseDetails>[];
-        _consumables = <String>[];
         _purchasePending = false;
-        _loading = false;
       });
       return;
     }
@@ -97,19 +91,14 @@ class _PurchasePageState extends State<PurchasePage> {
         _queryProductError = null;
         _products = productDetailResponse.productDetails;
         _purchases = <PurchaseDetails>[];
-        _consumables = <String>[];
         _purchasePending = false;
-        _loading = false;
       });
       return;
     }
 
-    final List<String> consumables = await ConsumableStore.load();
     setState(() {
       _products = productDetailResponse.productDetails;
-      _consumables = consumables;
       _purchasePending = false;
-      _loading = false;
     });
   }
 
@@ -132,6 +121,7 @@ class _PurchasePageState extends State<PurchasePage> {
     required double price,
     required String code,
     required String symbol,
+    required String access,
   }) {
     return GestureDetector(
       onTap: () {
@@ -192,7 +182,7 @@ class _PurchasePageState extends State<PurchasePage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    '$symbol$price $code for lifetime access',
+                    '$symbol$price $code for $access access',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF7f7b7b),
@@ -304,6 +294,9 @@ class _PurchasePageState extends State<PurchasePage> {
                         plan: _products[i].id == 'silver_membership'
                             ? 'AFFORDABLE PLAN'
                             : 'MOST POPULAR',
+                        access: _products[i].id == 'silver_membership'
+                            ? '3 months'
+                            : 'Lifetime',
                         planType: _products[i].id,
                         title: _products[i].title.split('(')[0],
                         price: _products[i].rawPrice,
@@ -427,50 +420,9 @@ class _PurchasePageState extends State<PurchasePage> {
     );
   }
 
-  Card _buildConsumableBox() {
-    if (_loading) {
-      return const Card(
-          child: ListTile(
-              leading: CircularProgressIndicator(),
-              title: Text('Fetching consumables...')));
-    }
-    const ListTile consumableHeader =
-        ListTile(title: Text('Purchased consumables'));
-    final List<Widget> tokens = _consumables.map((String id) {
-      return GridTile(
-        child: IconButton(
-          icon: const Icon(
-            Icons.stars,
-            size: 42.0,
-            color: Colors.orange,
-          ),
-          splashColor: Colors.yellowAccent,
-          onPressed: () => consume(id),
-        ),
-      );
-    }).toList();
-    return Card(
-      child: Column(
-        children: <Widget>[
-          consumableHeader,
-          const Divider(),
-          GridView.count(
-            crossAxisCount: 5,
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(16.0),
-            children: tokens,
-          )
-        ],
-      ),
-    );
-  }
-
   Future<void> consume(String id) async {
     await ConsumableStore.consume(id);
-    final List<String> consumables = await ConsumableStore.load();
-    setState(() {
-      _consumables = consumables;
-    });
+    setState(() {});
   }
 
   void handleError() {

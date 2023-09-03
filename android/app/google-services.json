@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "65195937386",
-    "project_id": "termux-commands-ee127",
-    "storage_bucket": "termux-commands-ee127.appspot.com"
+    "project_number": "736660377171",
+    "project_id": "anime-wallpapers-78bc1",
+    "storage_bucket": "anime-wallpapers-78bc1.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:65195937386:android:bb07f8341618f31e1d0413",
+        "mobilesdk_app_id": "1:736660377171:android:f2631bff132d3e56d2c0a6",
         "android_client_info": {
-          "package_name": "com.frontendforever.termux"
+          "package_name": "in.codingfrontend.animewallpapers"
         }
       },
       "oauth_client": [
         {
-          "client_id": "65195937386-1j96ujo20f3tujcos517a3bc8k91vq67.apps.googleusercontent.com",
+          "client_id": "736660377171-idad8in92se7mqpsbljejgdvfl65dgq1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAZUA7KqSdWqd1AK6mvVM-z8dMRjETR_qk"
+          "current_key": "AIzaSyC5LML4ZZ-wCvI4N9vocD-xPzR5pGb4NfA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "65195937386-1j96ujo20f3tujcos517a3bc8k91vq67.apps.googleusercontent.com",
+              "client_id": "736660377171-idad8in92se7mqpsbljejgdvfl65dgq1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

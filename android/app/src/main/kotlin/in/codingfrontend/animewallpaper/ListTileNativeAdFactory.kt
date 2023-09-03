@@ -1,5 +1,4 @@
-
-package com.frontendforever.termux
+package `in`.codingfrontend.animewallpapers
 
 import android.content.Context
 import android.view.LayoutInflater

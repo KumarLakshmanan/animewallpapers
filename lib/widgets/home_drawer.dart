@@ -66,7 +66,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           accountEmail: const Text(
-            "com.frontendforever.termux",
+            "in.codingfrontend.animewallpapers",
             style: TextStyle(
               color: Colors.white,
               fontSize: 12,
@@ -188,7 +188,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           onTap: () {
             Get.back();
             Share.share(
-              "Termux Tools & Commands. \nMore than 100+ tools with installation and usage steps are available in this app. \n\nhttps://play.google.com/store/apps/details?id=com.frontendforever.termux",
+              "Termux Tools & Commands. \nMore than 100+ tools with installation and usage steps are available in this app. \n\nhttps://play.google.com/store/apps/details?id=in.codingfrontend.animewallpapers",
             );
           },
         ),
@@ -229,7 +229,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           onTap: () async {
             await launchUrl(
               Uri.parse(
-                'https://play.google.com/store/apps/details?id=com.frontendforever.termux',
+                'https://play.google.com/store/apps/details?id=in.codingfrontend.animewallpapers',
               ),
               mode: LaunchMode.externalApplication,
             );
