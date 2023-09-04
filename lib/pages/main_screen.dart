@@ -126,7 +126,7 @@ class _MainScreenState extends State<MainScreen>
                   }
                 },
                 child: const Text(
-                  'Termux Tools & Commands',
+                  'Anime Wallpapers',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

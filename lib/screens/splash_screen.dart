@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 30,
               ),
               const Text(
-                "Termux Tools & Commands",
+                "Anime Wallpapers",
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.white,

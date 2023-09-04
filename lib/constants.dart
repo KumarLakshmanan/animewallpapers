@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const String kAppTitle = "Termux Tools & Commands";
-const String kAppDescription = "Open-Source projects library";
+const String kAppTitle = "Anime Wallpapers";
+const String kAppDescription = "Download and share anime wallpapers";
 
 List<BoxShadow> boxShadow = [
   // box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -20,5 +20,5 @@ Color secondaryColor = const Color(0xFF2C303A);
 Color appBarColor = const Color(0xFF1E1F25);
 
 Color backgroundColor = const Color(0xFFFFFFFF);
-String webUrl = "https://termux.frontendforever.com/";
-String apiUrl = "https://termux.frontendforever.com/api/v1.php";
+String webUrl = "https://wallpapers.frontendforever.com/";
+String apiUrl = "https://wallpapers.frontendforever.com/api/v1.php";

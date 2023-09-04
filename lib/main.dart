@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Termux Tools & Commands',
+      title: 'Anime Wallpapers',
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(

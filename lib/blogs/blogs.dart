@@ -701,7 +701,7 @@ class _InlineAdWidgetState extends State<InlineAdWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Termux Tools & Commands",
+                              "Anime Wallpapers",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,

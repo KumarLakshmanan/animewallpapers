@@ -58,7 +58,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           accountName: const Text(
-            "Termux Tools & Commands",
+            "Anime Wallpapers",
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -188,7 +188,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           onTap: () {
             Get.back();
             Share.share(
-              "Termux Tools & Commands. \nMore than 100+ tools with installation and usage steps are available in this app. \n\nhttps://play.google.com/store/apps/details?id=in.codingfrontend.animewallpapers",
+              "Anime Wallpapers. \nMore than 100+ tools with installation and usage steps are available in this app. \n\nhttps://play.google.com/store/apps/details?id=in.codingfrontend.animewallpapers",
             );
           },
         ),
