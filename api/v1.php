@@ -1054,78 +1054,26 @@ if (isset($_REQUEST["mode"])) {
         } else {
             $json["error"] = array("code" => "#400", "description" => "Invalid request.");
         }
-    } else if ($mode == 'addJob') {
-        if (isset($_REQUEST['title']) && isset($_REQUEST['description']) && isset($_REQUEST['images'])) {
+    } else if ($mode == 'addCategory') {
+        if (isset($_REQUEST['title']) && isset($_REQUEST['description']) && isset($_REQUEST['image'])) {
             $title = trim(htmlspecialchars($_REQUEST['title']));
             $description  = trim(htmlspecialchars($_REQUEST['description']));
             $token = trim(htmlspecialchars($_SESSION['token']));
             $email  = trim(htmlspecialchars($_SESSION['email']));
-            $images = trim(htmlspecialchars($_REQUEST['images']));
-            $link = trim(htmlspecialchars($_REQUEST['link']));
-            $pdfPath = "";
-            $uploadOk = 1;
+            $image = trim(htmlspecialchars($_REQUEST['image']));
             try {
-                if (isset($_FILES['pdf'])) {
-                    $target_dir = $uploadsDirectory . "pdf/";
-                    $pdfname = uniqid() . ".pdf";
-                    $target_file = $target_dir . $pdfname;
-                    $uploadOk = 1;
-                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                    // Check if image file is a actual image or fake image
-                    $check = getimagesize($_FILES["pdf"]["tmp_name"]);
-                    if ($check !== false) {
-                        $json["error"] = array("code" => "#400", "description" => "File is not a pdf.");
-                        $uploadOk = 0;
-                    }
-                    if ($_FILES["pdf"]["size"] > 50000000) {
-                        $json["error"] = array("code" => "#400", "description" => "Sorry, your file is too large.");
-                        $uploadOk = 0;
-                    }
-                    if (
-                        $imageFileType != "pdf"
-                    ) {
-                        $json["error"] = array("code" => "#400", "description" => "Sorry, only PDF files are allowed.");
-                        $uploadOk = 0;
-                    }
-
-                    if ($uploadOk != 0) {
-                        if (move_uploaded_file($_FILES["pdf"]["tmp_name"], $target_file)) {
-                            $pdfPath = $pdfname;
-                            $json["error"] = array("code" => "#200", "description" => "The file " . htmlspecialchars(basename($_FILES["pdf"]["name"])) . " has been uploaded.");
-                        } else {
-                            $json["error"] = array("code" => "#400", "description" => "Sorry, there was an error uploading your file.");
-                        }
-                    }
-                }
-
-                if ($uploadOk == 1) {
+                $userAuth  = validateSessionToken($pdoConn, $token, $email);
+                if ($userAuth) {
                     $username  = $userAuth['username'];
-                    $sql = "INSERT INTO jobs (name, description, image, created_date,link, pdf) VALUES (:name, :description, :image, NOW(),:link, :pdf)";
+                    $sql = "INSERT INTO categories (name, description, thumbnail) VALUES (:name, :description, :image)";
                     $stmt = $pdoConn->prepare($sql);
                     $stmt->bindParam(":name", $title);
                     $stmt->bindParam(":description", $description);
-                    $stmt->bindParam(":image", $images);
-                    $stmt->bindParam(":link", $link);
-                    $stmt->bindParam(":pdf", $pdfPath);
+                    $stmt->bindParam(":image", $image);
                     $stmt->execute();
-
-                    $sql = "SELECT regid FROM regid";
-                    $stmt = $pdoConn->prepare($sql);
-                    $stmt->execute();
-                    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    $active = array();
-                    foreach ($result as $row) {
-                        $active[] = $row["regid"];
-                    }
-                    sendGCM(
-                        "New Job Offer Added",
-                        $title,
-                        $active,
-                        "jobs"
-                    );
                     $json["error"] = array("code" => "#200", "description" => "Success.");
                 } else {
-                    $json["error"] = array("code" => "#400", "description" => "PDF is not uploaded");
+                    $json["error"] = array("code" => "#400", "description" => "Invalid token.");
                 }
             } catch (Exception $e) {
                 $json["error"] = array("code" => "#500", "description" => $e->getMessage());
@@ -1133,65 +1081,18 @@ if (isset($_REQUEST["mode"])) {
         } else {
             $json["error"] = array("code" => "#400", "description" => "Invalid request 1.");
         }
-    } else if ($mode == 'editJob') {
-        if (isset($_REQUEST['jobid']) && isset($_REQUEST['title']) && isset($_REQUEST['description']) && isset($_REQUEST['images'])) {
-            $id = trim(htmlspecialchars($_REQUEST['jobid']));
+    } else if ($mode == 'editCategory') {
+        if (isset($_REQUEST['categoryid']) && isset($_REQUEST['title']) && isset($_REQUEST['description']) && isset($_REQUEST['image'])) {
+            $id = trim(htmlspecialchars($_REQUEST['categoryid']));
             $title = trim(htmlspecialchars($_REQUEST['title']));
             $description  = trim(htmlspecialchars($_REQUEST['description']));
-            $token = trim(htmlspecialchars($_SESSION['token']));
-            $email  = trim(htmlspecialchars($_SESSION['email']));
-            $images = trim(htmlspecialchars($_REQUEST['images']));
-            $link = trim(htmlspecialchars($_REQUEST['link'] ?? ""));
-
-            $pdfPath = "";
-            $uploadOk = 1;
-
+            $image = trim(htmlspecialchars($_REQUEST['image']));
             try {
-                if (isset($_FILES['pdf'])) {
-                    $target_dir = $uploadsDirectory . "pdf/";
-                    $pdfname = uniqid() . ".pdf";
-                    $target_file = $target_dir . $pdfname;
-                    $uploadOk = 1;
-                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                    // Check if image file is a actual image or fake image
-                    $check = getimagesize($_FILES["pdf"]["tmp_name"]);
-                    if ($check !== false) {
-                        $json["error"] = array("code" => "#400", "description" => "File is not a pdf.");
-                        $uploadOk = 0;
-                    }
-                    if ($_FILES["pdf"]["size"] > 50000000) {
-                        $json["error"] = array("code" => "#400", "description" => "Sorry, your file is too large.");
-                        $uploadOk = 0;
-                    }
-                    if (
-                        $imageFileType != "pdf"
-                    ) {
-                        $json["error"] = array("code" => "#400", "description" => "Sorry, only PDF files are allowed.");
-                        $uploadOk = 0;
-                    }
-
-                    if ($uploadOk != 0) {
-                        if (move_uploaded_file($_FILES["pdf"]["tmp_name"], $target_file)) {
-                            $pdfPath = $pdfname;
-                            $json["error"] = array("code" => "#200", "description" => "The file " . htmlspecialchars(basename($_FILES["pdf"]["name"])) . " has been uploaded.");
-                        } else {
-                            $json["error"] = array("code" => "#400", "description" => "Sorry, there was an error uploading your file.");
-                        }
-                    }
-                }
-                $sql = "UPDATE jobs SET name = :name, description = :description, image = :image, link = :link,  updated_date = NOW()";
-                if ($pdfPath != "") {
-                    $sql .= ", pdf = :pdf";
-                }
-                $sql .= " WHERE id = :id";
+                $sql = "UPDATE categories SET name = :name, description = :description, thumbnail = :image WHERE id = :id";
                 $stmt = $pdoConn->prepare($sql);
                 $stmt->bindParam(":name", $title);
                 $stmt->bindParam(":description", $description);
-                $stmt->bindParam(":image", $images);
-                $stmt->bindParam(":link", $link);
-                if ($pdfPath != "") {
-                    $stmt->bindParam(":pdf", $pdfPath);
-                }
+                $stmt->bindParam(":image", $image);
                 $stmt->bindParam(":id", $id);
                 $stmt->execute();
                 $json["error"] = array("code" => "#200", "description" => "Success");
@@ -1201,15 +1102,15 @@ if (isset($_REQUEST["mode"])) {
         } else {
             $json["error"] = array("code" => "#400", "description" => "Invalid request 1.");
         }
-    } else if ($mode == 'deletejobs') {
-        if (isset($_REQUEST['eventid'])) {
-            $id = trim(htmlspecialchars($_REQUEST['eventid']));
+    } else if ($mode == 'deleteCategory') {
+        if (isset($_REQUEST['categoryid'])) {
+            $id = trim(htmlspecialchars($_REQUEST['categoryid']));
             $token = trim(htmlspecialchars($_SESSION['token']));
             $email  = trim(htmlspecialchars($_SESSION['email']));
             try {
                 $userAuth  = validateSessionToken($pdoConn, $token, $email);
                 if ($userAuth) {
-                    $sql = "DELETE FROM jobs WHERE id = :id";
+                    $sql = "UPDATE categories SET status = 0 WHERE id = :id";
                     $stmt = $pdoConn->prepare($sql);
                     $stmt->bindParam(":id", $id);
                     $stmt->execute();
@@ -1222,6 +1123,145 @@ if (isset($_REQUEST["mode"])) {
             }
         } else {
             $json["error"] = array("code" => "#400", "description" => "Invalid request.");
+        }
+    } else if ($mode == "addSubCategory") {
+        if (isset($_REQUEST['title']) && isset($_REQUEST['image']) && isset($_REQUEST['categoryid'])) {
+            $title = trim(htmlspecialchars($_REQUEST['title']));
+            $token = trim(htmlspecialchars($_SESSION['token']));
+            $email  = trim(htmlspecialchars($_SESSION['email']));
+            $image = trim(htmlspecialchars($_REQUEST['image']));
+            $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
+            try {
+                $userAuth  = validateSessionToken($pdoConn, $token, $email);
+                if ($userAuth) {
+                    $username  = $userAuth['username'];
+                    $sql = "INSERT INTO subcategories (name, thumbnail, category_id) VALUES (:name,  :image, :categoryid)";
+                    $stmt = $pdoConn->prepare($sql);
+                    $stmt->bindParam(":name", $title);
+                    $stmt->bindParam(":image", $image);
+                    $stmt->bindParam(":categoryid", $categoryid);
+                    $stmt->execute();
+
+                    $sql = "UPDATE categories SET subcategories_count= subcategories_count + 1, updated_at = NOW() WHERE id = :id";
+                    $stmt = $pdoConn->prepare($sql);
+                    $stmt->bindParam(":id", $categoryid);
+                    $stmt->execute();
+
+                    $json["error"] = array("code" => "#200", "description" => "Success.");
+                } else {
+                    $json["error"] = array("code" => "#400", "description" => "Invalid token.");
+                }
+            } catch (Exception $e) {
+                $json["error"] = array("code" => "#500", "description" => $e->getMessage());
+            }
+        } else {
+            $json["error"] = array("code" => "#400", "description" => "Invalid request 1.");
+        }
+    } else if ($mode == "editSubCategory") {
+        if (isset($_REQUEST['subcategoryid']) && isset($_REQUEST['title']) && isset($_REQUEST['image']) && isset($_REQUEST['categoryid'])) {
+            $id = trim(htmlspecialchars($_REQUEST['subcategoryid']));
+            $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
+            $title = trim(htmlspecialchars($_REQUEST['title']));
+            $image = trim(htmlspecialchars($_REQUEST['image']));
+
+            try {
+                $sql = "UPDATE subcategories SET name = :name,  thumbnail = :image, category_id = :categoryid WHERE id = :id";
+                $stmt = $pdoConn->prepare($sql);
+                $stmt->bindParam(":name", $title);
+                $stmt->bindParam(":image", $image);
+                $stmt->bindParam(":categoryid", $categoryid);
+                $stmt->bindParam(":id", $id);
+                $stmt->execute();
+                $json["error"] = array("code" => "#200", "description" => "Success");
+            } catch (Exception $e) {
+                $json["error"] = array("code" => "#500", "description" => $e->getMessage());
+            }
+        } else {
+            $json["error"] = array("code" => "#400", "description" => "Invalid request 1.");
+        }
+    } else if ($mode == "deleteSubCategory") {
+        if (isset($_REQUEST['subcategoryid'])) {
+            $id = trim(htmlspecialchars($_REQUEST['subcategoryid']));
+            $token = trim(htmlspecialchars($_SESSION['token']));
+            $email  = trim(htmlspecialchars($_SESSION['email']));
+            try {
+                $userAuth  = validateSessionToken($pdoConn, $token, $email);
+                if ($userAuth) {
+                    $sql = "UPDATE subcategories SET status = 0 WHERE id = :id";
+                    $stmt = $pdoConn->prepare($sql);
+                    $stmt->bindParam(":id", $id);
+                    $stmt->execute();
+                    $json["error"] = array("code" => "#200", "description" => "Success.");
+                } else {
+                    echo "Invalid token.";
+                    $json["error"] = array("code" => "#400", "description" => "Invalid token.");
+                }
+            } catch (Exception $e) {
+                $json["error"] = array("code" => "#500", "description" => $e->getMessage());
+            }
+        } else {
+            echo "Invalid request.";
+            $json["error"] = array("code" => "#400", "description" => "Invalid request.");
+        }
+    } else if ($mode == "getSubCategory") {
+        if (isset($_REQUEST['categoryid'])) {
+            $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
+            $sql = "SELECT * FROM subcategories WHERE category_id = :categoryid AND status = 1";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":categoryid", $categoryid);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            $json["data"] = array();
+            for ($i = 0; $i < count($result); $i++) {
+                $json["data"][] = array(
+                    "id" => $result[$i]["id"],
+                    "name" => htmlspecialchars_decode($result[$i]["name"]),
+                    "thumbnail" => $baseUrl . "uploads/images/" . $result[$i]["thumbnail"],
+                    "category_id" => $result[$i]["category_id"],
+                    "created_date" => strtotime($result[$i]["created_date"]) * 1000,
+                );
+            }
+        }
+    } else if ($mode == "addImage") {
+        if (isset($_REQUEST['title']) && isset($_REQUEST['image']) && isset($_REQUEST['categoryid']) && isset($_REQUEST['subcategoryid'])) {
+            $title = trim(htmlspecialchars($_REQUEST['title']));
+            $token = trim(htmlspecialchars($_SESSION['token']));
+            $email  = trim(htmlspecialchars($_SESSION['email']));
+            $image = trim(htmlspecialchars($_REQUEST['image']));
+            $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
+            $subcategoryid = trim(htmlspecialchars($_REQUEST['subcategoryid']));
+            try {
+                $userAuth  = validateSessionToken($pdoConn, $token, $email);
+                if ($userAuth) {
+                    $username  = $userAuth['username'];
+                    $sql = "INSERT INTO images (name, thumbnail, category_id, subcategory_id) VALUES (:name,  :image, :categoryid, :subcategoryid)";
+                    $stmt = $pdoConn->prepare($sql);
+                    $stmt->bindParam(":name", $title);
+                    $stmt->bindParam(":image", $image);
+                    $stmt->bindParam(":categoryid", $categoryid);
+                    $stmt->bindParam(":subcategoryid", $subcategoryid);
+                    $stmt->execute();
+
+                    $sql = "UPDATE categories SET images_count= images_count + 1 WHERE id = :id";
+                    $stmt = $pdoConn->prepare($sql);
+                    $stmt->bindParam(":id", $categoryid);
+                    $stmt->execute();
+
+                    $sql = "UPDATE subcategories SET images_count= images_count + 1 WHERE id = :id";
+                    $stmt = $pdoConn->prepare($sql);
+                    $stmt->bindParam(":id", $categoryid);
+                    $stmt->execute();
+
+
+                    $json["error"] = array("code" => "#200", "description" => "Success.");
+                } else {
+                    $json["error"] = array("code" => "#400", "description" => "Invalid token.");
+                }
+            } catch (Exception $e) {
+                $json["error"] = array("code" => "#500", "description" => $e->getMessage());
+            }
+        } else {
+            $json["error"] = array("code" => "#400", "description" => "Invalid request 1.");
         }
     } else if ($mode == 'getannouncement') {
         $sql = "SELECT * FROM announcements";
@@ -2214,6 +2254,86 @@ if (isset($_REQUEST["mode"])) {
             $json["error"] = array("code" => "#200", "description" => "Success.");
         } catch (Exception $e) {
             $json["error"] = array("code" => "#500", "description" => $e->getMessage());
+        }
+    } else if ($mode == "getAllCategories") {
+        $sql = "SELECT * FROM categories WHERE status = 1";
+        $stmt = $pdoConn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $json["error"] = array("code" => "#200", "description" => "Success.");
+        $json["data"] = $result;
+    } else if ($mode == "getAllSubCategories") {
+        if (isset($_REQUEST['categoryid'])) {
+            $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
+            $sql = "SELECT * FROM subcategories WHERE category_id = :categoryid AND status = 1";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":categoryid", $categoryid);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            $json["data"] = $result;
+        }
+    } else if ($mode == "getAllImages") {
+        $categoryid = trim(htmlspecialchars($_REQUEST['categoryid'] ?? ""));
+        $subcategoryid = trim(htmlspecialchars($_REQUEST['subcategoryid'] ?? ""));
+        $orderby = trim(htmlspecialchars($_REQUEST['orderby'] ?? "popular"));
+        $pageNo = (int)trim(htmlspecialchars($_REQUEST['pageNo'] ?? "1"));
+        $limit = (int)trim(htmlspecialchars($_REQUEST['limit'] ?? "10"));
+        $offset = ($pageNo - 1) * $limit;
+
+        if ($categoryid == "") {
+            $sql = "SELECT * FROM images WHERE status = 1 ";
+            if ($orderby == "popular") {
+                $sql .= "ORDER BY views DESC ";
+            } else if ($orderby == "latest") {
+                $sql .= "ORDER BY id DESC ";
+            } else if ($orderby == "oldest") {
+                $sql .= "ORDER BY id ASC ";
+            } else if ($orderby == "random") {
+                $sql .= "ORDER BY RAND() ";
+            } else {
+                $sql .= "ORDER BY id DESC ";
+            }
+            $sql .= "LIMIT :limit OFFSET :offset";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
+            $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+        } else if ($subcategoryid == "") {
+            $sql = "SELECT * FROM images WHERE category_id = :categoryid AND status = 1";
+            if ($orderby == "popular") {
+                $sql .= "ORDER BY views DESC ";
+            } else if ($orderby == "latest") {
+                $sql .= "ORDER BY id DESC ";
+            } else if ($orderby == "oldest") {
+                $sql .= "ORDER BY id ASC ";
+            } else if ($orderby == "random") {
+                $sql .= "ORDER BY RAND() ";
+            } else {
+                $sql .= "ORDER BY id DESC ";
+            }
+            $sql = " LIMIT :limit OFFSET :offset";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":categoryid", $categoryid);
+            $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
+            $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+        } else {
+            $sql = "SELECT * FROM images WHERE category_id = :categoryid AND subcategory_id = :subcategoryid AND status = 1";
+            if ($orderby == "popular") {
+                $sql .= "ORDER BY views DESC ";
+            } else if ($orderby == "latest") {
+                $sql .= "ORDER BY id DESC ";
+            } else if ($orderby == "oldest") {
+                $sql .= "ORDER BY id ASC ";
+            } else if ($orderby == "random") {
+                $sql .= "ORDER BY RAND() ";
+            } else {
+                $sql .= "ORDER BY id DESC ";
+            }
+            $sql = " LIMIT :limit OFFSET :offset";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":categoryid", $categoryid);
+            $stmt->bindParam(":subcategoryid", $subcategoryid);
+            $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
+            $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
         }
     } else {
         $json['error'] = array("code" => "#403", "description" => "Invalid mode.");

@@ -1,10 +1,11 @@
 <?php
 
 
-if (isset($_GET['jobid'])) {
-    $id = $_GET['jobid'];
-    $sql = "SELECT * FROM jobs WHERE id = $id";
+if (isset($_GET['subcategoryid'])) {
+    $id = $_GET['subcategoryid'];
+    $sql = "SELECT * FROM subcategories WHERE id = :id";
     $stmt = $pdoConn->prepare($sql);
+    $stmt->bindParam(':id', $id);
     $stmt->execute();
     $propertyEdit = $stmt->fetchAll();
     if (count($propertyEdit) > 0) {
@@ -13,40 +14,31 @@ if (isset($_GET['jobid'])) {
         <br />
         <div class="row">
             <div class="col-md-6">
-                <h6>Job Title *</h6>
+                <h6>subCategory Name *</h6>
                 <div class="p-2">
-                    <input type="text" class="form-control" id="title" placeholder="Enter Job name" required value="<?php echo ($propertyEdit[0]['name']); ?>">
+                    <input type="text" class="form-control" id="title" placeholder="Enter Job name" required value="<?php echo $propertyEdit[0]['name']; ?>">
                 </div>
             </div>
             <div class="col-md-6">
-                <h6>Job Link</h6>
+                <h6>Main Category *</h6>
                 <div class="p-2">
-                    <input type="text" class="form-control" id="link" placeholder="Enter Job link" value="<?php echo ($propertyEdit[0]['link']); ?>">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <h6>Job PDF</h6>
-                <?php
-                if ($propertyEdit[0]['pdf'] != "") {
-                ?>
-                    <a href="<?= $baseUrl ?>uploads/pdf/<?= $propertyEdit[0]['pdf'] ?>" target="_blank">View PDF</a>
-                    <a href="#" class="btn btn-danger" onclick="deletePdf(<?= $propertyEdit[0]['id'] ?>)">Delete PDF</a>
-                <?php
-                }
-                ?>
-                <div class="p-2">
-                    <input type="file" class="form-control" id="pdf" placeholder="Upload pdf">
-                </div>
-            </div>
-            <div class="col-12">
-                <h6>Job Description *</h6>
-                <div class="p-2">
-                    <textarea rows="5" class="form-control texteditor-content" id="description" placeholder="Enter Job description" required><?php echo ($propertyEdit[0]['description']); ?></textarea>
+                    <select class="form-control" id="maincategory" required>
+                        <option value="">Select maincategory Category</option>
+                        <?php
+                        $sql = "SELECT id, name FROM `categories`";
+                        $stmt = $pdoConn->prepare($sql);
+                        $stmt->execute();
+                        $categories = $stmt->fetchAll();
+                        foreach ($categories as $category) {
+                            echo '<option value="' . $category['id'] . '" ' . ($category['id'] == $propertyEdit[0]['category_id'] ? 'selected' : '') . '>' . $category['name'] . '</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
             </div>
             <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
                 <div class="p-2">
-                    <label for="images">Job Image</label>
+                    <label for="images">subCategory Image</label>
                     <div class="input-images" id="images" style="padding-top: .5rem;background: white"></div>
                 </div>
             </div>
@@ -54,7 +46,6 @@ if (isset($_GET['jobid'])) {
         <div class="p-2">
             <button type="button" class="w-100 btn btn-primary saveButton">Save changes</button>
         </div>
-
 
         <link href="<?= $baseUrl ?>css/image-uploader.min.css" rel="stylesheet" />
         <script src="<?= $baseUrl ?>js/image-uploader.min.js"></script>
@@ -66,7 +57,7 @@ if (isset($_GET['jobid'])) {
                 "baseURL": "<?= $baseUrl ?>",
                 "auth": "<?= $_SESSION['token'] ?>",
                 "username": "<?= $_SESSION['email'] ?>",
-                "alreadyUploaded": "<?php echo ($propertyEdit[0]['image']); ?>",
+                "alreadyUploaded": "<?php echo ($propertyEdit[0]['thumbnail']); ?>",
             };
             $(".saveButton").click(function() {
                 var name = $("#name").val();
@@ -74,11 +65,17 @@ if (isset($_GET['jobid'])) {
                 $(".uploaded-image").each(function() {
                     images.push($(this).attr("data-name"));
                 });
-                var description = $("#description").val();
                 var title = $("#title").val();
                 var link = $("#link").val();
 
-                if (title == "") {
+                if (images.length == 0) {
+                    swal({
+                        icon: 'error',
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'Please upload at least one image!',
+                    })
+                } else if (title == "") {
                     swal({
                         icon: 'error',
                         type: 'error',
@@ -95,13 +92,11 @@ if (isset($_GET['jobid'])) {
                     }).then((willDelete) => {
                         if (willDelete) {
                             var formData = new FormData();
-                            formData.append("mode", "editJob");
+                            formData.append("mode", "editSubCategory");
                             formData.append("title", title);
-                            formData.append("description", description);
-                            formData.append("link", link);
-                            formData.append("images", images);
-                            formData.append("pdf", $("#pdf")[0].files[0]);
-                            formData.append("jobid", "<?= $id ?>");
+                            formData.append("image", images[0]);
+                            formData.append("subcategoryid", "<?= $id ?>");
+                            formData.append("categoryid", $("#maincategory").val());
                             $(".preloader").show();
                             $.ajax({
                                 url: "<?= $apiUrl ?>",
@@ -116,7 +111,7 @@ if (isset($_GET['jobid'])) {
                                         swal({
                                             title: 'Success!',
                                             icon: 'success',
-                                            text: "Job has been updated successfully!",
+                                            text: "subCategory updated successfully",
                                             confirmButtonText: 'Ok'
                                         }).then((result) => {
                                             window.location.reload();
@@ -151,7 +146,7 @@ if (isset($_GET['jobid'])) {
                             type: 'POST',
                             data: {
                                 mode: 'deletepdf',
-                                jobid: id,
+                                subcategoryid: id,
                             },
                             success: function(data) {
                                 if (data.error.code == '#200') {

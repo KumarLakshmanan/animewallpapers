@@ -13,9 +13,9 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $baseUrl  = "https://animewallpapers.codingfrontend.in/";
     $adminBaseUrl  = "https://animewallpapers.codingfrontend.in/";
     $webAddress = "https://animewallpapers.codingfrontend.in/";
-    $codesDirectory = "/home/u707479837/public_html/subdomains/spkc/code/";
-    $uploadsDirectory = "/home/u707479837/public_html/subdomains/spkc/uploads/";
-    $baseDirectory = "/home/u707479837/public_html/subdomains/spkc/";
+    $codesDirectory = "/home/u707479837/domains/codingfrontend.in/public_html/animewallpapers/code/";
+    $uploadsDirectory = "/home/u707479837/domains/codingfrontend.in/public_html/animewallpapers/uploads/";
+    $baseDirectory = "/home/u707479837/domains/codingfrontend.in/public_html/animewallpapers/";
 }
 
 

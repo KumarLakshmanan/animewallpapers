@@ -41,14 +41,14 @@ if (isset($_GET["id"])) {
                 <?php
                 if ($pageId == "courses") {
                     include "dashboard/courses.php";
-                } else if ($pageId == "events") {
-                    include "dashboard/events.php";
+                } else if ($pageId == "images") {
+                    include "dashboard/images.php";
                 } else if ($pageId == "slider") {
                     include "dashboard/slider.php";
-                } elseif ($pageId == "editevent") {
-                    include "dashboard/event/edit.php";
-                } elseif ($pageId == "addevent") {
-                    include "dashboard/event/add.php";
+                } elseif ($pageId == "editimage") {
+                    include "dashboard/image/edit.php";
+                } elseif ($pageId == "addimage") {
+                    include "dashboard/image/add.php";
                 } elseif ($pageId == "users") {
                     include "dashboard/users.php";
                 } elseif ($pageId == "admins") {
@@ -103,12 +103,18 @@ if (isset($_GET["id"])) {
                     include "dashboard/gallery/edit.php";
                 } else if ($pageId == 'guest') {
                     include "dashboard/guest.php";
-                } else if ($pageId == 'jobs') {
-                    include "dashboard/jobs.php";
-                } else if ($pageId == 'addjobs') {
-                    include "dashboard/jobs/add.php";
-                } else if ($pageId == 'editjobs') {
-                    include "dashboard/jobs/edit.php";
+                } else if ($pageId == 'categories') {
+                    include "dashboard/categories.php";
+                } else if ($pageId == 'addcategory') {
+                    include "dashboard/category/add.php";
+                } else if ($pageId == 'editcategory') {
+                    include "dashboard/category/edit.php";
+                } else if ($pageId == 'subcategories') {
+                    include "dashboard/subcategories.php";
+                } else if ($pageId == 'addsubcategory') {
+                    include "dashboard/subcategory/add.php";
+                } else if ($pageId == 'editsubcategory') {
+                    include "dashboard/subcategory/edit.php";
                 } else {
                     include "dashboard/home.php";
                 }
