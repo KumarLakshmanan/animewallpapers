@@ -1,43 +1,76 @@
-class SingleBlog {
-  SingleBlog({
+// To parse this JSON data, do
+//
+//     final imageType = imageTypeFromJson(jsonString);
+
+import 'dart:convert';
+
+ImageType imageTypeFromJson(String str) => ImageType.fromJson(json.decode(str));
+
+String imageTypeToJson(ImageType data) => json.encode(data.toJson());
+
+class ImageType {
+  int id;
+  String title;
+  String image;
+  String thumb;
+  int width;
+  int height;
+  int views;
+  int likes;
+  DateTime createdAt;
+  DateTime updatedAt;
+  String category;
+  String subcategory;
+  String status;
+  String keywords;
+  ImageType({
     required this.id,
     required this.title,
-    required this.images,
-    required this.createdAt,
+    required this.image,
+    required this.thumb,
+    required this.width,
+    required this.height,
     required this.views,
     required this.likes,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.category,
+    required this.subcategory,
     required this.status,
     required this.keywords,
   });
 
-  int id;
-  String title;
-  List<String> images;
-  int createdAt;
-  int views;
-  int likes;
-  String status;
-  List<String> keywords;
-
-  factory SingleBlog.fromJson(Map<String, dynamic> json) => SingleBlog(
-        id: int.parse(json["id"].toString()),
+  factory ImageType.fromJson(Map<String, dynamic> json) => ImageType(
+        id: json["id"],
         title: json["title"],
-        images: List<String>.from(json["images"].map((x) => x)),
-        createdAt: json["created_at"],
-        views: json["views"] ?? 0,
-        likes: json["likes"] ?? 0,
+        image: json["image"],
+        thumb: json["thumb"],
+        width: json["width"],
+        height: json["height"],
+        views: json["views"],
+        likes: json["likes"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        category: json["category"],
+        subcategory: json["subcategory"],
         status: json["status"] ?? 'public',
-        keywords: List<String>.from(json["keywords"].map((x) => x)),
+        keywords: json["keywords"] ?? 'Anime',
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
-        "images": List<dynamic>.from(images.map((x) => x)),
-        "created_at": createdAt,
+        "image": image,
+        "thumb": thumb,
+        "width": width,
+        "height": height,
         "views": views,
         "likes": likes,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "category": category,
+        "subcategory": subcategory,
         "status": status,
-        "keywords": List<dynamic>.from(keywords.map((x) => x)),
+        "keywords": keywords,
       };
 }

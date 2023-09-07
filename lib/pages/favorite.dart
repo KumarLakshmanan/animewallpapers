@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/blogs/blogs.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
+import 'package:frontendforever/wallpapers/single_blog_item.dart';
+import 'package:frontendforever/widgets/banner_ad.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteList extends StatefulWidget {
@@ -17,7 +18,7 @@ class FavoriteList extends StatefulWidget {
 class _FavoriteListState extends State<FavoriteList> {
   bool isOpen = true;
   bool loaded = false;
-  List<SingleBlog> codes = [];
+  List<ImageType> codes = [];
   TextEditingController searchText = TextEditingController(text: '');
   String sortBy = 'createat';
   bool isAscending = true;
@@ -32,7 +33,7 @@ class _FavoriteListState extends State<FavoriteList> {
       if (prefsList.elementAt(i).toString().contains('favorites_')) {
         var data = prefs.getString(prefsList.elementAt(i).toString()) ?? '';
         var favoriteList = json.decode(data) as Map<String, dynamic>;
-        codes.add(SingleBlog.fromJson(favoriteList));
+        codes.add(ImageType.fromJson(favoriteList));
       }
     }
     setState(() {});
@@ -69,7 +70,7 @@ class _FavoriteListState extends State<FavoriteList> {
                 controller: _scrollController,
                 children: [
                   if (codes.isEmpty) ...[
-                    const RestaurantShimmer(),
+                    const WallpaperShimmer(),
                     const SizedBox(height: 20),
                     const Center(
                       child: Text(

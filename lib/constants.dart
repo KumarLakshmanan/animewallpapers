@@ -20,5 +20,6 @@ Color secondaryColor = const Color(0xFF2C303A);
 Color appBarColor = const Color(0xFF1E1F25);
 
 Color backgroundColor = const Color(0xFFFFFFFF);
-String webUrl = "https://wallpapers.frontendforever.com/";
-String apiUrl = "https://wallpapers.frontendforever.com/api/v1.php";
+String webUrl = "https://animewallpapers.codingfrontend.in/";
+String apiUrl = "https://animewallpapers.codingfrontend.in/api/v1.php";
+String announcementsKey = "announcements";

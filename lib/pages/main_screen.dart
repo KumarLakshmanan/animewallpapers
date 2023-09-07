@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:frontendforever/blogs/blogs.dart';
+import 'package:frontendforever/wallpapers/blogs.dart';
+import 'package:frontendforever/wallpapers/categories.dart';
 import 'package:get/get.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/widgets/home_drawer.dart';
@@ -16,7 +18,7 @@ class MainScreen extends StatefulWidget {
   const MainScreen({Key? key, this.show = false}) : super(key: key);
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen>
@@ -35,11 +37,13 @@ class _MainScreenState extends State<MainScreen>
   init() async {
     menuAnimation = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 450));
-    InAppUpdate.checkForUpdate().then((value) {
-      if (value.updateAvailability == UpdateAvailability.updateAvailable) {
-        InAppUpdate.startFlexibleUpdate();
-      }
-    });
+    if (!kDebugMode) {
+      InAppUpdate.checkForUpdate().then((value) {
+        if (value.updateAvailability == UpdateAvailability.updateAvailable) {
+          InAppUpdate.startFlexibleUpdate();
+        }
+      });
+    }
   }
 
   int clickCount = 0;
@@ -135,7 +139,14 @@ class _MainScreenState extends State<MainScreen>
                 ),
               ),
             ),
-            body: const CodesList(),
+            body: const Column(
+              children: [
+                CategoriesListView(),
+                Expanded(
+                  child: CodesList(),
+                ),
+              ],
+            ),
           ),
         ),
       ),

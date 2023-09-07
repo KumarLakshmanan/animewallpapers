@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/blogs/premium.dart';
+import 'package:frontendforever/wallpapers/premium.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/pages/favorite.dart';
 import 'package:frontendforever/screens/feedback.dart';

@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontendforever/blogs/blogs.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/models/single_blog.dart';
 import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
+import 'package:frontendforever/wallpapers/single_blog_item.dart';
+import 'package:frontendforever/widgets/inline_ad.dart';
 import 'package:http/http.dart' as http;
 
 class PremiumList extends StatefulWidget {
@@ -23,7 +24,7 @@ class _PremiumListState extends State<PremiumList>
 
   bool isOpen = true;
   bool loaded = false;
-  List<SingleBlog> codes = [];
+  List<ImageType> codes = [];
   TextEditingController searchText = TextEditingController(text: '');
   int pageNo = 1;
   final ScrollController _scrollController = ScrollController();
@@ -45,13 +46,14 @@ class _PremiumListState extends State<PremiumList>
           codes = [];
         }
         for (var i = 0; i < data['data'].length; i++) {
-          codes.add(SingleBlog.fromJson(data['data'][i]));
+          codes.add(ImageType.fromJson(data['data'][i]));
         }
         if (data['data'].length < 10) {
           loaded = true;
         }
         setState(() {});
       } else {
+        // ignore: use_build_context_synchronously
         showErrorDialog(context, data['error']['description']);
       }
     }
@@ -107,8 +109,8 @@ class _PremiumListState extends State<PremiumList>
                 ]
               ],
               if (!loaded) ...[
-                if (codes.isEmpty) const RestaurantShimmer(),
-                const RestaurantShimmer(),
+                if (codes.isEmpty) const WallpaperShimmer(),
+                const WallpaperShimmer(),
               ]
             ],
           ),
