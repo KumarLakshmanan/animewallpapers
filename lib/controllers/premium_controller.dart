@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/models/single_blog.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/functions.dart';
+import 'package:animewallpapers/models/single_blog.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 

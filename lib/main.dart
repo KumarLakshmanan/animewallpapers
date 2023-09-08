@@ -1,6 +1,6 @@
+import 'package:animewallpapers/functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:frontendforever/functions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: createMaterialColor(const Color(0xFF000000)),
         primaryColor: Colors.black,
-        fontFamily: GoogleFonts.lato().fontFamily,
+        fontFamily: GoogleFonts.poppins().fontFamily,
       ),
     );
   }

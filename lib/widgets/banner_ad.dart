@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/ad_controller.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/controllers/ad_controller.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

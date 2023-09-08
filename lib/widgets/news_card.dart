@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/models/announce_type.dart';
-import 'package:frontendforever/screens/photoslide.dart';
-import 'package:frontendforever/widgets/pdf.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/functions.dart';
+import 'package:animewallpapers/models/announce_type.dart';
+import 'package:animewallpapers/screens/photoslide.dart';
+import 'package:animewallpapers/widgets/pdf.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 

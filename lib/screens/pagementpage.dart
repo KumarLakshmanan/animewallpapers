@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/pages/main_screen.dart';
-import 'package:frontendforever/screens/feedback.dart';
-import 'package:frontendforever/widgets/all_widget.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/pages/main_screen.dart';
+import 'package:animewallpapers/screens/feedback.dart';
+import 'package:animewallpapers/widgets/all_widget.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';

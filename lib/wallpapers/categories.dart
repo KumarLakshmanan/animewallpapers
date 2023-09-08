@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/controllers/data_controller.dart';
-import 'package:frontendforever/widgets/on_tap_scale.dart';
+import 'package:animewallpapers/controllers/data_controller.dart';
+import 'package:animewallpapers/widgets/on_tap_scale.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontendforever/constants.dart';
+import 'package:animewallpapers/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 

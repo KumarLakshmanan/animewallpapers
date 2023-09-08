@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/pages/main_screen.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/pages/main_screen.dart';
 import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {

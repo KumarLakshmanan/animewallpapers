@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/models/announce_type.dart';
-import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
-import 'package:frontendforever/widgets/inline_ad.dart';
-import 'package:frontendforever/widgets/news_card.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/models/announce_type.dart';
+import 'package:animewallpapers/shimmer/restaurant_shimmer.dart';
+import 'package:animewallpapers/widgets/inline_ad.dart';
+import 'package:animewallpapers/widgets/news_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 

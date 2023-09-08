@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:frontendforever/controllers/premium_controller.dart';
-import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/wallpapers/premium_categories.dart';
-import 'package:frontendforever/wallpapers/single_blog_item.dart';
+import 'package:animewallpapers/controllers/premium_controller.dart';
+import 'package:animewallpapers/shimmer/restaurant_shimmer.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/wallpapers/premium_categories.dart';
+import 'package:animewallpapers/wallpapers/single_blog_item.dart';
 import 'package:get/get.dart';
 
 class PremiumList extends StatefulWidget {

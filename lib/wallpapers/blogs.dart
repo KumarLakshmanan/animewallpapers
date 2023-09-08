@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:frontendforever/controllers/data_controller.dart';
-import 'package:frontendforever/shimmer/restaurant_shimmer.dart';
-import 'package:frontendforever/wallpapers/single_blog_item.dart';
+import 'package:animewallpapers/controllers/data_controller.dart';
+import 'package:animewallpapers/shimmer/restaurant_shimmer.dart';
+import 'package:animewallpapers/wallpapers/single_blog_item.dart';
 import 'package:get/get.dart';
 
 class CodesList extends StatefulWidget {

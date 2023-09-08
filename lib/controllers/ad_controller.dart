@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AdHelper {
   static String get appOpenAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/9669008513';
+      return 'ca-app-pub-1100799750663761/5320199386';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_BANNER_AD_UNIT_ID>';
     } else {
@@ -18,7 +18,7 @@ class AdHelper {
 
   static String get interstitialAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/5402460445';
+      return 'ca-app-pub-1100799750663761/1064463448';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
     } else {
@@ -28,7 +28,7 @@ class AdHelper {
 
   static String get rewaredAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/7781211774';
+      return 'ca-app-pub-1100799750663761/8863062414';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
     } else {
@@ -38,7 +38,7 @@ class AdHelper {
 
   static String get bannerAds {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/2776297105';
+      return 'ca-app-pub-1100799750663761/3610735737';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_INTERSTITIAL_AD_UNIT_ID>';
     } else {
@@ -48,7 +48,7 @@ class AdHelper {
 
   static String get nativeAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-1100799750663761/9242939661';
+      return 'ca-app-pub-1100799750663761/3133019741';
     } else if (Platform.isIOS) {
       return '<YOUR_IOS_NATIVE_AD_UNIT_ID>';
     } else {
@@ -97,7 +97,7 @@ class AdController extends GetxController {
                   );
                   interstitialAd = ad;
                   if (adUnitId <= 0) {
-                    prefs.setInt("showedInterstitialAds", 3);
+                    prefs.setInt("showedInterstitialAds", 2);
                   } else {
                     prefs.setInt("showedInterstitialAds", adUnitId - 1);
                   }

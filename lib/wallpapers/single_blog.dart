@@ -6,11 +6,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/ad_controller.dart';
-import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/models/single_blog.dart';
-import 'package:frontendforever/widgets/on_tap_scale.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/controllers/ad_controller.dart';
+import 'package:animewallpapers/functions.dart';
+import 'package:animewallpapers/models/single_blog.dart';
+import 'package:animewallpapers/widgets/on_tap_scale.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -210,11 +210,6 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
           const SizedBox(width: 10),
           IconButton(
             onPressed: () async {
-              if (ac.interstitialAd != null) {
-                await ac.interstitialAd?.show();
-              } else {
-                await ac.loadInterstitialAd();
-              }
               showLoadingDialog();
               var response = await http.get(Uri.parse(widget.book.image));
               if (response.statusCode == 200) {
@@ -359,12 +354,6 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                   const SizedBox(width: 20),
                   OnTapScale(
                     onTap: () async {
-                      if (ac.interstitialAd != null) {
-                        await ac.interstitialAd?.show();
-                      } else {
-                        await ac.loadInterstitialAd();
-                      }
-                      // ignore: use_build_context_synchronously
                       return await dowloadImage(context);
                     },
                     child: Container(

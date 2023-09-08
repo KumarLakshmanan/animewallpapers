@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:frontendforever/functions.dart';
-import 'package:frontendforever/wallpapers/blogs.dart';
-import 'package:frontendforever/wallpapers/categories.dart';
+import 'package:animewallpapers/functions.dart';
+import 'package:animewallpapers/wallpapers/blogs.dart';
+import 'package:animewallpapers/wallpapers/categories.dart';
 import 'package:get/get.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/widgets/home_drawer.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/widgets/home_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:material_dialogs/material_dialogs.dart';

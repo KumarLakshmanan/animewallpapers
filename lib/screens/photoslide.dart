@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
+import 'package:animewallpapers/constants.dart';
 
 class SideSlide extends StatefulWidget {
   final String title;

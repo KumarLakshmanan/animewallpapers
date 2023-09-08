@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/wallpapers/single_blog.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/controllers/ad_controller.dart';
-import 'package:frontendforever/models/single_blog.dart';
-import 'package:frontendforever/widgets/on_tap_scale.dart';
+import 'package:animewallpapers/wallpapers/single_blog.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/controllers/ad_controller.dart';
+import 'package:animewallpapers/models/single_blog.dart';
+import 'package:animewallpapers/widgets/on_tap_scale.dart';
 import 'package:get/get.dart';
 
 class SingleBlogItem extends StatefulWidget {

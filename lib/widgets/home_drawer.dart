@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/wallpapers/premium.dart';
-import 'package:frontendforever/pages/favorite.dart';
-import 'package:frontendforever/screens/feedback.dart';
-import 'package:frontendforever/screens/pagementpage.dart';
-import 'package:frontendforever/screens/splash_screen.dart';
+import 'package:animewallpapers/wallpapers/premium.dart';
+import 'package:animewallpapers/pages/favorite.dart';
+import 'package:animewallpapers/screens/feedback.dart';
+import 'package:animewallpapers/screens/pagementpage.dart';
+import 'package:animewallpapers/screens/splash_screen.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -16,7 +16,7 @@ class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key? key}) : super(key: key);
 
   @override
-  _HomeDrawerState createState() => _HomeDrawerState();
+  State<HomeDrawer> createState() => _HomeDrawerState();
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
@@ -65,11 +65,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           accountEmail: const Text(
-            "in.codingfrontend.animewallpapers",
+            "More than 30k+ Anime Wallpapers in your pocket",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 12,
+              fontSize: 10,
             ),
+            maxLines: 2,
           ),
         ),
         if (alreadyPaid == null || alreadyPaid == false) ...[

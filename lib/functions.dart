@@ -1,8 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
-import 'package:frontendforever/notification.dart';
+import 'package:animewallpapers/constants.dart';
+import 'package:animewallpapers/notification.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';

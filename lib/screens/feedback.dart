@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:frontendforever/constants.dart';
+import 'package:animewallpapers/constants.dart';
 
-import 'package:frontendforever/functions.dart';
+import 'package:animewallpapers/functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

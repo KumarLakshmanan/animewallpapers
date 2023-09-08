@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendforever/constants.dart';
+import 'package:animewallpapers/constants.dart';
 
 class SearchBox extends StatefulWidget implements PreferredSizeWidget {
   final TextEditingController controller;
