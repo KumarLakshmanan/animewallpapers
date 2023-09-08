@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontendforever/functions.dart';
 import 'package:frontendforever/wallpapers/blogs.dart';
 import 'package:frontendforever/wallpapers/categories.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,7 @@ class _MainScreenState extends State<MainScreen>
   @override
   void initState() {
     init();
-
+    getAndroidRegId();
     super.initState();
   }
 

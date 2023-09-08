@@ -96,8 +96,8 @@ class AdController extends GetxController {
                     },
                   );
                   interstitialAd = ad;
-                  if (adUnitId == 0) {
-                    prefs.setInt("showedInterstitialAds", 2);
+                  if (adUnitId <= 0) {
+                    prefs.setInt("showedInterstitialAds", 3);
                   } else {
                     prefs.setInt("showedInterstitialAds", adUnitId - 1);
                   }

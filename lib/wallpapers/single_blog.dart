@@ -61,13 +61,6 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
   bool isDisable = true;
 
   Future<void> dowloadImage(BuildContext context) async {
-    // final Directory tempDir = await getTemporaryDirectory();
-    // String imageExt = widget.book.image.split(".").last;
-    // File file = File("${tempDir.path}/${widget.book.id}_$imageExt");
-    // if (file.existsSync()) {
-    //   showSetWallpaperDialog(imageExt: imageExt);
-    //   return;
-    // }
     progressString = Wallpaper.imageDownloadProgress(widget.book.image);
     showLoadingDialog();
     progressString.listen((data) {
@@ -173,258 +166,263 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.light,
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          actions: [
-            Center(
-              child: Ink(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
-                ),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFf3004a),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(6),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      "assets/icons/eye.png",
-                      height: 10,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      "${convertIntToViews(widget.book.views)}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+    return Scaffold(
+      appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Center(
+            child: Ink(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 8,
+              ),
+              decoration: const BoxDecoration(
+                color: Color(0xFFf3004a),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(6),
                 ),
               ),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/icons/eye.png",
+                    height: 10,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    "${convertIntToViews(widget.book.views)}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(width: 10),
-            IconButton(
-              onPressed: () async {
-                showLoadingDialog();
-                var response = await http.get(Uri.parse(widget.book.image));
-                if (response.statusCode == 200) {
-                  final result = await ImageGallerySaver.saveImage(
-                    Uint8List.fromList(response.bodyBytes),
-                    quality: 100,
-                    name: "Anime Wallpaper ${widget.book.id.toString()}",
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            onPressed: () async {
+              if (ac.interstitialAd != null) {
+                await ac.interstitialAd?.show();
+              } else {
+                await ac.loadInterstitialAd();
+              }
+              showLoadingDialog();
+              var response = await http.get(Uri.parse(widget.book.image));
+              if (response.statusCode == 200) {
+                final result = await ImageGallerySaver.saveImage(
+                  Uint8List.fromList(response.bodyBytes),
+                  quality: 100,
+                  name: "Anime Wallpaper ${widget.book.id.toString()}",
+                );
+                Get.back();
+                if (result["isSuccess"] == true) {
+                  snackbar(
+                    "Success",
+                    "Wallpaper downloaded successfully",
                   );
-                  Get.back();
-                  if (result["isSuccess"] == true) {
-                    snackbar(
-                      "Success",
-                      "Wallpaper downloaded successfully",
-                    );
-                  } else {
-                    snackbar(
-                      "Error",
-                      "Something went wrong",
-                    );
-                  }
                 } else {
                   snackbar(
                     "Error",
-                    "Server Connection Error",
+                    "Something went wrong",
                   );
                 }
-              },
-              icon: const Icon(Icons.download),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: Stack(
-          children: [
-            CachedNetworkImage(
-              imageUrl: widget.book.thumb,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              fit: BoxFit.cover,
-            ),
-            Positioned(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withOpacity(0.2),
-                        Colors.black.withOpacity(0.2),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
+              } else {
+                snackbar(
+                  "Error",
+                  "Server Connection Error",
+                );
+              }
+            },
+            icon: const Icon(Icons.download),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          CachedNetworkImage(
+            imageUrl: widget.book.thumb,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            fit: BoxFit.cover,
+          ),
+          Positioned(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.2),
+                      Colors.black.withOpacity(0.2),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: kToolbarHeight),
-                Center(
-                  child: SizedBox(
-                    height: (Get.height * 0.8) - kToolbarHeight,
-                    width: Get.width * 0.9,
-                    child: CachedNetworkImage(
-                      imageUrl: widget.book.image,
-                      fit: BoxFit.contain,
-                      placeholder: (context, url) => Center(
-                        child: Center(
-                          child: Container(
-                            height: Get.height * 0.8 - kToolbarHeight,
-                            width: Get.width * 0.9,
-                            color: Colors.black.withOpacity(0.2),
-                            child: Image.asset(
-                              "assets/icons/logo_nobg.png",
-                              fit: BoxFit.contain,
-                              color: Colors.black.withOpacity(0.5),
-                            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: kToolbarHeight),
+              Center(
+                child: SizedBox(
+                  height: (Get.height * 0.8) - kToolbarHeight,
+                  width: Get.width * 0.9,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.book.image,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Center(
+                      child: Center(
+                        child: Container(
+                          height: Get.height * 0.8 - kToolbarHeight,
+                          width: Get.width * 0.9,
+                          color: Colors.black.withOpacity(0.2),
+                          child: Image.asset(
+                            "assets/icons/logo_nobg.png",
+                            fit: BoxFit.contain,
+                            color: Colors.black.withOpacity(0.5),
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OnTapScale(
-                      onTap: () async {
-                        final prefs = await SharedPreferences.getInstance();
-                        if (isFavorite) {
-                          prefs.remove("favorites_${widget.book.id}");
-                        } else {
-                          prefs.setString(
-                            "favorites_${widget.book.id}",
-                            jsonEncode(widget.book.toJson()),
-                          );
-                          bool voted =
-                              prefs.getBool("voted_${widget.book.id}") ?? false;
-                          if (!voted) {
-                            http.post(
-                              Uri.parse(apiUrl),
-                              body: {
-                                "mode": "vote",
-                                "id": widget.book.id.toString(),
-                              },
-                            );
-                            prefs.setBool(
-                              "voted_${widget.book.id}",
-                              true,
-                            );
-                          }
-                          if (kDebugMode) {
-                            print(
-                              "$apiUrl?mode=vote&id=${widget.book.id.toString()}",
-                            );
-                          }
-                        }
-                        setState(() {
-                          isFavorite = !isFavorite;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        child: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          size: 24,
-                          color: isFavorite ? Colors.red : Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    OnTapScale(
-                      onTap: () async {
-                        return await dowloadImage(context);
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFf3004a),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(100),
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.now_wallpaper,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    OnTapScale(
-                      onTap: () async {
-                        final Directory tempDir = await getTemporaryDirectory();
-                        String imageExt = widget.book.image.split("/").last;
-                        File file =
-                            File("${tempDir.path}/${widget.book.id}_$imageExt");
-                        if (!file.existsSync()) {
-                          showLoadingDialog();
-                          var res =
-                              await http.get(Uri.parse(widget.book.image));
-                          file.writeAsBytesSync(res.bodyBytes);
-                          Get.back();
-                        }
-                        await Share.shareXFiles(
-                          [
-                            XFile(
-                              "${tempDir.path}/${widget.book.id}_$imageExt",
-                            ),
-                          ],
-                          text:
-                              "Check out this cool wallpaper. Get more amazing 30k+ wallpapers from  at: \n\n https://play.google.com/store/apps/details?id=in.codingfrontend.animewallpapers",
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OnTapScale(
+                    onTap: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      if (isFavorite) {
+                        prefs.remove("favorites_${widget.book.id}");
+                      } else {
+                        prefs.setString(
+                          "favorites_${widget.book.id}",
+                          jsonEncode(widget.book.toJson()),
                         );
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        child: Icon(
-                          Icons.share,
-                          size: 24,
-                          color: Colors.white,
-                        ),
+                        bool voted =
+                            prefs.getBool("voted_${widget.book.id}") ?? false;
+                        if (!voted) {
+                          http.post(
+                            Uri.parse(apiUrl),
+                            body: {
+                              "mode": "vote",
+                              "id": widget.book.id.toString(),
+                            },
+                          );
+                          prefs.setBool(
+                            "voted_${widget.book.id}",
+                            true,
+                          );
+                        }
+                        if (kDebugMode) {
+                          print(
+                            "$apiUrl?mode=vote&id=${widget.book.id.toString()}",
+                          );
+                        }
+                      }
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        size: 24,
+                        color: isFavorite ? Colors.red : Colors.white,
                       ),
                     ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
+                  ),
+                  const SizedBox(width: 20),
+                  OnTapScale(
+                    onTap: () async {
+                      if (ac.interstitialAd != null) {
+                        await ac.interstitialAd?.show();
+                      } else {
+                        await ac.loadInterstitialAd();
+                      }
+                      // ignore: use_build_context_synchronously
+                      return await dowloadImage(context);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFf3004a),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(100),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.now_wallpaper,
+                        size: 30,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  OnTapScale(
+                    onTap: () async {
+                      final Directory tempDir = await getTemporaryDirectory();
+                      String imageExt = widget.book.image.split("/").last;
+                      File file =
+                          File("${tempDir.path}/${widget.book.id}_$imageExt");
+                      if (!file.existsSync()) {
+                        showLoadingDialog();
+                        var res = await http.get(Uri.parse(widget.book.image));
+                        file.writeAsBytesSync(res.bodyBytes);
+                        Get.back();
+                      }
+                      await Share.shareXFiles(
+                        [
+                          XFile(
+                            "${tempDir.path}/${widget.book.id}_$imageExt",
+                          ),
+                        ],
+                        text:
+                            "Check out this cool wallpaper. Get more amazing 30k+ wallpapers from  at: \n\n https://play.google.com/store/apps/details?id=in.codingfrontend.animewallpapers",
+                      );
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      child: Icon(
+                        Icons.share,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
