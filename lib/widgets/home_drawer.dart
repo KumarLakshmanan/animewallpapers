@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontendforever/wallpapers/premium.dart';
-import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/pages/favorite.dart';
 import 'package:frontendforever/screens/feedback.dart';
 import 'package:frontendforever/screens/pagementpage.dart';
@@ -87,7 +86,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ),
             ),
             title: const Text(
-              'Premium Membership',
+              'Get Membership',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white,
@@ -104,14 +103,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
         ],
         ListTile(
           leading: const Icon(
-            Icons.book_sharp,
+            Icons.image,
             color: Colors.white,
             size: 20,
           ),
           title: Row(
             children: [
               const Text(
-                'Premium Tools',
+                'Premium Wallpapers',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.white,
@@ -130,21 +129,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ],
           ),
           onTap: () async {
-            if (alreadyPaid == null || alreadyPaid == false) {
-              Get.snackbar(
-                "Upgrade to Premium",
-                "You can only able to access this content after upgrading to premium.",
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: secondaryColor,
-                colorText: Colors.white,
-              );
-            } else {
-              Get.back();
-              Get.to(
-                const PremiumList(),
-                transition: Transition.rightToLeft,
-              );
-            }
+            Get.to(
+              const PremiumList(),
+              transition: Transition.rightToLeft,
+            );
           },
         ),
         ListTile(

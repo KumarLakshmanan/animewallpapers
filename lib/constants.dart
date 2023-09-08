@@ -18,7 +18,7 @@ List<BoxShadow> boxShadow = [
 Color primaryColor = const Color(0xFF131417);
 Color secondaryColor = const Color(0xFF2C303A);
 Color appBarColor = const Color(0xFF1E1F25);
-
+Color cherryColor = const Color(0xFFf3004a);
 Color backgroundColor = const Color(0xFFFFFFFF);
 String webUrl = "https://animewallpapers.codingfrontend.in/";
 String apiUrl = "https://animewallpapers.codingfrontend.in/api/v1.php";

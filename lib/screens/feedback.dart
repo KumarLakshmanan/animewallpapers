@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart';
 import 'package:frontendforever/constants.dart';
 
 import 'package:frontendforever/functions.dart';
@@ -43,6 +42,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        backgroundColor: secondaryColor,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new),
@@ -66,20 +66,27 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       TextField(
                         controller: nameController,
                         keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 1,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 2,
                             ),
                           ),
+                          labelStyle: TextStyle(
+                            color: Colors.white,
+                          ),
                           labelText: 'Name',
+                        ),
+                        cursorColor: Colors.white,
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -87,19 +94,26 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
+                          enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 1,
                             ),
                           ),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 2,
                             ),
                           ),
+                          labelStyle: const TextStyle(
+                            color: Colors.white,
+                          ),
                           labelText: 'Email',
+                        ),
+                        cursorColor: Colors.white,
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -107,19 +121,26 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
+                          enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 1,
                             ),
                           ),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 2,
                             ),
                           ),
+                          labelStyle: const TextStyle(
+                            color: Colors.white,
+                          ),
                           labelText: 'Phone',
+                        ),
+                        cursorColor: Colors.white,
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -127,20 +148,27 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         controller: feedbackController,
                         maxLines: 5,
                         keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 1,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: primaryColor,
+                              color: Colors.white,
                               width: 2,
                             ),
                           ),
+                          labelStyle: TextStyle(
+                            color: Colors.white,
+                          ),
                           labelText: 'Enter the Feedback',
+                        ),
+                        cursorColor: Colors.white,
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
                     ],
@@ -169,9 +197,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           'name': nameController.text,
                           'email': emailController.text,
                           'phone': phoneController.text,
-                          'message': (feedbackCategory ?? "-----------") +
-                              "\n\n" +
-                              feedbackController.text,
+                          'message': feedbackController.text,
                         },
                       );
                       if (response.statusCode == 200) {

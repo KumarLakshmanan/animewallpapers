@@ -11,7 +11,6 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../controllers/main_screen_controller.dart';
 
 class MainScreen extends StatefulWidget {
   final bool show;
@@ -23,7 +22,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
-  final MainScreenController mainController = Get.put(MainScreenController());
   late AnimationController menuAnimation;
   bool isOpened = false;
 
@@ -55,9 +53,6 @@ class _MainScreenState extends State<MainScreen>
         if (Scaffold.of(context).isDrawerOpen) {
           Scaffold.of(context).closeDrawer();
           isOpened = false;
-          return false;
-        } else if (mainController.tabIndex != 0) {
-          mainController.changePage(0);
           return false;
         } else {
           Dialogs.bottomMaterialDialog(
@@ -105,7 +100,6 @@ class _MainScreenState extends State<MainScreen>
         child: SafeArea(
           child: Scaffold(
             backgroundColor: secondaryColor,
-            key: mainController.mainScaffoldKey,
             drawer: Drawer(
               backgroundColor: secondaryColor,
               child: const HomeDrawer(),

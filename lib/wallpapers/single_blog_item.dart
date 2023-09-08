@@ -4,6 +4,7 @@ import 'package:frontendforever/wallpapers/single_blog.dart';
 import 'package:frontendforever/constants.dart';
 import 'package:frontendforever/controllers/ad_controller.dart';
 import 'package:frontendforever/models/single_blog.dart';
+import 'package:frontendforever/widgets/on_tap_scale.dart';
 import 'package:get/get.dart';
 
 class SingleBlogItem extends StatefulWidget {
@@ -19,7 +20,7 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return OnTapScale(
       onTap: () async {
         await Get.to(
           () => SingleBlogScreen(book: widget.code),
@@ -32,7 +33,6 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
         }
       },
       child: Ink(
-        height: (Get.width * (Get.width > 350 ? 0.33 : 0.5)) * 2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           color: appBarColor,
@@ -44,69 +44,52 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
             ),
           ],
         ),
-        child: GetBuilder(
-          init: AdController(),
-          builder: (ac) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Positioned.fill(
-                        child: CachedNetworkImage(
-                          imageUrl: widget.code.thumb,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Center(
-                            child: SizedBox(
-                              height: 150,
-                              width: 150,
-                              child: Image.asset(
-                                "assets/icons/logo_nobg.png",
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => const Center(
-                            child: Icon(
-                              Icons.error,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 5,
-                        right: 5,
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF444857),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(6),
-                            ),
-                          ),
-                          child: (widget.code.status != "public" && !ac.isPro)
-                              ? const Icon(
-                                  Icons.lock_outline,
-                                  color: Colors.white,
-                                  size: 13,
-                                )
-                              : Image.asset(
-                                  "assets/icons/explore.png",
-                                  height: 12,
-                                  color: Colors.white,
-                                ),
-                        ),
-                      )
-                    ],
+        child: Stack(
+          children: [
+            CachedNetworkImage(
+              imageUrl: widget.code.thumb,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(
+                child: SizedBox(
+                  height: (Get.width * (Get.width > 350 ? 0.33 : 0.5)) * 1.5,
+                  child: Image.asset(
+                    "assets/icons/logo_nobg.png",
+                    fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(height: 5),
-              ],
-            );
-          },
+              ),
+              errorWidget: (context, url, error) => const Center(
+                child: Icon(
+                  Icons.error,
+                  color: Colors.red,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 2,
+              right: 2,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF444857),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(6),
+                  ),
+                ),
+                child: (widget.code.status != "public" && !ac.isPro)
+                    ? const Icon(
+                        Icons.lock_outline,
+                        color: Colors.white,
+                        size: 16,
+                      )
+                    : Image.asset(
+                        "assets/icons/explore.png",
+                        height: 12,
+                        color: Colors.white,
+                      ),
+              ),
+            )
+          ],
         ),
       ),
     );

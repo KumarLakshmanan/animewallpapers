@@ -131,14 +131,22 @@ showErrorDialog(context, text, {lottie = true}) {
 showLoadingDialog() {
   return Get.dialog(
     const AlertDialog(
+      contentPadding: EdgeInsets.all(12),
       content: Row(
         children: [
-          CircularProgressIndicator(),
+          SizedBox(
+            height: 30,
+            width: 30,
+            child: CircularProgressIndicator(),
+          ),
           SizedBox(width: 20),
-          Text("Loading..."),
+          Text(
+            "Please Wait...",
+          )
         ],
       ),
     ),
+    barrierDismissible: false,
   );
 }
 
@@ -175,10 +183,10 @@ Future<void> _messageHandler(RemoteMessage message) async {
 
 Future<String> getAndroidRegId() async {
   if (!kIsWeb) {
-    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-    String? androidRegId = await _firebaseMessaging.getToken();
+    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    String? androidRegId = await firebaseMessaging.getToken();
     await http.get(
-      Uri.parse(apiUrl + '?mode=saveregid&regid=$androidRegId&version=2'),
+      Uri.parse('$apiUrl?mode=saveregid&regid=$androidRegId&version=2'),
     );
     if (kDebugMode) {
       print('Android Reg Id: $androidRegId');
@@ -235,11 +243,11 @@ convertEpochtoTimeAgo(int epoch) {
     timeAgo = 'Yesterday';
   } else {
     if (difference.inDays <= 30) {
-      timeAgo = difference.inDays.toString() + ' days ago';
+      timeAgo = '${difference.inDays} days ago';
     } else if (difference.inDays > 30 && difference.inDays <= 365) {
-      timeAgo = (difference.inDays / 30).floor().toString() + ' months ago';
+      timeAgo = '${(difference.inDays / 30).floor()} months ago';
     } else {
-      timeAgo = (difference.inDays / 365).floor().toString() + ' years ago';
+      timeAgo = '${(difference.inDays / 365).floor()} years ago';
     }
   }
   return timeAgo;
@@ -289,4 +297,32 @@ retunHtml(String html) {
   //     RegExp(r"(width=')([a-zA-Z0-9:;\.\s\(\)\-\,]*)(')"), '');
   html = html.replaceAll(")(", ") (");
   return html;
+}
+
+snackbar(String title, String message) {
+  Get.closeCurrentSnackbar();
+  Get.snackbar(
+    title,
+    message,
+    snackPosition: SnackPosition.BOTTOM,
+    animationDuration: const Duration(milliseconds: 300),
+    backgroundColor: secondaryColor,
+    colorText: Colors.white,
+    margin: const EdgeInsets.all(2),
+  );
+}
+
+convertIntToViews(views) {
+  if (views >= 1000000000) {
+    return (views / 1000000000).toFixed(1) +
+        'B'; // Convert to billions (1 decimal place)
+  } else if (views >= 1000000) {
+    return (views / 1000000).toFixed(1) +
+        'M'; // Convert to millions (1 decimal place)
+  } else if (views >= 1000) {
+    return (views / 1000).toFixed(1) +
+        'K'; // Convert to thousands (1 decimal place)
+  } else {
+    return views.toString(); // Less than a thousand, no conversion needed
+  }
 }
