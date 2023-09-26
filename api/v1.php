@@ -134,95 +134,21 @@ if (isset($_REQUEST["mode"])) {
         } else {
             $json["error"] = array("code" => "#400", "description" => "email and password are required.");
         }
-    } else if ($mode == 'editbooks') {
-        if (
-            isset($_REQUEST['bookname']) &&
-            isset($_REQUEST['medium']) &&
-            isset($_REQUEST['class']) &&
-            isset($_REQUEST['term']) &&
-            isset($_REQUEST['position']) &&
-            isset($_REQUEST['bookid'])
-        ) {
-            try {
-                $bookname = trim(htmlspecialchars($_REQUEST["bookname"]));
-                $medium = trim(htmlspecialchars($_REQUEST["medium"]));
-                $class = trim(htmlspecialchars($_REQUEST["class"]));
-                $term = trim(htmlspecialchars($_REQUEST["term"]));
-                $position = trim(htmlspecialchars($_REQUEST["position"]));
-                $bookid = trim(htmlspecialchars($_REQUEST["bookid"]));
-                $pdfPath = "";
-                $fileSize = 0;
-                if (trim($bookname) == "" || trim($medium) == "" || trim($class) == "" || trim($term) == "" || trim($bookid) == "") {
-                    $json["error"] = array("code" => "#400", "description" => "Please fill all the fields.");
-                } else {
-                    $pdfPath = "";
-                    $uploadOk = 1;
-                    if (isset($_FILES['pdf'])) {
-                        $target_dir = $uploadsDirectory . "pdf/";
-                        $pdfname = time() . ".pdf";
-                        $target_file = $target_dir . $pdfname;
-                        $uploadOk = 1;
-                        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                        // Check if image file is a actual image or fake image
-                        $check = getimagesize($_FILES["pdf"]["tmp_name"]);
-                        if ($check !== false) {
-                            $json["error"] = array("code" => "#400", "description" => "File is not a pdf.");
-                            $uploadOk = 0;
-                        }
-                        if ($_FILES["pdf"]["size"] > 50000000) {
-                            $json["error"] = array("code" => "#400", "description" => "Sorry, your file is too large.");
-                            $uploadOk = 0;
-                        }
-                        if (
-                            $imageFileType != "pdf"
-                        ) {
-                            $json["error"] = array("code" => "#400", "description" => "Sorry, only PDF files are allowed.");
-                            $uploadOk = 0;
-                        }
-                        // Check if $uploadOk is set to 0 by an error
-                        if ($uploadOk != 0) {
-                            if (move_uploaded_file($_FILES["pdf"]["tmp_name"], $target_file)) {
-                                $fileSize = filesize($target_file);
-                                $pdfPath = $pdfname;
-                                $json["error"] = array("code" => "#200", "description" => "The file " . htmlspecialchars(basename($_FILES["pdf"]["name"])) . " has been uploaded.");
-                            } else {
-                                $json["error"] = array("code" => "#400", "description" => "Sorry, there was an error uploading your file.");
-                            }
-                        }
-                    }
-                    $sql = "UPDATE tnscert_books2 SET label = :label, medium = :medium, class = :class, term = :term, position = :position";
-                    if ($pdfPath != "") {
-                        $sql .= ", content_name_s3 = :pdf, file_size = :file_size";
-                    }
-                    $sql .= " WHERE id = :id";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindParam(":label", $bookname);
-                    $stmt->bindParam(":medium", $medium);
-                    $stmt->bindParam(":class", $class);
-                    $stmt->bindParam(":term", $term);
-                    if ($pdfPath != "") {
-                        $stmt->bindParam(":pdf", $pdfPath);
-                        $stmt->bindParam(":file_size", $fileSize);
-                    }
-                    $stmt->bindParam(":id", $bookid);
-                    $stmt->execute();
-                    $json["error"] = array("code" => "#200", "description" => "Success.");
-                }
-            } catch (Exception $e) {
-                $json["error"] = array("code" => "#500", "description" => $e->getMessage());
-            }
-        }
     } else if ($mode == 'addbooks') {
         if (
             isset($_REQUEST['bookname']) &&
             isset($_REQUEST['category']) &&
-            isset($_FILES['image1']) &&
-            isset($_FILES['image2'])
+            isset($_REQUEST['category2']) &&
+            isset($_REQUEST['subcategory'])
         ) {
             try {
                 $bookname = trim(htmlspecialchars($_REQUEST["bookname"]));
                 $category = trim(htmlspecialchars($_REQUEST["category"]));
-                if (trim($bookname) == "" || trim($category) == "") {
+                $category2 = trim(htmlspecialchars($_REQUEST["category2"]));
+                $subcategory = trim(htmlspecialchars($_REQUEST["subcategory"]));
+
+                $bookid = trim(htmlspecialchars($_REQUEST["bookid"] ?? ""));
+                if (trim($bookname) == "" || trim($category) == "" || trim($subcategory) == "") {
                     $json["error"] = array("code" => "#400", "description" => "Please fill all the fields.");
                 } else {
                     $imagePath1 = "";
@@ -269,12 +195,6 @@ if (isset($_REQUEST["mode"])) {
                         $target_file = $target_dir . $image2name;
                         $uploadOk = 1;
                         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                        // Check if image file is a actual image or fake image
-                        // $check = getimagesize($_FILES["image2"]["tmp_name"]);
-                        // if ($check !== false) {
-                        //     $json["error"] = array("code" => "#400", "description" => "File is not an image.");
-                        //     $uploadOk = 0;
-                        // }
                         if ($_FILES["image2"]["size"] > 50000000) {
                             $json["error"] = array("code" => "#400", "description" => "Sorry, your file is too large.");
                             $uploadOk = 0;
@@ -295,15 +215,45 @@ if (isset($_REQUEST["mode"])) {
                             }
                         }
                     }
-                    if ($imagePath1 != "" && $imagePath2 != "") {
-                        $sql = "INSERT INTO couplewallpapers (title, category, image1, image2) VALUES (:title, :category, :image1, :image2)";
+
+                    if ($bookid == "") {
+                        if ($imagePath1 != "" && $imagePath2 != "") {
+                            $sql = "INSERT INTO couplewallpapers (title, category, category2, image1, image2, subcategory) VALUES (:title, :category, :category2, :image1, :image2, :subcategory)";
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bindParam(":title", $bookname);
+                            $stmt->bindParam(":category", $category);
+                            $stmt->bindParam(":category2", $category2);
+                            $stmt->bindParam(":image1", $imagePath1);
+                            $stmt->bindParam(":image2", $imagePath2);
+                            $stmt->bindParam(":subcategory", $subcategory);
+                            $stmt->execute();
+                            $json["error"] = array("code" => "#200", "description" => "Success.");
+                        } else {
+                            $json["error"] = array("code" => "#400", "description" => "Please upload both images.");
+                        }
+                    } else {
+                        $sql = "UPDATE couplewallpapers SET title = :title, category = :category, category2 = :category2,";
+                        if ($imagePath1 != "") {
+                            $sql .= " image1 = :image1,";
+                        }
+                        if ($imagePath2 != "") {
+                            $sql .= " image2 = :image2,";
+                        }
+                        $sql .= "subcategory = :subcategory WHERE id = :id";
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(":title", $bookname);
                         $stmt->bindParam(":category", $category);
-                        $stmt->bindParam(":image1", $imagePath1);
-                        $stmt->bindParam(":image2", $imagePath2);
+                        $stmt->bindParam(":category2", $category2);
+                        if ($imagePath1 != "") {
+                            $stmt->bindParam(":image1", $imagePath1);
+                        }
+                        if ($imagePath2 != "") {
+                            $stmt->bindParam(":image2", $imagePath2);
+                        }
+                        $stmt->bindParam(":subcategory", $subcategory);
+                        $stmt->bindParam(":id", $bookid);
                         $stmt->execute();
-                        $json["error"] = array("code" => "#200", "description" => "Success.");
+                        $json["error"] = array("code" => "#200", "description" => "Succeasss.");
                     }
                 }
             } catch (Exception $e) {
@@ -334,7 +284,7 @@ if (isset($_REQUEST["mode"])) {
             $message = htmlspecialchars($message);
 
             $sql = "INSERT INTO messages (name, email, phone, message,  created_at) VALUES (:name, :email, :phone, :message, :created_at)";
-            $stmt = $pdoConn->prepare($sql);
+            $stmt = $conn->prepare($sql);
             $stmt->bindParam(":name", $name);
             $stmt->bindParam(":email", $email);
             $stmt->bindParam(":phone", $mobile);
@@ -411,8 +361,8 @@ if (isset($_REQUEST["mode"])) {
             echo "error";
         }
     } else if ($mode == "getAllCategories") {
-        $sql = "SELECT COUNT(*) AS count, category, image1, image2 FROM couplewallpapers GROUP BY category;";
-        $stmt = $pdoConn->prepare($sql);
+        $sql = "SELECT COUNT(*) AS count, category, image1, image2 FROM couplewallpapers GROUP BY category";
+        $stmt = $conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
         $json["error"] = array("code" => "#200", "description" => "Success.");
@@ -422,18 +372,16 @@ if (isset($_REQUEST["mode"])) {
                 $result[$i]['image'] = $webAddress . "img/" . $result[$i]['category'] . ".png";
             } else {
                 $sql = "SELECT * FROM couplewallpapers WHERE category = :categoryid ORDER BY RAND() LIMIT 1";
-                $stmt = $pdoConn->prepare($sql);
+                $stmt = $conn->prepare($sql);
                 $stmt->bindParam(":categoryid", $result[$i]['category']);
                 $stmt->execute();
                 $result2 = $stmt->fetchAll();
-                $result[$i]['image'] = $result2[0]['thumb'];
-            }
-            if ($result[$i]['category'] == "premium") {
-                unset($result[$i]);
+                $result[$i]['image1'] = $result2[0]['image1'];
+                $result[$i]['image2'] = $result2[0]['image2'];
             }
         }
         $json["data"] = $result;
-    }else if ($mode == "getAllImages") {
+    } else if ($mode == "getAllImages") {
         $category = $_REQUEST['category'] ?? "";
         $subcategory = $_REQUEST['subcategory'] ?? "";
         $pageNo = (int)trim(htmlspecialchars($_REQUEST['pageNo'] ?? "1"));
@@ -442,24 +390,24 @@ if (isset($_REQUEST["mode"])) {
 
         if ($category == "random" || $category == "") {
             $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers ORDER BY RAND() LIMIT :limit OFFSET :offset";
-            $stmt = $pdoConn->prepare($sql);
+            $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
         } else if ($subcategory != "") {
             $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers WHERE category = :categoryid AND subcategory = 'premium'  ORDER BY RAND() LIMIT :limit OFFSET :offset";
-            $stmt = $pdoConn->prepare($sql);
+            $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
             $stmt->bindParam(":categoryid", $category);
         } else if ($category != "") {
             $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers WHERE category = :categoryid ORDER BY RAND() LIMIT :limit OFFSET :offset";
-            $stmt = $pdoConn->prepare($sql);
+            $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
             $stmt->bindParam(":categoryid", $category);
         } else {
             $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers ORDER BY RAND() LIMIT :limit OFFSET :offset";
-            $stmt = $pdoConn->prepare($sql);
+            $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
         }
@@ -469,14 +417,14 @@ if (isset($_REQUEST["mode"])) {
         for ($i = 0; $i < count($result); $i++) {
             $id = $result[$i]['id'];
             $sql = "UPDATE couplewallpapers SET views = views + 1 WHERE id = :id";
-            $stmt = $pdoConn->prepare($sql);
+            $stmt = $conn->prepare($sql);
             $stmt->bindParam(":id", $id);
             $stmt->execute();
         }
     } else if ($mode == "vote") {
         $id =  $_REQUEST['id'];
         $sql = "UPDATE couplewallpapers SET votes = votes + 1 WHERE id = :id";
-        $stmt = $pdoConn->prepare($sql);
+        $stmt = $conn->prepare($sql);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
         $json["error"] = array("code" => "#200", "description" => "Success.");

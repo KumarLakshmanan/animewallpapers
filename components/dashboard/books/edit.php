@@ -23,63 +23,67 @@ if (isset($_GET['bookid'])) {
             </div>
             <br />
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <label>Title</label>
                     <div class="p-2">
                         <input type="text" class="form-control w-100" id="name" placeholder="Enter Title" required value="<?= $bookid != "" ? $propertyEdit[0]['title'] : "" ?>">
                     </div>
                 </div>
-                <br />
                 <div class="col-6">
-                    <label>Category</label>
+                    <label>Status</label>
+                    <div class="p-2">
+                        <select class="form-select w-100" id="subcategory">
+                            <option value="public" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "public" ? "selected" : "") : "" ?>>public</option>
+                            <option value="premium" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "premium" ? "selected" : "") : "" ?>>premium</option>
+                            <option value="private" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "private" ? "selected" : "") : "" ?>>private</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <label>Category 1</label>
                     <div class="p-2">
                         <input type="text" class="form-control w-100" id="category" placeholder="Enter Category" required value="<?= $bookid != "" ? $propertyEdit[0]['category'] : "" ?>" list="categoryList">
                     </div>
                 </div>
                 <div class="col-6">
-                    <label>Status</label>
+                    <label>Category 2</label>
                     <div class="p-2">
-                        <select class="form-control w-100" id="subcategory">
-                            <option value="public" <?= $bookid != "" ? $propertyEdit[0]['subcategory'] : "" ?>>public</option>
-                            <option value="premium" <?= $bookid != "" ? $propertyEdit[0]['subcategory'] : "" ?>>premium</option>
-                            <option value="private" <?= $bookid != "" ? $propertyEdit[0]['subcategory'] : "" ?>>private</option>
-                        </select>
+                        <input type="text" class="form-control w-100" id="category2" placeholder="Enter Category" required value="<?= $bookid != "" ? $propertyEdit[0]['category2'] : "" ?>" list="categoryList">
                     </div>
                 </div>
             </div>
             <datalist id="categoryList">
                 <?php
-                $sql = "SELECT category FROM `couplewallpapers` GROUP BY `category`";
+                $sql = "SELECT category, category2 FROM `couplewallpapers` GROUP BY `category`";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $categories = array();
                 foreach ($result as $key => $value) {
-                    echo '<option value="' . $value['category'] . '" ' . ($medium == $value['category'] ? "selected" : "") . '>' . $value['category'] . '</option>';
+                    $categories[] = $value['category'];
+                    $categories[] = $value['category2'];
+                }
+                $categories = array_unique($categories);
+                foreach ($categories as $key => $value) {
+                    // echo '<option value="' . $value['category'] . '" ' . ($medium == $value['category'] ? "selected" : "") . '>' . $value['category'] . '</option>';
+                    echo '<option value="' . $value . '">' . $value . '</option>';
                 }
                 ?>
             </datalist>
             <br />
+            <div id="preview">
+                <img src="<?= $baseUrl ?>uploads/images/<?= $bookid != "" ? $propertyEdit[0]['image1'] : "" ?>" width="100px" height="100px" id="image1Preview" />
+                <img src="<?= $baseUrl ?>uploads/images/<?= $bookid != "" ?  $propertyEdit[0]['image2'] : "" ?>" width="100px" height="100px" id="image2Preview" />
+            </div>
             <div class="row">
                 <div class="col-6">
                     <label>Image File 1</label>
-                    <?php
-                    if ($bookid != "") {
-                    ?>
-                        <img src="<?= $baseUrl ?>uploads/images/<?= $propertyEdit[0]['image1'] ?>" width="100px" height="100px" />
-                    <?php
-                    } ?>
                     <div class="p-2">
                         <input type="file" class="form-control w-100" id="image1" placeholder="Enter Image" required accept="images/*" />
                     </div>
                 </div>
                 <div class="col-6">
                     <label>Image File 2</label>
-                    <?php
-                    if ($bookid != "") {
-                    ?>
-                        <img src="<?= $baseUrl ?>uploads/images/<?= $propertyEdit[0]['image2'] ?>" width="100px" height="100px" />
-                    <?php
-                    } ?>
                     <div class="p-2">
                         <input type="file" class="form-control w-100" id="image2" placeholder="Enter Image" required accept="images/*" />
                     </div>
@@ -112,21 +116,60 @@ if (isset($_GET['bookid'])) {
     if ($(".texteditor-content").length > 0) {
         $(".texteditor-content").richText();
     }
-
+    $("#image1").change(function() {
+        var file = this.files[0];
+        var fileType = file["type"];
+        var validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+        if ($.inArray(fileType, validImageTypes) < 0) {
+            swal({
+                icon: 'error',
+                type: 'error',
+                title: 'Oops...',
+                text: 'Please upload valid image!',
+            })
+            $("#image1").val("");
+        } else {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#image1Preview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    $("#image2").change(function() {
+        var file = this.files[0];
+        var fileType = file["type"];
+        var validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+        if ($.inArray(fileType, validImageTypes) < 0) {
+            swal({
+                icon: 'error',
+                type: 'error',
+                title: 'Oops...',
+                text: 'Please upload valid image!',
+            })
+            $("#image2").val("");
+        } else {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#image2Preview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
     $(".saveButton").click(function() {
         var bookname = $("#name").val();
         var category = $("#category").val();
+        var category2 = $("#category2").val();
         var bookid = "<?= $bookid ?>";
         var subcategory = $("#subcategory").val();
         if (bookname == "" || category == "" || subcategory == "") {
-            console.table(bookname, category, classs, term);
             swal({
                 icon: 'error',
                 type: 'error',
                 title: 'Oops...',
                 text: 'Please fill all the fields!',
             })
-        } else if ($("#image1")[0].files.length == 0 || $("#image2")[0].files.length == 0) {
+        } else if (($("#image1")[0].files.length == 0 || $("#image2")[0].files.length == 0) && bookid == "") {
             swal({
                 icon: 'error',
                 type: 'error',
@@ -145,11 +188,13 @@ if (isset($_GET['bookid'])) {
             }).then((willDelete) => {
                 if (willDelete) {
                     var formData = new FormData();
-                    formData.append("mode", "<?= $bookid != "" ? "editbooks" : "addbooks" ?>");
+                    formData.append("mode", "addbooks");
                     formData.append("bookname", bookname);
                     formData.append("category", category);
                     formData.append("image1", image1);
                     formData.append("image2", image2);
+                    formData.append("subcategory", subcategory);
+                    formData.append("category2", category2);
                     <?php
                     if ($bookid != "") {
                     ?>

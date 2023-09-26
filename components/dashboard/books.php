@@ -25,12 +25,18 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
                     <select class="form-select" id="medium" aria-label="Default select example">
                         <option value="">Select Category</option>
                         <?php
-                        $sql = "SELECT category FROM `couplewallpapers` GROUP BY `category`";
+                        $sql = "SELECT category, category2 FROM `couplewallpapers` GROUP BY `category`";
                         $stmt = $conn->prepare($sql);
                         $stmt->execute();
                         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        $categories = array();
                         foreach ($result as $key => $value) {
-                            echo '<option value="' . $value['category'] . '" ' . ($medium == $value['category'] ? "selected" : "") . '>' . $value['category'] . '</option>';
+                            $categories[] = $value['category'];
+                            $categories[] = $value['category2'];
+                        }
+                        $categories = array_unique($categories);
+                        foreach ($categories as $key => $value) {
+                            echo '<option value="' . $value . '" ' . ($category == $value ? 'selected' : '') . '>' . $value . '</option>';
                         }
                         ?>
                     </select>
@@ -42,7 +48,8 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
                     <thead>
                         <tr>
                             <th class="border-top-0">#</th>
-                            <th class="border-top-0">Category</th>
+                            <th class="border-top-0">Category 1</th>
+                            <th class="border-top-0">Category 2</th>
                             <th class="border-top-0">Title</th>
                             <th class="border-top-0">Views</th>
                             <th class="border-top-0">Created At</th>
@@ -53,21 +60,38 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
                         <?php
                         $sql = "";
                         if ($category != '') {
-                            $sql = "SELECT * FROM `couplewallpapers` WHERE category = '$category' ORDER BY `id` DESC";
+                            $sql = "SELECT * FROM `couplewallpapers` WHERE category = :category1 OR category2 = :category2 ORDER BY `id` DESC";
                         }
                         if ($sql == "") {
                             $result = [];
                         } else {
                             $stmt = $conn->prepare($sql);
+                            $stmt->bindParam(':category1', $category);
+                            $stmt->bindParam(':category2', $category);
                             $stmt->execute();
                             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         }
 
                         foreach ($result as $key => $value) {
-                            echo '<tr>
-                                    <td>' . ($key + 1) . '</td>
-                                    <td>' . $value['category'] . '</td>
-                                    <td>' . $value['title'] . '</td>
+                            echo '<tr> <td>' . ($key + 1) . '</td>';
+                            // echo '<td>' . $value['category'] == $category ? ('<b>' . $value['category'] . '</b>') : $value['category'] . '</td>
+                            //         <td>' . $value['category2'] == $category ? ('<b>' . $value['category2'] . '</b>') : $value['category2'] . '</td>
+
+                            echo '<td>';
+                            if ($value['category'] == $category) {
+                                echo '<b>' . $value['category'] . '</b>';
+                            } else {
+                                echo $value['category'];
+                            }
+                            echo '</td>
+                                    <td>';
+                            if ($value['category2'] == $category) {
+                                echo '<b>' . $value['category2'] . '</b>';
+                            } else {
+                                echo $value['category2'];
+                            }
+                            echo '</td>';
+                            echo '<td>' . $value['title'] . '</td>
                                     <td>' . $value['views'] . '</td>
                                     <td>' . $value['created_at'] . '</td>
                                     <td>
