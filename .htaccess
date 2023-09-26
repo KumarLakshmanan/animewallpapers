@@ -1,0 +1,31 @@
+RewriteEngine On
+
+
+<IfModule mod_speling.c>
+    CheckSpelling Off
+</IfModule>
+Options -Indexes
+
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+
+RewriteRule ^home index.php?id=home [NC,QSA,L]
+RewriteRule ^messages index.php?id=messages [NC,QSA,L]
+RewriteRule ^notification index.php?id=notification [NC,QSA,L]
+RewriteRule ^logout components/logout.php [NC,QSA,L]
+
+RewriteRule ^language index.php?id=language [NC,QSA,L]
+
+RewriteRule ^profiles index.php?id=profiles [NC,QSA,L]
+RewriteRule ^addprofiles index.php?id=editprofiles [NC,QSA,L]
+RewriteRule ^editprofiles index.php?id=editprofiles [NC,QSA,L]
+
+RewriteRule ^subject index.php?id=subject [NC,QSA,L]
+RewriteRule ^addsubject index.php?id=addsubject [NC,QSA,L]
+RewriteRule ^editsubject index.php?id=addsubject [NC,QSA,L]

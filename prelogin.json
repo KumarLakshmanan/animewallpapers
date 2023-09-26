@@ -1,0 +1,62 @@
+{
+    "website": "https://www.frontendforever.com/",
+    "version": "2.4.0",
+    "theme": {
+      "primary": "0xFF222831",
+      "secondary": "0xFF30475E",
+      "bottombar": "0xFF222831",
+      "bottombaractive": "0xFFF05454",
+      "background": "0xFFF5F5F5"
+    },
+    "feedback": [
+      "New bugs/issue in app",
+      "Increase the Content quality",
+      "Change the app design",
+      "Payment Errors",
+      "Suggestion for improvement",
+      "App contains too many ads",
+      "Others"
+    ],
+    "onboarding": [
+      {
+        "image": "appicons/intro/intro_blog.png",
+        "title": "Blog Posts",
+        "description": "View all the blog posts and comments, upvote to Increase the community value"
+      },
+      {
+        "image": "appicons/intro/intro_books.png",
+        "title": "Pdf Books",
+        "description": "View and download more than 100 pdf books from the online E-Library"
+      },
+      {
+        "image": "appicons/intro/intro_editor.png",
+        "title": "Code Editor",
+        "description": "View and edit HTML codes from online, share your code with the community"
+      }
+    ],
+    "bottombar": [
+      { "icon": "appicons/bottombar/coding.png", "title": "Codes" },
+      { "icon": "appicons/bottombar/book.png", "title": "Books" },
+      { "icon": "appicons/bottombar/profile.png", "title": "Profile" }
+    ],
+    "share_link": "Check out this awesome app called Frontend Forever. It's a free app that helps you to create and share code. \nAlso you can download more than 100+ pdf books available on this app \n\nDownload it now from https://play.google.com/store/apps/details?id=com.frontendforever",
+    "vip_desc": "Get access to all of the features of the app without ads. And gain more points for every activity.",
+    "vip_price_month": 1,
+    "vip_price_6month": 5,
+    "vip_price_lifetime": 10,
+    "showpro": true,
+    "assets": {
+      "sort_asc": "appicons/assets/sort-ascending.png",
+      "sort_desc": "appicons/assets/sort-descending.png",
+      "filter": "appicons/assets/filter.png",
+      "download": "appicons/assets/download.png",
+      "ad": "appicons/assets/view.png",
+      "load": "appicons/assets/load.png",
+      "view": "appicons/assets/view.png",
+      "next": "appicons/assets/next.png",
+      "royal": "appicons/assets/royal.png",
+      "vip": "appicons/assets/vip.png",
+      "fire": "appicons/assets/fire.png"
+    }
+  }
+  
