@@ -164,34 +164,49 @@ class _CategoriesListViewState extends State<CategoriesListView> {
                               )
                             : null,
                         borderRadius: BorderRadius.circular(6),
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(
-                            category['image'],
-                          ),
-                          fit: BoxFit.cover,
-                        ),
                       ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          color: Colors.black.withOpacity(0.5),
-                        ),
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
+                      child: Stack(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      '${webUrl}uploads/images/${category["image1"]}',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      '${webUrl}uploads/images/${category["image2"]}',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            "${category['category']} (${category['count']})",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
                             ),
-                            textAlign: TextAlign.center,
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              child: Text(
+                                "${category['category']} (${category['count']})",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),

@@ -125,7 +125,7 @@ class _MainScreenState extends State<MainScreen>
                   }
                 },
                 child: const Text(
-                  'Anime Wallpapers',
+                  kAppTitle,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

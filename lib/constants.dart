@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const String kAppTitle = "Anime Wallpapers";
-const String kAppDescription = "Download and share anime wallpapers";
+const String kAppTitle = "Matching Profile Pictures";
+const String kAppDescription =
+    "Download and share matching profile pictures for couples, friends, family, siblings, and more.";
 
 List<BoxShadow> boxShadow = [
   // box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -20,6 +21,6 @@ Color secondaryColor = const Color(0xFF2C303A);
 Color appBarColor = const Color(0xFF1E1F25);
 Color cherryColor = const Color(0xFFf3004a);
 Color backgroundColor = const Color(0xFFFFFFFF);
-String webUrl = "https://animewallpapers.codingfrontend.in/";
-String apiUrl = "https://animewallpapers.codingfrontend.in/api/v1.php";
+String webUrl = "https://coupleprofiles.frontendforever.com/";
+String apiUrl = "https://coupleprofiles.frontendforever.com/api/v1.php";
 String announcementsKey = "announcements";

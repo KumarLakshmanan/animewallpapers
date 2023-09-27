@@ -1,3 +1,4 @@
+import 'package:animewallpapers/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:animewallpapers/wallpapers/premium.dart';
@@ -57,7 +58,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           accountName: const Text(
-            "Anime Wallpapers",
+            kAppTitle,
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -65,7 +66,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           accountEmail: const Text(
-            "More than 30k+ Anime Wallpapers in your pocket",
+            "More than 10k+ Matching Profile Pictures",
             style: TextStyle(
               color: Colors.white,
               fontSize: 10,
@@ -111,7 +112,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           title: Row(
             children: [
               const Text(
-                'Premium Wallpapers',
+                'Premium PFPs',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.white,
