@@ -299,11 +299,17 @@ class _MainScreenState extends State<MainScreen>
                                 child: Column(
                                   children: [
                                     const Spacer(),
-                                    CachedNetworkImage(
-                                      imageUrl: categories[i]['image'],
-                                      width: 100,
-                                      height: 100,
-                                    ),
+                                    if (categories[i]['image'].runtimeType ==
+                                            String &&
+                                        categories[i]['image']
+                                            .toString()
+                                            .isNotEmpty) ...[
+                                      CachedNetworkImage(
+                                        imageUrl: categories[i]['image'],
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                                    ],
                                     const SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
