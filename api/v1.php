@@ -1206,7 +1206,7 @@ if (isset($_REQUEST["mode"])) {
     } else if ($mode == "getSubCategory") {
         if (isset($_REQUEST['categoryid'])) {
             $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
-            $sql = "SELECT * FROM subcategories WHERE category_id = :categoryid AND status = 1";
+            $sql = "SELECT * FROM subcategories WHERE category_id = :categoryid ";
             $stmt = $pdoConn->prepare($sql);
             $stmt->bindParam(":categoryid", $categoryid);
             $stmt->execute();
@@ -2232,7 +2232,7 @@ if (isset($_REQUEST["mode"])) {
         try {
             $name = $_REQUEST["name"] ?? "";
             $email = $_REQUEST["email"] ?? "";
-            $mobile = $_REQUEST["mobile"] ?? "";
+            $mobile = $_REQUEST["phone"] ?? "";
             $message = $_REQUEST["message"] ?? "";
             $category = $_REQUEST["category"] ?? "";
             $name = htmlspecialchars($name);
@@ -2255,17 +2255,17 @@ if (isset($_REQUEST["mode"])) {
         } catch (Exception $e) {
             $json["error"] = array("code" => "#500", "description" => $e->getMessage());
         }
-    } else if ($mode == "getAllCategories") {
-        $sql = "SELECT * FROM categories WHERE status = 1";
-        $stmt = $pdoConn->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $json["error"] = array("code" => "#200", "description" => "Success.");
-        $json["data"] = $result;
+        // } else if ($mode == "getAllCategories") {
+        //     $sql = "SELECT * FROM categories ";
+        //     $stmt = $pdoConn->prepare($sql);
+        //     $stmt->execute();
+        //     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        //     $json["error"] = array("code" => "#200", "description" => "Success.");
+        //     $json["data"] = $result;
     } else if ($mode == "getAllSubCategories") {
         if (isset($_REQUEST['categoryid'])) {
             $categoryid = trim(htmlspecialchars($_REQUEST['categoryid']));
-            $sql = "SELECT * FROM subcategories WHERE category_id = :categoryid AND status = 1";
+            $sql = "SELECT * FROM subcategories WHERE category_id = :categoryid ";
             $stmt = $pdoConn->prepare($sql);
             $stmt->bindParam(":categoryid", $categoryid);
             $stmt->execute();
@@ -2273,67 +2273,132 @@ if (isset($_REQUEST["mode"])) {
             $json["data"] = $result;
         }
     } else if ($mode == "getAllImages") {
-        $categoryid = trim(htmlspecialchars($_REQUEST['categoryid'] ?? ""));
-        $subcategoryid = trim(htmlspecialchars($_REQUEST['subcategoryid'] ?? ""));
-        $orderby = trim(htmlspecialchars($_REQUEST['orderby'] ?? "popular"));
-        $pageNo = (int)trim(htmlspecialchars($_REQUEST['pageNo'] ?? "1"));
+        $category = $_REQUEST['category'] ?? "";
+        $subcategory = $_REQUEST['subcategory'] ?? "";
         $limit = (int)trim(htmlspecialchars($_REQUEST['limit'] ?? "10"));
-        $offset = ($pageNo - 1) * $limit;
 
-        if ($categoryid == "") {
-            $sql = "SELECT * FROM images WHERE status = 1 ";
-            if ($orderby == "popular") {
-                $sql .= "ORDER BY views DESC ";
-            } else if ($orderby == "latest") {
-                $sql .= "ORDER BY id DESC ";
-            } else if ($orderby == "oldest") {
-                $sql .= "ORDER BY id ASC ";
-            } else if ($orderby == "random") {
-                $sql .= "ORDER BY RAND() ";
-            } else {
-                $sql .= "ORDER BY id DESC ";
-            }
-            $sql .= "LIMIT :limit OFFSET :offset";
+        if ($category == "random" || $category == "") {
+            $sql = "SELECT id, image, thumb, width, height, views, category, subcategory as status  FROM alphawallpapers2 WHERE isavailable = 1 ORDER BY RAND() LIMIT :limit";
             $stmt = $pdoConn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
-            $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
-        } else if ($subcategoryid == "") {
-            $sql = "SELECT * FROM images WHERE category_id = :categoryid AND status = 1";
-            if ($orderby == "popular") {
-                $sql .= "ORDER BY views DESC ";
-            } else if ($orderby == "latest") {
-                $sql .= "ORDER BY id DESC ";
-            } else if ($orderby == "oldest") {
-                $sql .= "ORDER BY id ASC ";
-            } else if ($orderby == "random") {
-                $sql .= "ORDER BY RAND() ";
-            } else {
-                $sql .= "ORDER BY id DESC ";
-            }
-            $sql = " LIMIT :limit OFFSET :offset";
+        } else if ($subcategory != "") {
+            $sql = "SELECT id, image, thumb, width, height, views, category, subcategory as status  FROM alphawallpapers2 WHERE category = :categoryid  AND isavailable = 1 AND subcategory = 'premium'  ORDER BY RAND() LIMIT :limit";
             $stmt = $pdoConn->prepare($sql);
-            $stmt->bindParam(":categoryid", $categoryid);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
-            $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+            $stmt->bindParam(":categoryid", $category);
+        } else if ($category != "") {
+            $sql = "SELECT id, image, thumb, width, height, views, category, subcategory as status  FROM alphawallpapers2 WHERE category = :categoryid AND isavailable = 1 ORDER BY RAND() LIMIT :limit";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
+            $stmt->bindParam(":categoryid", $category);
         } else {
-            $sql = "SELECT * FROM images WHERE category_id = :categoryid AND subcategory_id = :subcategoryid AND status = 1";
-            if ($orderby == "popular") {
-                $sql .= "ORDER BY views DESC ";
-            } else if ($orderby == "latest") {
-                $sql .= "ORDER BY id DESC ";
-            } else if ($orderby == "oldest") {
-                $sql .= "ORDER BY id ASC ";
-            } else if ($orderby == "random") {
-                $sql .= "ORDER BY RAND() ";
-            } else {
-                $sql .= "ORDER BY id DESC ";
-            }
-            $sql = " LIMIT :limit OFFSET :offset";
+            $sql = "SELECT id, image, thumb, width, height, views, category, subcategory as status  FROM alphawallpapers2 WHERE isavailable = 1 ORDER BY RAND() LIMIT :limit";
             $stmt = $pdoConn->prepare($sql);
-            $stmt->bindParam(":categoryid", $categoryid);
-            $stmt->bindParam(":subcategoryid", $subcategoryid);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
-            $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $json["data"] = $result;
+        for ($i = 0; $i < count($result); $i++) {
+            $id = $result[$i]['id'];
+            $sql = "UPDATE alphawallpapers2 SET views = views + 1 WHERE id = :id";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+        }
+    } else if ($mode == "addAlphaImage") {
+        if (isset($_REQUEST['title']) && isset($_REQUEST['image']) && isset($_REQUEST['thumb']) && isset($_REQUEST['width']) && isset($_REQUEST['height'])) {
+            $title = trim(htmlspecialchars($_REQUEST['title']));
+            $image = trim(htmlspecialchars($_REQUEST['image']));
+            $thumb = trim(htmlspecialchars($_REQUEST['thumb']));
+            $width = trim(htmlspecialchars($_REQUEST['width']));
+            $height = trim(htmlspecialchars($_REQUEST['height']));
+            try {
+                $sql = "INSERT INTO alphimages (title, image, thumb, width, height) VALUES (:title, :image, :thumb, :width, :height)";
+                $stmt = $pdoConn->prepare($sql);
+                $stmt->bindParam(":title", $title);
+                $stmt->bindParam(":image", $image);
+                $stmt->bindParam(":thumb", $thumb);
+                $stmt->bindParam(":width", $width);
+                $stmt->bindParam(":height", $height);
+                $stmt->execute();
+                $json["error"] = array("code" => "#200", "description" => "Success.");
+            } catch (Exception $e) {
+                $json["error"] = array("code" => "#500", "description" => $e->getMessage());
+            }
+        } else {
+            $json["error"] = array("code" => "#400", "description" => "Invalid request 1.");
+        }
+    } else if ($mode == "getAllCategories") {
+        $sql = "SELECT COUNT(*) AS count, category FROM alphawallpapers2 WHERE isavailable = 1 GROUP BY category;";
+        $stmt = $pdoConn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $json["error"] = array("code" => "#200", "description" => "Success.");
+        for ($i = 0; $i < count($result); $i++) {
+            $fileName = $baseDirectory . "img/images/" . $result[$i]['category'] . ".png";
+            // if (file_exists($fileName)) {
+            //     $result[$i]['image'] = $webAddress . "img/images/" . $result[$i]['category'] . ".png";
+            // } else {
+            //     $sql = "SELECT * FROM alphawallpapers2 WHERE isavailable = 1 AND category = :categoryid ORDER BY RAND() LIMIT 1";
+            //     $stmt = $pdoConn->prepare($sql);
+            //     $stmt->bindParam(":categoryid", $result[$i]['category']);
+            //     $stmt->execute();
+            //     $result2 = $stmt->fetchAll();
+            //     $result[$i]['image'] = $result2[0]['thumb'];
+            // }
+            $fileName = $baseDirectory . "img/thumb/" . $result[$i]['category'] . ".png";
+            if (file_exists($fileName)) {
+                $result[$i]['thumb'] = $webAddress . "img/thumb/" . $result[$i]['category'] . ".png";
+            } else {
+                $result[$i]['thumb'] = $result[$i]['image'];
+            }
+        }
+        $json["data"] = $result;
+    } else if ($mode == "getAllPremiumCategories") {
+        $sql = "SELECT COUNT(*) AS count, category FROM alphawallpapers2 WHERE subcategory = 'premium' AND isavailable = 1 GROUP BY category;";
+        $stmt = $pdoConn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $json["error"] = array("code" => "#200", "description" => "Success.");
+        for ($i = 0; $i < count($result); $i++) {
+            $fileName = $baseDirectory . "img/" . $result[$i]['category'] . ".png";
+            if (file_exists($fileName)) {
+                $result[$i]['image'] = $webAddress . "img/" . $result[$i]['category'] . ".png";
+            } else {
+                $sql = "SELECT * FROM alphawallpapers2 WHERE category = :categoryid ORDER BY RAND() LIMIT 1";
+                $stmt = $pdoConn->prepare($sql);
+                $stmt->bindParam(":categoryid", $result[$i]['category']);
+                $stmt->execute();
+                $result2 = $stmt->fetchAll();
+                $result[$i]['image'] = $result2[0]['thumb'];
+            }
+            if ($result[$i]['category'] == "premium") {
+                unset($result[$i]);
+            }
+        }
+        $json["data"] = $result;
+    } else if ($mode == "vote") {
+        $id =  $_REQUEST['id'];
+        $sql = "UPDATE alphawallpapers2 SET votes = votes + 1 WHERE id = :id";
+        $stmt = $pdoConn->prepare($sql);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        $json["error"] = array("code" => "#200", "description" => "Success.");
+    } else if ($mode == "saveregid") {
+        $regid = $_REQUEST['regid'];
+        $sql = "SELECT * FROM `regid` WHERE regid = :regid";
+        $stmt = $pdoConn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        if ($result) {
+            $json["error"] = array("code" => "#200", "description" => "Success.");
+        } else {
+            $sql = "INSERT INTO regid (regid) VALUES (:regid)";
+            $stmt = $pdoConn->prepare($sql);
+            $stmt->bindParam(":regid", $regid);
+            $stmt->execute();
+            $json["error"] = array("code" => "#200", "description" => "Success.");
         }
     } else {
         $json['error'] = array("code" => "#403", "description" => "Invalid mode.");
