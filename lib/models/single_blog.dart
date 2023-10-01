@@ -15,6 +15,8 @@ class ImageType {
   int views;
   String category;
   String status;
+  double height;
+  double width;
   ImageType({
     required this.id,
     required this.image,
@@ -22,6 +24,8 @@ class ImageType {
     required this.views,
     required this.category,
     required this.status,
+    required this.height,
+    required this.width,
   });
 
   factory ImageType.fromJson(Map<String, dynamic> json) => ImageType(
@@ -31,6 +35,8 @@ class ImageType {
         views: json["views"],
         category: json["category"],
         status: json["status"] ?? 'public',
+        height: json["height"].toDouble(),
+        width: json["width"].toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -40,5 +46,7 @@ class ImageType {
         "views": views,
         "category": category,
         "status": status,
+        "height": height,
+        "width": width,
       };
 }

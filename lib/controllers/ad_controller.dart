@@ -76,7 +76,7 @@ class AdController extends GetxController {
     if (!kIsWeb) {
       if (interstitialAd.runtimeType == Null) {
         final prefs = await SharedPreferences.getInstance();
-        int adUnitId = prefs.getInt("showedInterstitialAds") ?? 0;
+        int adUnitId = prefs.getInt("showInterstitialAds") ?? 0;
         if (kDebugMode) {
           print("You are Pro: $isPro");
         }
@@ -97,9 +97,9 @@ class AdController extends GetxController {
                   );
                   interstitialAd = ad;
                   if (adUnitId <= 0) {
-                    prefs.setInt("showedInterstitialAds", 2);
+                    prefs.setInt("showInterstitialAds", 3);
                   } else {
-                    prefs.setInt("showedInterstitialAds", adUnitId - 1);
+                    prefs.setInt("showInterstitialAds", adUnitId - 1);
                   }
                   update();
                 },
@@ -113,7 +113,7 @@ class AdController extends GetxController {
           }
         } else {
           if (adUnitId != 0) {
-            prefs.setInt("showedInterstitialAds", adUnitId - 1);
+            prefs.setInt("showInterstitialAds", adUnitId - 1);
           }
         }
       }

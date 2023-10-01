@@ -125,10 +125,12 @@ Widget submitButton(
   );
 }
 
-Expanded buildDivider() {
-  return const Expanded(
+Expanded buildDivider({
+  Color color = const Color(0xFF989898),
+}) {
+  return Expanded(
     child: Divider(
-      color: Color(0xFF989898),
+      color: color,
       height: 1.5,
     ),
   );
