@@ -268,7 +268,7 @@ class _MainScreenState extends State<MainScreen>
                             GestureDetector(
                               onTap: () async {
                                 await Get.to(
-                                  SingleCategory(
+                                  () => SingleCategory(
                                     category: categories[i]['category'],
                                   ),
                                   transition: Transition.rightToLeft,

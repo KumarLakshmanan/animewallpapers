@@ -70,40 +70,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
             maxLines: 2,
           ),
         ),
-        // ListTile(
-        //   leading: const Icon(
-        //     Icons.image,
-        //     color: Colors.white,
-        //     size: 20,
-        //   ),
-        //   title: Row(
-        //     children: [
-        //       const Text(
-        //         'Premium Wallpapers',
-        //         style: TextStyle(
-        //           fontSize: 14,
-        //           color: Colors.white,
-        //         ),
-        //       ),
-        //       if (alreadyPaid == null || alreadyPaid == false) ...[
-        //         const SizedBox(
-        //           width: 5,
-        //         ),
-        //         const Icon(
-        //           Icons.lock_outline,
-        //           color: Colors.white,
-        //           size: 12,
-        //         ),
-        //       ]
-        //     ],
-        //   ),
-        //   onTap: () async {
-        //     Get.to(
-        //       const PremiumList(),
-        //       transition: Transition.rightToLeft,
-        //     );
-        //   },
-        // ),
         ListTile(
           leading: Container(
             height: 20,
@@ -125,7 +91,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           onTap: () async {
             Get.back();
             Get.to(
-              const FavoriteList(),
+              () => const FavoriteList(),
               transition: Transition.rightToLeft,
             );
           },

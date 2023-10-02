@@ -1,6 +1,7 @@
 import 'package:animewallpapers/controllers/data_controller.dart';
 import 'package:animewallpapers/shimmer/restaurant_shimmer.dart';
 import 'package:animewallpapers/wallpapers/single_blog_item.dart';
+import 'package:animewallpapers/widgets/banner_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:animewallpapers/constants.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -64,51 +65,58 @@ class _SingleCategoryState extends State<SingleCategory> {
           ),
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          dc.codes = [];
-          dc.loaded = false;
-          dc.getDataFromAPI(
-            scategory: widget.category,
-          );
-          dc.update();
-        },
-        child: GetBuilder(
-          init: DataController(),
-          builder: (dc) {
-            return Padding(
-              padding: const EdgeInsets.only(
-                left: 8.0,
-                right: 8.0,
-              ),
-              child: MasonryGridView(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                gridDelegate:
-                    const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
-                children: [
-                  const SizedBox(height: 2),
-                  const SizedBox(height: 2),
-                  for (var i = 0; i < dc.codes.length; i++) ...[
-                    SingleBlogItem(
-                      index: i,
+      body: Column(
+        children: [
+          const BannerAdWidget(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                dc.codes = [];
+                dc.loaded = false;
+                dc.getDataFromAPI(
+                  scategory: widget.category,
+                );
+                dc.update();
+              },
+              child: GetBuilder(
+                init: DataController(),
+                builder: (dc) {
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8.0,
+                      right: 8.0,
                     ),
-                  ],
-                  if (!dc.loaded) ...[
-                    for (var i = 0; i < 2; i++) const WallpaperShimmer(),
-                  ],
-                  if (dc.codes.isEmpty) ...[
-                    for (var i = 0; i < 2; i++) const WallpaperShimmer(),
-                  ],
-                ],
+                    child: MasonryGridView(
+                      controller: _scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      gridDelegate:
+                          const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      children: [
+                        const SizedBox(height: 2),
+                        const SizedBox(height: 2),
+                        for (var i = 0; i < dc.codes.length; i++) ...[
+                          SingleBlogItem(
+                            index: i,
+                          ),
+                        ],
+                        if (!dc.loaded) ...[
+                          for (var i = 0; i < 2; i++) const WallpaperShimmer(),
+                        ],
+                        if (dc.codes.isEmpty) ...[
+                          for (var i = 0; i < 2; i++) const WallpaperShimmer(),
+                        ],
+                      ],
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
