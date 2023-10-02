@@ -22,6 +22,9 @@ class _SingleBlogItemState extends State<SingleBlogItem> {
   Widget build(BuildContext context) {
     return OnTapScale(
       onTap: () async {
+        dc.codes = [];
+        dc.loaded = false;
+        dc.update();
         await Get.to(
           () => SingleBlogScreen(
             index: widget.index,

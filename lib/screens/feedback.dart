@@ -16,7 +16,7 @@ class FeedbackScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FeedbackScreenState createState() => _FeedbackScreenState();
+  State<FeedbackScreen> createState() => _FeedbackScreenState();
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
@@ -93,20 +93,20 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       TextField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
+                        decoration: const InputDecoration(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.white,
                               width: 1,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.white,
                               width: 2,
                             ),
                           ),
-                          labelStyle: const TextStyle(
+                          labelStyle: TextStyle(
                             color: Colors.white,
                           ),
                           labelText: 'Email',
@@ -120,20 +120,20 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       TextField(
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
+                        decoration: const InputDecoration(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.white,
                               width: 1,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.white,
                               width: 2,
                             ),
                           ),
-                          labelStyle: const TextStyle(
+                          labelStyle: TextStyle(
                             color: Colors.white,
                           ),
                           labelText: 'Phone',
@@ -208,6 +208,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           setState(() {
                             sended = 1;
                           });
+                          // ignore: use_build_context_synchronously
                           Dialogs.materialDialog(
                             context: context,
                             titleAlign: TextAlign.center,
@@ -228,10 +229,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             ],
                           );
                         } else {
+                          // ignore: use_build_context_synchronously
                           showErrorDialog(
                               context, data['error']['description']);
                         }
                       } else {
+                        // ignore: use_build_context_synchronously
                         showErrorDialog(context, 'Something went wrong');
                       }
                     }

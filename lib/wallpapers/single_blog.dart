@@ -288,9 +288,7 @@ class _SingleBlogScreenState extends State<SingleBlogScreen> {
                           if (!widget.type) {
                             if (value == dc.codes.length - 1) {
                               dc.getDataFromAPI(
-                                scategory: widget.type
-                                    ? fc.favorites[index].category
-                                    : dc.codes[index].category,
+                                scategory:dc.codes[index].category,
                               );
                             }
                           }

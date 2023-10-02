@@ -45,14 +45,14 @@ class _MainScreenState extends State<MainScreen>
       });
     }
     getAndroidRegId();
-    getDataFromAPI();
+    getCategoriesFromAPI();
   }
 
-  getDataFromAPI() async {
+  getCategoriesFromAPI() async {
     final prefs = await SharedPreferences.getInstance();
-    String allCategories = prefs.getString('allCategories') ?? '';
+    String allCategories = prefs.getString('allCategoriesV2') ?? '';
     if (allCategories.isNotEmpty) {
-      categories = json.decode(allCategories);
+      categories = jsonDecode(allCategories);
       loading = false;
       setState(() {});
     }
@@ -64,7 +64,7 @@ class _MainScreenState extends State<MainScreen>
       var data = json.decode(response.body);
       if (data['error']['code'] == '#200') {
         categories = data['data'];
-        prefs.setString('allCategories', json.encode(categories));
+        prefs.setString('allCategoriesV2', json.encode(categories));
         loading = false;
         setState(() {});
       }
@@ -96,7 +96,10 @@ class _MainScreenState extends State<MainScreen>
             clickCount++;
             if (clickCount > 10) {
               final prefs = await SharedPreferences.getInstance();
+              ac.isPro = true;
+              ac.update();
               prefs.setBool("isVip", true);
+              Get.closeAllSnackbars();
               Get.snackbar(
                 "Pro Unlocked",
                 "You can use pro features now",
@@ -282,8 +285,8 @@ class _MainScreenState extends State<MainScreen>
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
-                                  boxShadow: [
-                                    const BoxShadow(
+                                  boxShadow: const [
+                                    BoxShadow(
                                       color: Color.fromRGBO(100, 100, 111, 0.2),
                                       blurRadius: 29,
                                       offset: Offset(0, 7),

@@ -15,7 +15,7 @@ class InlineDropDown extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _InlineDropDownState createState() => _InlineDropDownState();
+  State<InlineDropDown> createState() => _InlineDropDownState();
 }
 
 class _InlineDropDownState extends State<InlineDropDown> {

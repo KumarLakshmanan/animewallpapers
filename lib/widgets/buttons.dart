@@ -24,7 +24,7 @@ class MaterialBtn extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _MaterialBtnState createState() => _MaterialBtnState();
+  State<MaterialBtn> createState() => _MaterialBtnState();
 }
 
 class _MaterialBtnState extends State<MaterialBtn> {

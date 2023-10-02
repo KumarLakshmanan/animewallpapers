@@ -9,8 +9,11 @@ import 'package:animewallpapers/screens/feedback.dart';
 import 'package:animewallpapers/widgets/all_widget.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+// ignore: depend_on_referenced_packages
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+// ignore: depend_on_referenced_packages
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+// ignore: depend_on_referenced_packages
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
@@ -456,10 +459,12 @@ class _PurchasePageState extends State<PurchasePage> {
 
   Future<void> _listenToPurchaseUpdated(
       List<PurchaseDetails> purchaseDetailsList) async {
-    print('--------------------------------');
-    print('listen');
-    print(purchaseDetailsList);
-    print('--------------------------------');
+    if (kDebugMode) {
+      print('--------------------------------');
+      print('listen');
+      print(purchaseDetailsList);
+      print('--------------------------------');
+    }
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.error) {
         handleError();
@@ -467,6 +472,7 @@ class _PurchasePageState extends State<PurchasePage> {
           purchaseDetails.status == PurchaseStatus.restored) {
         final prefs = await SharedPreferences.getInstance();
         prefs.setBool('isVip', true);
+        // ignore: use_build_context_synchronously
         Dialogs.bottomMaterialDialog(
           context: context,
           title: 'Purchase Successful',

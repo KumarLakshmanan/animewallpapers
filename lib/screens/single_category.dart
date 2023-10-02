@@ -26,6 +26,7 @@ class _SingleCategoryState extends State<SingleCategory> {
   void initState() {
     dc.codes = [];
     dc.loaded = false;
+    dc.update();
     super.initState();
     dc.getDataFromAPI(
       scategory: widget.category,
@@ -67,7 +68,9 @@ class _SingleCategoryState extends State<SingleCategory> {
         onRefresh: () async {
           dc.codes = [];
           dc.loaded = false;
-          dc.getDataFromAPI();
+          dc.getDataFromAPI(
+            scategory: widget.category,
+          );
           dc.update();
         },
         child: GetBuilder(

@@ -20,7 +20,7 @@ class EntryField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EntryFieldState createState() => _EntryFieldState();
+  State<EntryField> createState() => _EntryFieldState();
 }
 
 class _EntryFieldState extends State<EntryField> {

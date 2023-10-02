@@ -40,6 +40,7 @@ class _FilterByState extends State<FilterBy> {
         prefs.setString("keywords", json.encode(categories));
         setState(() {});
       } else {
+        // ignore: use_build_context_synchronously
         showErrorDialog(context, data['error']['description']);
       }
     }

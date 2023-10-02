@@ -8,6 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:animewallpapers/main.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+// ignore: depend_on_referenced_packages
 import 'package:in_app_purchase_platform_interface/src/in_app_purchase_platform_addition.dart';
 
 void main() {
@@ -49,7 +50,6 @@ class TestIAPConnection implements InAppPurchase {
 
   @override
   T getPlatformAddition<T extends InAppPurchasePlatformAddition?>() {
-    // TODO: implement getPlatformAddition
     throw UnimplementedError();
   }
 
@@ -59,7 +59,6 @@ class TestIAPConnection implements InAppPurchase {
 
   @override
   Future<void> restorePurchases({String? applicationUserName}) {
-    // TODO: implement restorePurchases
     throw UnimplementedError();
   }
 }
