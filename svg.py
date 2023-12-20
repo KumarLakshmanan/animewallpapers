@@ -11,42 +11,61 @@ images = []
 
 
 def download_collection(url, collection_path):
-    response = requests.get(url, headers=headers)
-    data = json.loads(response.text)
-    collections = data['pageProps']['results']['collections']
-    with open(collection_path, 'w', encoding='utf-8') as outfile:
-        json.dump(collections, outfile)
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = json.loads(response.text)
+        collections = data['pageProps']['results']['collections']
+        with open(collection_path, 'w', encoding='utf-8') as outfile:
+            json.dump(collections, outfile)
+    except requests.exceptions.RequestException as e:
+        print(f"Error downloading collection from {url}: {e}")
 
 
 def download_icon(collection, icons_path, svg_path):
-    total_items = collection['count']
-    total_items = int(total_items)
-    per_collection_page = 50
-    total_collection_requests = total_items / per_collection_page
-    for j in range(int(total_collection_requests)):
-        collection_url = 'https://www.svgrepo.com/_next/data/9UdWXZJ2dR-D_IkpQGEy7/collection/' + \
-            collection['slug']+'/'+str(j + 1)+'.json'
-        print(collection_url)
-        collection_response = requests.get(
-            collection_url, headers=headers)
-        collection_data = json.loads(collection_response.text)
-        items = collection_data['pageProps']['results']['icons']
-        if not os.path.exists(icons_path + collection['slug']):
-            os.makedirs(icons_path + collection['slug'])
-        with open(icons_path + collection['slug'] + '/' + str(j + 1) + '.json', 'w', encoding='utf-8') as outfile:
-            json.dump(items, outfile)
-        for item in items:
-            icon_id = item['id']
-            icon_name = item['title']
-            icon_slug = item['slug']
-            icon_url = 'https://www.svgrepo.com/show/' + \
-                str(icon_id)+'/'+icon_slug+'.svg'
-            print(icon_url)
-            icon_response = requests.get(icon_url, headers=headers)
-            with open(svg_path + collection['slug'] + '/' + str(icon_id) + '__' + icon_slug + '.svg', 'wb') as f:
-                string_content = icon_response.content.replace(
-                    '<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->', '')
-                f.write(string_content)
+    try:
+        total_items = collection['count']
+        total_items = int(total_items)
+        per_collection_page = 50
+        total_collection_requests = total_items / per_collection_page
+        for j in range(int(total_collection_requests)):
+            collection_url = 'https://www.svgrepo.com/_next/data/9UdWXZJ2dR-D_IkpQGEy7/collection/' + \
+                collection['slug']+'/'+str(j + 1)+'.json'
+            print(collection_url)
+            try:
+                collection_response = requests.get(
+                    collection_url, headers=headers)
+                collection_response.raise_for_status()
+                collection_data = json.loads(collection_response.text)
+                items = collection_data['pageProps']['results']['icons']
+
+                if not os.path.exists(icons_path + collection['slug']):
+                    os.makedirs(icons_path + collection['slug'])
+
+                if not os.path.exists(svg_path + collection['slug']):
+                    os.makedirs(svg_path + collection['slug'])
+
+                with open(icons_path + collection['slug'] + '/' + str(j + 1) + '.json', 'w', encoding='utf-8') as outfile:
+                    json.dump(items, outfile)
+
+                for item in items:
+                    iconid = item['id']
+                    iconslug = item['slug']
+                    iconurl = 'https://www.svgrepo.com/show/' + \
+                        str(iconid)+'/'+iconslug+'.svg'
+                    print(iconurl)
+                    try:
+                        icon_response = requests.get(
+                            iconurl, headers=headers)
+                        icon_response.raise_for_status()
+                        with open(svg_path + collection['slug'] + '/' + str(iconid) + '__' + iconslug + '.svg', 'wb') as f:
+                            f.write(icon_response.content)
+                    except requests.exceptions.RequestException as icon_error:
+                        print(f"Error downloading icon from {iconurl}: {icon_error}")
+            except requests.exceptions.RequestException as collection_error:
+                print(f"Error downloading collection from {collection_url}: {collection_error}")
+    except ValueError as value_error:
+        print(f"Error processing collection: {value_error}")
 
 
 def main():
