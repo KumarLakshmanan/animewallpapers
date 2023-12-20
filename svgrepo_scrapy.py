@@ -1,10 +1,6 @@
 import os
-from selenium import webdriver
 import json
 import requests
-import json
-import requests
-import time
 
 headers = {
     'x-nextjs-data': '1',
@@ -37,7 +33,6 @@ def main():
 
         for collection in collections:
             totalItems = collection['count']
-            # convert to int
             totalItems = int(totalItems)
             perCollectionPage = 50
             totalCollectionRequests = totalItems / perCollectionPage
@@ -51,20 +46,23 @@ def main():
                 items = collectionData['pageProps']['results']['icons']
                 if not os.path.exists(iconsPath + collection['slug']):
                     os.makedirs(iconsPath + collection['slug'])
+
+                if not os.path.exists(svgPath + collection['slug']):
+                    os.makedirs(svgPath + collection['slug'])
+
                 with open(iconsPath + collection['slug'] + '/' + str(j + 1) + '.json', 'w', encoding='utf-8') as outfile:
                     json.dump(items, outfile)
+
                 for item in items:
                     iconid = item['id']
-                    iconname = item['title']
                     iconslug = item['slug']
                     iconurl = 'https://www.svgrepo.com/show/' + \
                         str(iconid)+'/'+iconslug+'.svg'
                     print(iconurl)
                     iconResponse = requests.get(iconurl, headers=headers)
                     with open(svgPath + collection['slug'] + '/' + str(iconid) + '__' + iconslug + '.svg', 'wb') as f:
-                        stringcontent = iconResponse.content.replace(
-                            '<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->', '')
-                        f.write(stringcontent)
+                        f.write(iconResponse.content)
 
 
-main()
+if __name__ == "__main__":
+    main()
