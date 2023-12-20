@@ -13,9 +13,9 @@ class Connection
     private $db;
     public function __construct()
     {
-        $db_name = "u707479837_coupleprofiles";
-        $db_user = "u707479837_coupleprofiles";
-        $db_pass = "Kumar@2003";
+        $db_name = "u707479837_svgrepo";
+        $db_user = "u707479837_svgrepo";
+        $db_pass = "eNZK7L>4]2T";
         $this->db = new PDO('mysql:host=127.0.0.1;dbname=' . $db_name, $db_user, $db_pass);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
