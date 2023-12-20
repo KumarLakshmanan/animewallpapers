@@ -26,14 +26,14 @@ if (isset($_GET['bookid'])) {
                 <div class="col-6">
                     <label>Title</label>
                     <div class="p-2">
-                        <input type="text" class="form-control w-100" id="name" placeholder="Enter Title" required value="<?= $bookid != "" ? $propertyEdit[0]['title'] : "" ?>">
+                        <input type="text" class="form-control w-100" id="name" placeholder="Enter Title" required value="<?= $bookid != "" ? $propertyEdit[0]['title'] : "Matching Pfp" ?>">
                     </div>
                 </div>
                 <div class="col-6">
                     <label>Status</label>
                     <div class="p-2">
                         <select class="form-select w-100" id="subcategory">
-                            <option value="public" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "public" ? "selected" : "") : "" ?>>public</option>
+                            <option value="public" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "public" ? "selected" : "") : "selected" ?>>public</option>
                             <option value="premium" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "premium" ? "selected" : "") : "" ?>>premium</option>
                             <option value="private" <?= $bookid != "" ? ($propertyEdit[0]['subcategory'] == "private" ? "selected" : "") : "" ?>>private</option>
                         </select>
@@ -42,13 +42,13 @@ if (isset($_GET['bookid'])) {
                 <div class="col-6">
                     <label>Category 1</label>
                     <div class="p-2">
-                        <input type="text" class="form-control w-100" id="category" placeholder="Enter Category" required value="<?= $bookid != "" ? $propertyEdit[0]['category'] : "" ?>" list="categoryList">
+                        <input type="text" class="form-control w-100" id="category" placeholder="Enter Category" required value="<?= $bookid != "" ? $propertyEdit[0]['category'] : "Anime" ?>" list="categoryList">
                     </div>
                 </div>
                 <div class="col-6">
                     <label>Category 2</label>
                     <div class="p-2">
-                        <input type="text" class="form-control w-100" id="category2" placeholder="Enter Category" required value="<?= $bookid != "" ? $propertyEdit[0]['category2'] : "" ?>" list="categoryList">
+                        <input type="text" class="form-control w-100" id="category2" placeholder="Enter Category" required value="<?= $bookid != "" ? $propertyEdit[0]['category2'] : "Couples" ?>" list="categoryList">
                     </div>
                 </div>
             </div>

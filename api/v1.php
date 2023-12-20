@@ -365,20 +365,18 @@ if (isset($_REQUEST["mode"])) {
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
+
+        $json['data'] = [];
+        $json['array'] = [];
         $json["error"] = array("code" => "#200", "description" => "Success.");
         for ($i = 0; $i < count($result); $i++) {
             $fileName = $baseDirectory . "img/" . $result[$i]['category'] . ".png";
             if (file_exists($fileName)) {
                 $result[$i]['image'] = $webAddress . "img/" . $result[$i]['category'] . ".png";
             } else {
-                $sql = "SELECT * FROM couplewallpapers WHERE category = :categoryid ORDER BY RAND() LIMIT 1";
-                $stmt = $conn->prepare($sql);
-                $stmt->bindParam(":categoryid", $result[$i]['category']);
-                $stmt->execute();
-                $result2 = $stmt->fetchAll();
-                $result[$i]['image1'] = $result2[0]['image1'];
-                $result[$i]['image2'] = $result2[0]['image2'];
+                $result[$i]['image'] = '';
             }
+            $json['data'][] = $result[$i];
         }
         $json["data"] = $result;
     } else if ($mode == "getAllImages") {
@@ -389,24 +387,24 @@ if (isset($_REQUEST["mode"])) {
         $offset = ($pageNo - 1) * $limit;
 
         if ($category == "random" || $category == "") {
-            $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers ORDER BY RAND() LIMIT :limit OFFSET :offset";
+            $sql = "SELECT id, category, category2, image1, image2, subcategory as status  FROM couplewallpapers ORDER BY RAND() LIMIT :limit OFFSET :offset";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
         } else if ($subcategory != "") {
-            $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers WHERE category = :categoryid AND subcategory = 'premium'  ORDER BY RAND() LIMIT :limit OFFSET :offset";
+            $sql = "SELECT id, category, category2, image1, image2, subcategory as status  FROM couplewallpapers WHERE category = :categoryid AND subcategory = 'premium'  ORDER BY RAND() LIMIT :limit OFFSET :offset";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
             $stmt->bindParam(":categoryid", $category);
         } else if ($category != "") {
-            $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers WHERE category = :categoryid ORDER BY RAND() LIMIT :limit OFFSET :offset";
+            $sql = "SELECT id, category, category2, image1, image2, subcategory as status  FROM couplewallpapers WHERE category = :categoryid ORDER BY RAND() LIMIT :limit OFFSET :offset";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
             $stmt->bindParam(":categoryid", $category);
         } else {
-            $sql = "SELECT id, image, thumb, views, category, subcategory as status  FROM couplewallpapers ORDER BY RAND() LIMIT :limit OFFSET :offset";
+            $sql = "SELECT id, category, category2, image1, image2, subcategory as status  FROM couplewallpapers ORDER BY RAND() LIMIT :limit OFFSET :offset";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
             $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);

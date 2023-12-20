@@ -19,28 +19,14 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
             <div class="d-md-flex mb-3">
                 <h3 class="box-title mb-0">All Photos</h3>
             </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <label for="medium" class="form-label">Select Category</label>
-                    <select class="form-select" id="medium" aria-label="Default select example">
-                        <option value="">Select Category</option>
-                        <?php
-                        $sql = "SELECT category, category2 FROM `couplewallpapers` GROUP BY `category`";
-                        $stmt = $conn->prepare($sql);
-                        $stmt->execute();
-                        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        $categories = array();
-                        foreach ($result as $key => $value) {
-                            $categories[] = $value['category'];
-                            $categories[] = $value['category2'];
-                        }
-                        $categories = array_unique($categories);
-                        foreach ($categories as $key => $value) {
-                            echo '<option value="' . $value . '" ' . ($category == $value ? 'selected' : '') . '>' . $value . '</option>';
-                        }
-                        ?>
-                    </select>
-                </div>
+            <div class="col-md-6">
+                <?php
+                $sql = "SELECT count(*) as total FROM `couplewallpapers`";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                ?>
+                <p><b>Total Photos: <?= $result['total'] ?></b></p>
             </div>
             <br />
             <div class="table-responsive">
@@ -48,8 +34,6 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
                     <thead>
                         <tr>
                             <th class="border-top-0">#</th>
-                            <th class="border-top-0">Category 1</th>
-                            <th class="border-top-0">Category 2</th>
                             <th class="border-top-0">Title</th>
                             <th class="border-top-0">Views</th>
                             <th class="border-top-0">Created At</th>
@@ -59,47 +43,24 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
                     <tbody>
                         <?php
                         $sql = "";
-                        if ($category != '') {
-                            $sql = "SELECT * FROM `couplewallpapers` WHERE category = :category1 OR category2 = :category2 ORDER BY `id` DESC";
-                        }
-                        if ($sql == "") {
-                            $result = [];
-                        } else {
-                            $stmt = $conn->prepare($sql);
-                            $stmt->bindParam(':category1', $category);
-                            $stmt->bindParam(':category2', $category);
-                            $stmt->execute();
-                            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        }
+                        $sql = "SELECT * FROM `couplewallpapers`  ORDER BY `id` DESC ";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bindParam(':category1', $category);
+                        $stmt->bindParam(':category2', $category);
+                        $stmt->execute();
+                        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         foreach ($result as $key => $value) {
                             echo '<tr> <td>' . ($key + 1) . '</td>';
-                            // echo '<td>' . $value['category'] == $category ? ('<b>' . $value['category'] . '</b>') : $value['category'] . '</td>
-                            //         <td>' . $value['category2'] == $category ? ('<b>' . $value['category2'] . '</b>') : $value['category2'] . '</td>
-
-                            echo '<td>';
-                            if ($value['category'] == $category) {
-                                echo '<b>' . $value['category'] . '</b>';
-                            } else {
-                                echo $value['category'];
-                            }
-                            echo '</td>
-                                    <td>';
-                            if ($value['category2'] == $category) {
-                                echo '<b>' . $value['category2'] . '</b>';
-                            } else {
-                                echo $value['category2'];
-                            }
-                            echo '</td>';
                             echo '<td>' . $value['title'] . '</td>
                                     <td>' . $value['views'] . '</td>
                                     <td>' . $value['created_at'] . '</td>
                                     <td>
-                                        <a href="' . $adminBaseUrl . 'editprofiles?bookid=' . $value['id'] . '" class="btn btn-primary text-white">
+                                        <a href="' . $adminBaseUrl . 'editprofiles?bookid=' . $value['id'] . '" class="btn btn-primary text-white m-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75l1.83-1.83z"/></svg>
                                             Edit
                                         </a>
-                                        <button class="btn btn-danger text-white" onclick="deleteAdmin(' . $value['id'] . ')">
+                                        <button class="btn btn-danger text-white  m-0" onclick="deleteAdmin(' . $value['id'] . ')">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32"><path fill="currentColor" d="M13.5 6.5V7h5v-.5a2.5 2.5 0 0 0-5 0Zm-2 .5v-.5a4.5 4.5 0 1 1 9 0V7H28a1 1 0 1 1 0 2h-1.508L24.6 25.568A5 5 0 0 1 19.63 30h-7.26a5 5 0 0 1-4.97-4.432L5.508 9H4a1 1 0 0 1 0-2h7.5ZM9.388 25.34a3 3 0 0 0 2.98 2.66h7.263a3 3 0 0 0 2.98-2.66L24.48 9H7.521l1.867 16.34ZM13 12.5a1 1 0 0 1 1 1v10a1 1 0 1 1-2 0v-10a1 1 0 0 1 1-1Zm7 1a1 1 0 1 0-2 0v10a1 1 0 1 0 2 0v-10Z"/></svg>
                                             Delete
                                         </button>
