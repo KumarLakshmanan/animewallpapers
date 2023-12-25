@@ -28,6 +28,14 @@ def download_icon(collection, icons_path, svg_path):
         total_items = int(total_items)
         per_collection_page = 50
         total_collection_requests = total_items / per_collection_page
+
+        # Move directory creation outside the inner loop
+        if not os.path.exists(icons_path + collection['slug']):
+            os.makedirs(icons_path + collection['slug'])
+
+        if not os.path.exists(svg_path + collection['slug']):
+            os.makedirs(svg_path + collection['slug'])
+
         for j in range(int(total_collection_requests)):
             collection_url = 'https://www.svgrepo.com/_next/data/9UdWXZJ2dR-D_IkpQGEy7/collection/' + \
                 collection['slug']+'/'+str(j + 1)+'.json'
@@ -38,12 +46,6 @@ def download_icon(collection, icons_path, svg_path):
                 collection_response.raise_for_status()
                 collection_data = json.loads(collection_response.text)
                 items = collection_data['pageProps']['results']['icons']
-
-                if not os.path.exists(icons_path + collection['slug']):
-                    os.makedirs(icons_path + collection['slug'])
-
-                if not os.path.exists(svg_path + collection['slug']):
-                    os.makedirs(svg_path + collection['slug'])
 
                 with open(icons_path + collection['slug'] + '/' + str(j + 1) + '.json', 'w', encoding='utf-8') as outfile:
                     json.dump(items, outfile)
